@@ -1,9 +1,8 @@
-import { Alert, Button, Descriptions, Flex, Grid, InputNumber, Space } from 'antd'
+import { Alert, Button, Descriptions, Flex, InputNumber, Progress, Space } from 'antd'
 import type { DescriptionsProps } from 'antd'
 import { draftHandle, type StatPatch, type StatValues } from '@pkhex-everywhere/engine'
-import { useLoadedGame, useQuery } from '@pkhex-everywhere/react'
+import { useLoadedGame } from '@pkhex-everywhere/react'
 import { gameName, statsAreApproximate } from '../../capabilities'
-import { PlugInActionButton } from '../../components/PlugInActionButton'
 import { useTranslation } from '../../i18n'
 import { useDraft } from './useDraft'
 
@@ -13,12 +12,18 @@ const statKeys: Stat[] = ['health', 'attack', 'defense', 'specialAttack', 'speci
 
 const total = (values: StatValues) => statKeys.reduce((sum, key) => sum + values[key], 0)
 
+const statColors: Record<Stat, string> = {
+  health: '#52c41a',
+  attack: '#fa8c16',
+  defense: '#1890ff',
+  specialAttack: '#722ed1',
+  specialDefense: '#eb2f96',
+  speed: '#13c2c2',
+}
+
 export function StatsTab() {
   const { details, submit } = useDraft()
   const { game } = useLoadedGame()
-  const actions = useQuery('plugins.actions', 'pokemonStats', draftHandle)
-  const screens = Grid.useBreakpoint()
-  const layout = screens.sm ? 'horizontal' : 'vertical'
   const { t } = useTranslation()
 
   const stats: { key: Stat; label: string }[] = [
@@ -36,8 +41,32 @@ export function StatsTab() {
     { key: 'avs', label: 'AV', values: details.avs },
   ]
 
+  const statCeiling: Record<Stat, number> = {
+    health: 714,
+    attack: 526,
+    defense: 614,
+    specialAttack: 504,
+    specialDefense: 614,
+    speed: 548,
+  }
+
   const statItems = (stat: { key: Stat; label: string }): DescriptionsProps['items'] => [
-    { key: 'stat', label: t('editor.stats.stat', 'Stat'), children: details.stats[stat.key] },
+    {
+      key: 'stat',
+      label: t('editor.stats.stat', 'Stat'),
+      children: (
+        <Flex vertical gap={4} style={{ minWidth: 100 }}>
+          <span style={{ fontWeight: 600 }}>{details.stats[stat.key]}</span>
+          <Progress
+            percent={Math.min(100, Math.max(1, Math.round((details.stats[stat.key] / (statCeiling[stat.key] || 500)) * 100)))}
+            strokeColor={statColors[stat.key]}
+            showInfo={false}
+            size="small"
+            style={{ margin: 0 }}
+          />
+        </Flex>
+      ),
+    },
     ...inputs.flatMap(({ key, label, values }) =>
       values === null
         ? []
@@ -73,14 +102,14 @@ export function StatsTab() {
         />
       )}
       {stats.map((stat) => (
-        <Descriptions key={stat.key} bordered size="small" layout={layout} title={stat.label} items={statItems(stat)} />
+        <Descriptions key={stat.key} bordered size="small" layout="vertical" title={stat.label} items={statItems(stat)} />
       ))}
-      <Descriptions bordered size="small" layout={layout} title={t('stats.total', 'Total')} items={totalItems} />
+      <Descriptions bordered size="small" layout="vertical" title={t('stats.total', 'Total')} items={totalItems} />
       {details.hiddenPower && (
         <Descriptions
           bordered
           size="small"
-          layout={layout}
+          layout="vertical"
           title={t('editor.stats.hiddenPower', 'Hidden Power')}
           items={[
             { key: 'type', label: t('editor.stats.type', 'Type'), children: details.hiddenPower.type },
@@ -94,7 +123,7 @@ export function StatsTab() {
         <Descriptions
           bordered
           size="small"
-          layout={layout}
+          layout="vertical"
           title={t('editor.stats.extra', 'Extra')}
           items={[
             {
@@ -116,13 +145,6 @@ export function StatsTab() {
             },
           ]}
         />
-      )}
-      {actions.length > 0 && (
-        <Space wrap size={20} align="center">
-          {actions.map((action) => (
-            <PlugInActionButton key={action.id} action={action} target={draftHandle} />
-          ))}
-        </Space>
       )}
     </Flex>
   )

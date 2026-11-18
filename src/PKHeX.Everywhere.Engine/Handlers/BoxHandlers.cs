@@ -104,4 +104,60 @@ public static class BoxHandlers
         session.Raise(new PokemonAdded(at, source, box.All[index].ToOverview()));
         return new AddedPokemon(new PokemonId(box.All[index].UniqueId.Value), at);
     }
+
+    /// <summary>
+    /// Moves one or more Pokémon to a target box, strictly validating box capacity and limits.
+    /// </summary>
+    [Requires(Requirement.Save)]
+    [Command("box.moveToBox", Topics.Box)]
+    public static void MoveToBox(Session session, Game game, PokemonHandle[] pokemons, int targetBox)
+    {
+        var save = game.SaveFile;
+        var slotCount = save.BoxSlotCount;
+        var sourceIndices = pokemons
+            .Where(p => p.Source == SlotSource.Box && p.Box.HasValue)
+            .Select(p => p.Box!.Value * slotCount + p.Slot)
+            .ToList();
+
+        try
+        {
+            game.Trainer.PokemonBox.MoveToBox(sourceIndices, targetBox);
+            session.AlsoWrote([Topics.Box]);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            throw new EngineException(ErrorCodes.BadArguments, e.Message, e);
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new EngineException(ErrorCodes.BoxFull, e.Message, e);
+        }
+    }
+
+    /// <summary>
+    /// Swaps the positions of two Pokémon within or between boxes.
+    /// </summary>
+    [Requires(Requirement.Save)]
+    [Command("box.swapSlots", Topics.Box)]
+    public static void SwapSlots(Session session, Game game, PokemonHandle a, PokemonHandle b)
+    {
+        var save = game.SaveFile;
+        var slotCount = save.BoxSlotCount;
+
+        if (a.Source != SlotSource.Box || a.Box is null || b.Source != SlotSource.Box || b.Box is null)
+            throw new EngineException(ErrorCodes.BadArguments, "Ambos os Pokémon devem estar em caixas.");
+
+        var indexA = a.Box.Value * slotCount + a.Slot;
+        var indexB = b.Box.Value * slotCount + b.Slot;
+
+        try
+        {
+            game.Trainer.PokemonBox.SwapSlots(indexA, indexB);
+            session.AlsoWrote([Topics.Box]);
+        }
+        catch (Exception e)
+        {
+            throw new EngineException(ErrorCodes.BadArguments, e.Message, e);
+        }
+    }
 }

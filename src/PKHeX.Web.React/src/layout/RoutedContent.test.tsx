@@ -8,15 +8,13 @@ import { RoutedContent } from './RoutedContent'
 
 vi.mock('../app', () => {
   const error = new TypeError('Importing a module script failed.')
-  const plugInsLoaded = Promise.reject(error)
-  plugInsLoaded.catch(() => {})
   const engine = {
     status: { state: 'failed', loaded: 0, total: 0, error },
     onStatusChange: () => () => {},
     subscribe: () => () => {},
     game: { version: () => Promise.reject(error) },
   } as unknown as Engine
-  return { engine, plugInsLoaded }
+  return { engine }
 })
 
 async function renderFailedBoot() {

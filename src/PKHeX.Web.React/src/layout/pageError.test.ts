@@ -39,11 +39,11 @@ describe('page errors', () => {
     const url = new URL(issueLink(error, emerald)!)
 
     expect(url.origin + url.pathname).toBe('https://github.com/arleypadua/PKHeX.Everywhere/issues/new')
-    expect(url.searchParams.get('title')).toBe('Error on PKHeX.Web: Cannot read properties of undefined')
+    expect(url.searchParams.get('title')).toBe('Error on DXCore: Cannot read properties of undefined')
     expect(url.searchParams.get('labels')).toBe('bug')
     expect(url.searchParams.get('body')).toBe(
       [
-        '# Error on PKHeX.Web',
+        '# Error on DXCore',
         '',
         '* **Id**: b7a9f2c4',
         '* **Game version**: Emerald',

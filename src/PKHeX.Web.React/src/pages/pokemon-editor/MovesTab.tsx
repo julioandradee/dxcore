@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Checkbox, Descriptions, Flex, Grid } from 'antd'
+import { Checkbox, Descriptions, Flex } from 'antd'
 import { draftHandle } from '@pkhex-everywhere/engine'
 import { useQuery } from '@pkhex-everywhere/react'
 import { useTranslation } from '../../i18n'
@@ -13,7 +13,6 @@ export function MovesTab() {
   const options = useQuery('pokemon.options', draftHandle)
   const allMoves = useQuery('game.moves')
   const [showAllMoves, setShowAllMoves] = useState(false)
-  const layout = Grid.useBreakpoint().sm ? 'horizontal' : 'vertical'
 
   const choicesFor = moveChoices(details.moves, showAllMoves ? allMoves : options.moves)
 
@@ -31,12 +30,12 @@ export function MovesTab() {
           title={`${t('moves.move')} ${index + 1}`}
           bordered
           size="small"
-          layout={layout}
+          layout="vertical"
+          column={{ xs: 1, sm: 2 }}
           items={[
             {
               key: 'move',
               label: t('moves.move'),
-              style: { maxWidth: 250 },
               children: (
                 <ChoiceSelect
                   label={`${t('moves.move')} ${index + 1}`}

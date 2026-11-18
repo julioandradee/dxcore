@@ -2,11 +2,15 @@ import { smogon } from './calculators'
 
 export type Theme = 'light' | 'dark'
 export type Language = 'pt-BR' | 'en' | 'es'
+export type EditorLayout = 'showcase' | 'classic'
+export type PokemonListView = 'gallery' | 'table'
 
 // Blazored.LocalStorage wrote these keys as raw strings before the settings moved to JS.
 const themeKey = 'theme'
 const languageKey = '__settings__#language'
 const calculatorUrlKey = '__settings__#calculatorUrl'
+const editorLayoutKey = '__settings__#editorLayout'
+const pokemonListViewKey = '__settings__#pokemonListView'
 const lastDateNewsSeenKey = 'lastDateNewsSeen'
 const pkhemuPreviewKey = 'pkhemuClosedTest'
 const pkhemuCardDismissedKey = 'pkhemuCardDismissed'
@@ -45,6 +49,20 @@ export function createSettings(storage: Storage = localStorage, prefersDark = pr
     },
     writeCalculatorUrl(url: string | null) {
       write(calculatorUrlKey, url?.trim() ? url.replace(/\/$/, '') : null)
+    },
+    readEditorLayout(): EditorLayout {
+      const layout = storage.getItem(editorLayoutKey)
+      return layout === 'classic' ? 'classic' : 'showcase'
+    },
+    writeEditorLayout(layout: EditorLayout) {
+      write(editorLayoutKey, layout)
+    },
+    readPokemonListView(): PokemonListView {
+      const view = storage.getItem(pokemonListViewKey)
+      return view === 'table' ? 'table' : 'gallery'
+    },
+    writePokemonListView(view: PokemonListView) {
+      write(pokemonListViewKey, view)
     },
     readLastDateNewsSeen(): string | null {
       return storage.getItem(lastDateNewsSeenKey)

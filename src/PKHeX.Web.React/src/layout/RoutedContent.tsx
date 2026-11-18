@@ -5,7 +5,6 @@ import { useEngineStatus } from '@pkhex-everywhere/react'
 import { engine } from '../app'
 import { applicationName } from '../constants'
 import { RoutedErrorBoundary } from './RoutedErrorBoundary'
-import { WhenPlugInsLoaded } from './WhenPlugInsLoaded'
 
 export function RoutedContent() {
   const { state } = useEngineStatus()
@@ -14,9 +13,7 @@ export function RoutedContent() {
   return (
     <RoutedErrorBoundary engine={engine}>
       <Suspense fallback={<Loading />}>
-        <WhenPlugInsLoaded>
-          <Outlet />
-        </WhenPlugInsLoaded>
+        <Outlet />
       </Suspense>
     </RoutedErrorBoundary>
   )

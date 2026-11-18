@@ -21,7 +21,10 @@ internal static class PkmEdits
         var gen34 = pkm.Format is 3 or 4 || pkm.Version.IsGen3() || pkm.Version.IsGen4();
         var abilityBit = gen34 ? 0x0000_0001u : 0x0001_0000u;
         var unown = (pkm.Format == 3 || pkm.Version.IsGen3()) && pkm.Species == (int)Species.Unown;
-        while (true)
+        
+        var attempts = 0;
+        const int maxAttempts = 50;
+        while (attempts++ < maxAttempts)
         {
             var pid = random.Rand32();
             if (forceShiny) pid = ShinyUtil.GetShinyPID(pkm.TID16, pkm.SID16, pid, (uint)random.Next(8));
@@ -29,6 +32,11 @@ internal static class PkmEdits
             if (unown ? EntityPID.GetUnownForm3(pid) != pkm.Form : (pid & abilityBit) != (pkm.PID & abilityBit)) continue;
             if (PersonalInfo.IsSingleGender(ratio) || EntityGender.GetFromPIDAndRatio(pid, ratio) == pkm.Gender) return pid;
         }
+
+        // Fallback if combination is mathematically impossible or low probability (e.g. Unown letter lock in Gen 3)
+        var fallbackPid = random.Rand32();
+        if (forceShiny) fallbackPid = ShinyUtil.GetShinyPID(pkm.TID16, pkm.SID16, fallbackPid, (uint)random.Next(8));
+        return fallbackPid;
     }
 
     public static void SetShinyKeepingGender(this PKM pkm, bool shiny)
@@ -41,6 +49,10 @@ internal static class PkmEdits
 
         if (pkm.IsShiny == shiny) return;
         pkm.RerollPid(pkm.Nature, shiny);
+        if (pkm.IsShiny != shiny)
+        {
+            pkm.SetIsShiny(shiny);
+        }
         if (pkm.Format >= 6) pkm.EncryptionConstant = pkm.PID;
     }
 
@@ -49,8 +61,13 @@ internal static class PkmEdits
 
     private static void RerollPid(this PKM pkm, Nature nature, bool shiny)
     {
-        do pkm.PID = pkm.RandomPid(Util.Rand, nature, shiny);
-        while (pkm.IsShiny != shiny);
+        var attempts = 0;
+        const int maxReroll = 5;
+        do
+        {
+            pkm.PID = pkm.RandomPid(Util.Rand, nature, shiny);
+        }
+        while (pkm.IsShiny != shiny && ++attempts < maxReroll);
     }
 
     private static bool PidHoldsGender(PKM pkm) => pkm.Format is 3 or 4 || pkm.Version is not 0 and < GameVersion.X;

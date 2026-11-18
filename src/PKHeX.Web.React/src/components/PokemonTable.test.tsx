@@ -79,7 +79,7 @@ describe('PokemonTable', () => {
     expect(tableText).toContain('—')
   })
 
-  it('renders batch export bar when batchExport is true and items are selected', () => {
+  it('renders selection bar with count and clear button when items are selected', () => {
     const onSelectedChange = vi.fn()
     const { container } = render(
       <MemoryRouter>
@@ -89,7 +89,6 @@ describe('PokemonTable', () => {
               pokemon={[pikachu]}
               selected={[pikachu]}
               onSelectedChange={onSelectedChange}
-              batchExport="test.zip"
             />
           </EngineProvider>
         </App>
@@ -97,10 +96,11 @@ describe('PokemonTable', () => {
     )
 
     expect(container.textContent).toMatch(/1 Pokémon (selected|selecionado)/)
-    expect(container.textContent).toMatch(/Export(ar)? \(\.pk\)/)
+    expect(container.textContent).toMatch(/Limpar seleção|Clear selection/)
+    expect(container.textContent).not.toMatch(/Export(ar)? \(\.pk\)/)
   })
 
-  it('shows .zip export option when multiple items are selected', () => {
+  it('shows multiple selection count and clear button when multiple items are selected', () => {
     const onSelectedChange = vi.fn()
     const { container } = render(
       <MemoryRouter>
@@ -110,7 +110,6 @@ describe('PokemonTable', () => {
               pokemon={[pikachu, unknownPokemon]}
               selected={[pikachu, unknownPokemon]}
               onSelectedChange={onSelectedChange}
-              batchExport="test.zip"
             />
           </EngineProvider>
         </App>
@@ -118,7 +117,8 @@ describe('PokemonTable', () => {
     )
 
     expect(container.textContent).toMatch(/2 Pokémon (selected|selecionados)/)
-    expect(container.textContent).toMatch(/Export(ar)? \(2\) (as|como) \.zip/)
+    expect(container.textContent).toMatch(/Limpar seleção|Clear selection/)
+    expect(container.textContent).not.toMatch(/Export(ar)? \(2\) (as|como) \.zip/)
   })
 
   it('clears selection when clicking the clear button', () => {

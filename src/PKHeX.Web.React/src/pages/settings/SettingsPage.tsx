@@ -1,8 +1,20 @@
 import { useState } from 'react'
-import { AutoComplete, Descriptions, Flex, Select, Switch } from 'antd'
+import { AppstoreOutlined } from '@ant-design/icons'
+import { AutoComplete, Button, Descriptions, Flex, Radio, Select, Switch, Tag, Typography } from 'antd'
+import { useNavigate } from 'react-router'
 import { calculators } from '../../calculators'
-import { changeCalculatorUrl, changeTheme, useCalculatorUrl, useTheme } from '../../host'
+import {
+  changeCalculatorUrl,
+  changeEditorLayout,
+  changePokemonListView,
+  changeTheme,
+  useCalculatorUrl,
+  useEditorLayout,
+  usePokemonListView,
+  useTheme,
+} from '../../host'
 import { useTranslation, type Language } from '../../i18n'
+import { routes } from '../../routes'
 
 function CalculatorInput({ placeholder }: { placeholder: string }) {
   const calculatorUrl = useCalculatorUrl()
@@ -48,6 +60,9 @@ function LanguageSelect() {
 
 export default function SettingsPage() {
   const theme = useTheme()
+  const editorLayout = useEditorLayout()
+  const pokemonListView = usePokemonListView()
+  const navigate = useNavigate()
   const { t } = useTranslation()
 
   return (
@@ -56,6 +71,7 @@ export default function SettingsPage() {
         title={t('settings.general')}
         bordered
         size="small"
+        layout="vertical"
         column={1}
         items={[
           { key: 'language', label: t('settings.language'), children: <LanguageSelect /> },
@@ -66,6 +82,7 @@ export default function SettingsPage() {
         title={t('settings.appearance')}
         bordered
         size="small"
+        layout="vertical"
         column={1}
         items={[
           {
@@ -78,6 +95,82 @@ export default function SettingsPage() {
                 checkedChildren={t('settings.theme.dark')}
                 unCheckedChildren={t('settings.theme.light')}
               />
+            ),
+          },
+          {
+            key: 'editorLayout',
+            label: t('settings.editorLayout', 'Layout do Editor de Pokémon'),
+            children: (
+              <Radio.Group
+                value={editorLayout}
+                onChange={(e) => changeEditorLayout(e.target.value)}
+                optionType="button"
+                buttonStyle="solid"
+                options={[
+                  {
+                    value: 'showcase',
+                    label: t('settings.editorLayout.showcase', '✨ Destaque em Colunas (Arte Oficial HD)'),
+                  },
+                  {
+                    value: 'classic',
+                    label: t('settings.editorLayout.classic', '🖼️ Clássico Compacto (GIF Animado)'),
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            key: 'pokemonListView',
+            label: t('settings.pokemonListView', 'Visualização de Pokémon (Equipe e Caixas)'),
+            children: (
+              <Radio.Group
+                value={pokemonListView}
+                onChange={(e) => changePokemonListView(e.target.value)}
+                optionType="button"
+                buttonStyle="solid"
+                options={[
+                  {
+                    value: 'gallery',
+                    label: t('settings.pokemonListView.gallery', '🖼️ Galeria em Grade (Padrão)'),
+                  },
+                  {
+                    value: 'table',
+                    label: t('settings.pokemonListView.table', '📋 Lista por Tabela'),
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      />
+      <Descriptions
+        title={t('settings.about')}
+        bordered
+        size="small"
+        layout="vertical"
+        column={1}
+        items={[
+          {
+            key: 'version',
+            label: t('settings.version'),
+            children: <Tag color="blue">⚡ DXCore v2.0</Tag>,
+          },
+          {
+            key: 'desc',
+            label: t('settings.about'),
+            children: <Typography.Text>{t('settings.aboutDescription')}</Typography.Text>,
+          },
+          {
+            key: 'features',
+            label: t('settings.features'),
+            children: (
+              <Button
+                type="primary"
+                icon={<AppstoreOutlined />}
+                onClick={() => navigate(routes.features)}
+              >
+                {t('settings.viewFeatures', 'Ver Catálogo')}
+              </Button>
             ),
           },
         ]}

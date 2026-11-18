@@ -1,15 +1,14 @@
-import { useCallback, useEffect, type ReactNode } from 'react'
-import { App, ConfigProvider, theme as antdTheme } from 'antd'
+import { Suspense, useCallback, useEffect, type ReactNode } from 'react'
+import { App, Button, ConfigProvider, Result, Spin, theme as antdTheme } from 'antd'
 import ptBR from 'antd/locale/pt_BR'
 import esES from 'antd/locale/es_ES'
 import enUS from 'antd/locale/en_US'
-import { BrowserRouter, Navigate, Route, Routes, useParams, useSearchParams } from 'react-router'
-import type { EngineError, PageLayout, SaveCapability } from '@pkhex-everywhere/engine'
+import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router'
+import type { EngineError, SaveCapability } from '@pkhex-everywhere/engine'
 import { EngineProvider, RequireGame, useLoadedGame } from '@pkhex-everywhere/react'
-import { engine, plugIns } from '../app'
+import { engine } from '../app'
 import { useSupports } from '../hooks/useSupports'
 import { useLanguage, useTheme } from '../host'
-import { PlugInsProvider } from '../plugins/PlugInsContext'
 import BoxPage from '../pages/box/BoxPage'
 import CreditsPage from '../pages/static/CreditsPage'
 import EncountersPage from '../pages/encounters/EncountersPage'
@@ -18,26 +17,20 @@ import HomePage from '../pages/home/HomePage'
 import ItemsPage from '../pages/items/ItemsPage'
 import LoadPage from '../pages/load/LoadPage'
 import PartyPage from '../pages/party/PartyPage'
-import PlugInPage from '../pages/plugins/PlugInPage'
-import PlugInsPage from '../pages/plugins/PlugInsPage'
-import PlugInModulePage from '../pages/plugins/PlugInModulePage'
-import PlugInErrorsPage from '../pages/plugins/PlugInErrorsPage'
 import PokemonClonePage from '../pages/pokemon-editor/PokemonClonePage'
 import PokemonEditorPage from '../pages/pokemon-editor/PokemonEditorPage'
 import PrivacyPolicyPage from '../pages/static/PrivacyPolicyPage'
 import ReleaseNotesPage from '../pages/release-notes/ReleaseNotesPage'
 import SettingsPage from '../pages/settings/SettingsPage'
+import FeaturesPage from '../pages/features/FeaturesPage'
 import TermsOfUsePage from '../pages/static/TermsOfUsePage'
 import { routes } from '../routes'
 import { useTranslation } from '../i18n'
-import { EmptyPlugInLayout } from './EmptyPlugInLayout'
 import { AutoLoadDemo } from './AutoLoadDemo'
 import { GameJourney } from './GameJourney'
 import { journey } from './journey'
 import { LoadLayout } from './LoadLayout'
 import { MainLayout } from './MainLayout'
-import { PlugInOutcomes } from './PlugInOutcomes'
-import { PlugInUpdateNotice } from './PlugInUpdateNotice'
 
 const fontFamily = `'Pokemon GB', "Lucida Console", sans-serif`
 
@@ -112,21 +105,22 @@ function PokemonCloneRoute() {
   return <PokemonClonePage source={source} id={id} />
 }
 
-function PlugInRoute() {
-  const { id } = useParams()
-  return <PlugInPage id={id} />
-}
-
-function PlugInModuleRoute({ layout }: { layout: PageLayout }) {
-  const { plugInId, path } = useParams()
-  return <PlugInModulePage key={`${plugInId}/${path}`} plugInId={plugInId} path={path} layout={layout} />
-}
-
 function NotFoundPage() {
   const { t } = useTranslation()
+  const { game } = useLoadedGame()
+  const navigate = useNavigate()
   return (
     <Page title={t('common.notFound', 'Not found')}>
-      <p role="alert">{t('common.pageNotFound', "Sorry, there's nothing at this address.")}</p>
+      <Result
+        status="404"
+        title="404"
+        subTitle={<span role="alert">{t('common.pageNotFound', "Sorry, there's nothing at this address.")}</span>}
+        extra={
+          <Button type="primary" onClick={() => navigate(game ? routes.home : routes.load)}>
+            {game ? t('common.backToHome', 'Voltar ao Início') : t('load.title', 'Carregar Save')}
+          </Button>
+        }
+      />
     </Page>
   )
 }
@@ -143,13 +137,9 @@ function AppRoutes({ autoLoad }: { autoLoad: boolean }) {
         <Route path="pokemon/search-encounter" element={<Page title="Encounters" capability="encounters"><EncountersRoute /></Page>} />
         <Route path="pokemon/:source/:id" element={<Page title="Pokemon" requiresSave><PokemonEditorRoute /></Page>} />
         <Route path="pokemon/:source/:id/clone" element={<Page title="Clone Pokemon" requiresSave><PokemonCloneRoute /></Page>} />
-        <Route path="plugins" element={<PlugInsPage />} />
-        <Route path="plugins/errors" element={<PlugInErrorsPage />} />
-        <Route path="plugins/:id" element={<PlugInRoute />} />
-        <Route path="plugins/:plugInId/:path" element={<Page capability="plugIns"><PlugInModuleRoute layout="standard" /></Page>} />
-        <Route path="plugins/:plugInId/:path/standard" element={<Page capability="plugIns"><PlugInModuleRoute layout="standard" /></Page>} />
         <Route path="save" element={<Page title="Save"><LoadPage /></Page>} />
         <Route path="settings" element={<Page title="Settings"><SettingsPage /></Page>} />
+        <Route path="features" element={<Page title="Features"><FeaturesPage /></Page>} />
         <Route path="credits" element={<Page title="Credits"><CreditsPage /></Page>} />
         <Route path="privacy-policy" element={<Page title="Privacy Policy"><PrivacyPolicyPage /></Page>} />
         <Route path="terms-of-use" element={<Page title="Terms of Use"><TermsOfUsePage /></Page>} />
@@ -158,9 +148,6 @@ function AppRoutes({ autoLoad }: { autoLoad: boolean }) {
       </Route>
       <Route element={<LoadLayout />}>
         <Route path="load" element={<LoadRoute autoLoad={autoLoad} />} />
-      </Route>
-      <Route element={<EmptyPlugInLayout />}>
-        <Route path="plugins/:plugInId/:path/empty" element={<Page capability="plugIns"><PlugInModuleRoute layout="empty" /></Page>} />
       </Route>
     </Routes>
   )
@@ -193,25 +180,60 @@ export function AppShell({ autoLoad }: { autoLoad: boolean }) {
   const language = useLanguage()
   const antdLocale = language === 'pt-BR' ? ptBR : language === 'es' ? esES : enUS
 
+  const isDark = theme === 'dark'
+
   return (
     <ConfigProvider
       locale={antdLocale}
       theme={{
-        algorithm: theme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-        token: { fontFamily },
+        algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+        token: {
+          fontFamily,
+          colorPrimary: '#DC0A2D',
+          colorPrimaryHover: '#E8304D',
+          colorPrimaryActive: '#B80825',
+          colorLink: '#DC0A2D',
+          colorLinkHover: '#ff4d4f',
+          borderRadius: 8,
+          ...(isDark
+            ? {
+                colorBgBase: '#000a18',
+                colorBgLayout: '#000814',
+                colorBgContainer: '#000f22',
+                colorBgElevated: '#00152d',
+                colorBorder: '#0d2544',
+                colorBorderSecondary: '#081a30',
+              }
+            : {}),
+        },
+        components: {
+          Layout: {
+            headerBg: '#001529',
+            siderBg: '#001529',
+            bodyBg: isDark ? '#000814' : undefined,
+          },
+          Menu: {
+            darkItemBg: '#001529',
+            darkSubMenuItemBg: '#000c18',
+          },
+        },
       }}
     >
       <PageBackground />
       <App component={false}>
         <NotifyingEngineProvider>
-          <PlugInsProvider value={plugIns}>
-            <BrowserRouter basename={import.meta.env.BASE_URL}>
-              <GameJourney />
-              <PlugInOutcomes />
-              <PlugInUpdateNotice />
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <GameJourney />
+            <Suspense
+              fallback={
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
+                  <Spin size="large" />
+                </div>
+              }
+            >
               <AppRoutes autoLoad={autoLoad} />
-            </BrowserRouter>
-          </PlugInsProvider>
+            </Suspense>
+          </BrowserRouter>
         </NotifyingEngineProvider>
       </App>
     </ConfigProvider>

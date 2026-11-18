@@ -1,13 +1,21 @@
 import { useState } from 'react'
-import { App, Descriptions, Flex, Input, InputNumber, Space, Typography } from 'antd'
+import {
+  ExportOutlined,
+  HistoryOutlined,
+  InboxOutlined,
+  ShopOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
+import { App, Button, Card, Col, Descriptions, Flex, Input, InputNumber, Row, Space, Statistic, Typography } from 'antd'
 import { EngineError } from '@pkhex-everywhere/engine'
-import { useLoadedGame, useQuery, useTrainer } from '@pkhex-everywhere/react'
-import { AdSlot } from '../../components/AdSlot'
-import { PlugInActionButton } from '../../components/PlugInActionButton'
+import { useBox, useEngine, useLoadedGame, useParty, useTrainer } from '@pkhex-everywhere/react'
+import { gameName } from '../../capabilities'
 import { TrainerGenderRadio } from '../../components/TrainerGenderRadio'
+import { downloadFile, useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
+import { routes } from '../../routes'
+import { SaveBackupModal } from '../../snapshots/SaveBackupModal'
 
-const multiplexAdSlot = '7470710144'
 const maxMoney = 999_999
 const maxBattlePoints = 65_535
 
@@ -16,10 +24,104 @@ export default function HomePage() {
 
   return (
     <Flex vertical gap={20} style={{ width: '100%' }}>
-      {game && <TrainerCard />}
-      <AdSlot slot={multiplexAdSlot} format="autorelaxed" />
-      <QuickActions />
+      {game && (
+        <>
+          <TrainerCard />
+          <SaveOverviewCard />
+        </>
+      )}
     </Flex>
+  )
+}
+
+function SaveOverviewCard() {
+  const { t } = useTranslation()
+  const { game } = useLoadedGame()
+  const { party } = useParty()
+  const { box } = useBox()
+  const engine = useEngine()
+  const navigate = useNavigate()
+  const [backupModalOpen, setBackupModalOpen] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  if (!game) return null
+
+  const totalBoxPokemon = box.length
+  const totalPartyPokemon = party.length
+  const shinyCount = box.filter((p) => p.isShiny).length + party.filter((p) => p.isShiny).length
+
+  const handleExport = async () => {
+    setExporting(true)
+    try {
+      const { bytes, fileName } = await engine.game.export()
+      downloadFile(bytes, fileName)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  return (
+    <Card
+      title={
+        <Flex align="center" gap={8}>
+          <span>{t('home.overviewTitle', 'Visão Geral do Save')}</span>
+          <span style={{ fontSize: '0.85em', color: '#8c8c8c' }}>({gameName(game)})</span>
+        </Flex>
+      }
+      size="small"
+      style={{ borderRadius: 8 }}
+    >
+      <Row gutter={[16, 16]}>
+        <Col xs={12} sm={8} md={6}>
+          <Statistic
+            title={t('home.partyCount', 'Na Equipe')}
+            value={totalPartyPokemon}
+            suffix="/ 6"
+            prefix={<TeamOutlined style={{ color: '#1677ff' }} />}
+          />
+        </Col>
+        <Col xs={12} sm={8} md={6}>
+          <Statistic
+            title={t('home.boxCount', 'Nas Caixas')}
+            value={totalBoxPokemon}
+            prefix={<InboxOutlined style={{ color: '#52c41a' }} />}
+          />
+        </Col>
+        <Col xs={12} sm={8} md={6}>
+          <Statistic
+            title={t('home.shinyCount', 'Pokémon Shiny')}
+            value={shinyCount}
+            prefix={<span style={{ color: '#faad14' }}>✨</span>}
+          />
+        </Col>
+        <Col xs={12} sm={8} md={6}>
+          <Statistic
+            title={t('home.fileName', 'Arquivo')}
+            value={game.fileName ?? '—'}
+            valueStyle={{ fontSize: '0.9rem', wordBreak: 'break-all' }}
+          />
+        </Col>
+      </Row>
+
+      <Flex wrap="wrap" gap={10} style={{ marginTop: 20 }}>
+        <Button icon={<TeamOutlined />} onClick={() => navigate(routes.party)}>
+          {t('menu.party', 'Equipe')}
+        </Button>
+        <Button icon={<InboxOutlined />} onClick={() => navigate(routes.box)}>
+          {t('menu.box', 'Caixas Pokémon')}
+        </Button>
+        <Button icon={<ShopOutlined />} onClick={() => navigate(routes.items)}>
+          {t('menu.items', 'Itens')}
+        </Button>
+        <Button icon={<HistoryOutlined />} onClick={() => setBackupModalOpen(true)}>
+          {t('backup.title', 'Histórico e Backups')}
+        </Button>
+        <Button type="primary" icon={<ExportOutlined />} loading={exporting} onClick={() => void handleExport()}>
+          {t('load.export', 'Salvar / Exportar')}
+        </Button>
+      </Flex>
+      <SaveBackupModal open={backupModalOpen} onClose={() => setBackupModalOpen(false)} />
+    </Card>
   )
 }
 
@@ -40,6 +142,7 @@ function TrainerCard() {
       title={t('trainer.title')}
       bordered
       size="small"
+      layout="vertical"
       column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 3, xxl: 3 }}
       items={[
         { key: 'id', label: 'TID/SID', children: trainer.id },
@@ -73,19 +176,28 @@ function TrainerCard() {
           key: 'cash',
           label: t('trainer.cash'),
           children: (
-            <InputNumber<number>
-              aria-label={t('trainer.cash')}
-              value={money.value ?? 0}
-              onChange={money.onChange}
-              onBlur={money.onBlur}
-              formatter={(value) => `$ ${value}`}
-              parser={(value) => Number(value?.replace(/\$\s?/g, ''))}
-              disabled={trainer.money === null}
-              min={0}
-              max={maxMoney}
-              precision={0}
-              style={{ width: '100%', maxWidth: 170 }}
-            />
+            <Space.Compact style={{ width: '100%', maxWidth: 220 }}>
+              <InputNumber<number>
+                aria-label={t('trainer.cash')}
+                value={money.value ?? 0}
+                onChange={money.onChange}
+                onBlur={money.onBlur}
+                formatter={(value) => `$ ${value}`}
+                parser={(value) => Number(value?.replace(/\$\s?/g, ''))}
+                disabled={trainer.money === null}
+                min={0}
+                max={maxMoney}
+                precision={0}
+                style={{ width: '100%' }}
+              />
+              <Button
+                disabled={trainer.money === null}
+                onClick={() => void edit(() => setMoney(maxMoney))}
+                title={t('trainer.maxCash', 'Maximizar Dinheiro')}
+              >
+                MAX
+              </Button>
+            </Space.Compact>
           ),
         },
         ...(trainer.battlePoints === null
@@ -95,16 +207,24 @@ function TrainerCard() {
                 key: 'battlePoints',
                 label: t('trainer.battlePoints'),
                 children: (
-                  <InputNumber<number>
-                    aria-label={t('trainer.battlePoints')}
-                    value={battlePoints.value}
-                    onChange={battlePoints.onChange}
-                    onBlur={battlePoints.onBlur}
-                    min={0}
-                    max={maxBattlePoints}
-                    precision={0}
-                    style={{ width: '100%', maxWidth: 170 }}
-                  />
+                  <Space.Compact style={{ width: '100%', maxWidth: 220 }}>
+                    <InputNumber<number>
+                      aria-label={t('trainer.battlePoints')}
+                      value={battlePoints.value}
+                      onChange={battlePoints.onChange}
+                      onBlur={battlePoints.onBlur}
+                      min={0}
+                      max={maxBattlePoints}
+                      precision={0}
+                      style={{ width: '100%' }}
+                    />
+                    <Button
+                      onClick={() => void edit(() => setBattlePoints(maxBattlePoints))}
+                      title={t('trainer.maxBp', 'Maximizar Battle Points')}
+                    >
+                      MAX
+                    </Button>
+                  </Space.Compact>
                 ),
               },
             ]),
@@ -114,22 +234,6 @@ function TrainerCard() {
   )
 }
 
-function QuickActions() {
-  const { t } = useTranslation()
-  const actions = useQuery('plugins.actions', 'quick', null)
-  if (actions.length === 0) return null
-
-  return (
-    <Flex vertical align="center" gap={20} style={{ marginTop: 20 }}>
-      <Typography.Title level={1}>{t('home.quickActions', 'Quick Actions')}</Typography.Title>
-      <Space wrap size={20} align="center">
-        {actions.map((action) => (
-          <PlugInActionButton key={action.id} action={action} />
-        ))}
-      </Space>
-    </Flex>
-  )
-}
 
 // The input shows its own value while focused, so an edit's refetch can't overwrite keystrokes that came after it.
 function useDraft<T>(value: T, commit: (next: T) => unknown) {

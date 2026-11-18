@@ -1,4 +1,4 @@
-import { DatePicker, Descriptions, Grid, InputNumber, Switch } from 'antd'
+import { DatePicker, Descriptions, InputNumber, Switch } from 'antd'
 import type { DescriptionsProps } from 'antd'
 import dayjs from 'dayjs'
 import { draftHandle } from '@pkhex-everywhere/engine'
@@ -15,8 +15,6 @@ export function MetConditionsTab() {
   const options = useQuery('pokemon.options', draftHandle)
   const originGames = useQuery('game.originGames')
   const balls = useQuery('game.balls')
-  const screens = Grid.useBreakpoint()
-
   const items: DescriptionsProps['items'] = [
     ...(originGames.length === 0
       ? []
@@ -107,7 +105,7 @@ export function MetConditionsTab() {
     <Descriptions
       bordered
       size="small"
-      layout={screens.sm ? 'horizontal' : 'vertical'}
+      layout="vertical"
       column={{ xs: 1, sm: 2, md: 3 }}
       items={items}
     />

@@ -1,4 +1,4 @@
-export { createEngine, EngineError, type Engine, type EngineStatus } from './engine'
+export { call, createEngine, EngineError, type Engine, type EngineStatus } from './engine'
 export { wasmHost, type DotnetRuntime, type WasmHostOptions } from './wasmHost'
 export type { EngineHost } from './host'
 export type { CallName, CommandName, EngineClient, QueryName } from './generated/client'

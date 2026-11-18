@@ -216,6 +216,7 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
         </Flex>
         <div style={{ maxHeight: '55vh', overflowY: 'auto' }}>
           <PokemonTable
+            view="table"
             pokemon={displayed}
             extraColumns={[...(view === 'box' ? boxColumns : []), previewColumn(preview)]}
             actions={false}

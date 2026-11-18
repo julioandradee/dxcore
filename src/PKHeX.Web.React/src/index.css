@@ -21,3 +21,145 @@ html, body {
 code {
     color: #c02d76;
 }
+
+/* Informações do Pokémon no Editor: layout responsivo sem tabela */
+.editor-field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.editor-field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ant-color-text-secondary, #8c8c8c);
+    user-select: none;
+}
+
+/* Responsividade Mobile do Header e Logo */
+@media (max-width: 768px) {
+    .desktop-header-actions {
+        display: none !important;
+    }
+    .mobile-header-actions {
+        display: inline-flex !important;
+    }
+    .project-title {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .desktop-header-actions {
+        display: inline-flex !important;
+    }
+    .mobile-header-actions {
+        display: none !important;
+    }
+}
+
+.ant-layout-sider-collapsed .project-title {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Responsividade Avançada para Tabelas, Células (th/td), Abas e Badges
+   ========================================================================== */
+
+/* Garante rolagem horizontal fluida em contêineres de tabelas e descriptions */
+.ant-table-wrapper,
+.ant-descriptions-view {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Permitir quebras de linha naturais nas células th e td e distribuição vertical */
+.ant-table-cell,
+.ant-descriptions-item-label,
+.ant-descriptions-item-content {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Padrão vertical compacto em todas as tabelas e células do sistema */
+.ant-table-cell {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+}
+
+.ant-table-thead > tr > th {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
+}
+
+/* Evitar que badges e tags travem a largura mínima das th e td */
+.ant-tag {
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    height: auto !important;
+    min-height: 22px !important;
+    line-height: 1.3 !important;
+    padding: 1px 8px !important;
+    font-size: 12px !important;
+    margin: 2px 4px 2px 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+}
+
+.ant-descriptions-item-label {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    white-space: normal !important;
+}
+
+.ant-descriptions-item-content {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+}
+
+/* Suporte de navegação para a barra de abas do editor de Pokémon */
+.pokemon-editor-tabs-wrapper .ant-tabs-nav-wrap {
+    overflow-x: auto !important;
+    scrollbar-width: none;
+}
+.pokemon-editor-tabs-wrapper .ant-tabs-nav-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* Ajustes extras ultra-compactos para mobile */
+    .ant-table-cell {
+        padding: 6px 6px !important;
+        font-size: 12px !important;
+    }
+
+    .ant-table-thead > tr > th {
+        padding: 6px 6px !important;
+        font-size: 11px !important;
+    }
+
+    .ant-tag {
+        min-height: 20px !important;
+        padding: 1px 6px !important;
+        font-size: 11px !important;
+        margin: 2px 3px 2px 0 !important;
+    }
+
+    .ant-descriptions-item-label {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+        max-width: 120px;
+    }
+
+    .ant-descriptions-item-content {
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+    }
+}
+
+

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Descriptions, Flex, Grid, Input, InputNumber, Radio } from 'antd'
+import { Descriptions, Flex, Input, InputNumber, Radio } from 'antd'
 import type { PokemonHandler } from '@pkhex-everywhere/engine'
 import { TrainerGenderRadio } from '../../components/TrainerGenderRadio'
 import { useTranslation } from '../../i18n'
@@ -11,7 +11,6 @@ const maxId = 4_294_967_295
 export function TrainerTab() {
   const { t } = useTranslation()
   const { details, submit } = useDraft()
-  const layout = Grid.useBreakpoint().sm ? 'horizontal' : 'vertical'
   const handledBy = (handler: PokemonHandler) => details.currentHandler === handler
 
   return (
@@ -19,7 +18,7 @@ export function TrainerTab() {
       <Descriptions
         bordered
         size="small"
-        layout={layout}
+        layout="vertical"
         column={columns}
         items={[
           {
@@ -44,7 +43,7 @@ export function TrainerTab() {
         title={handledBy('originalTrainer') ? `${t('trainer.originalTrainer')} ✅` : t('trainer.originalTrainer')}
         bordered
         size="small"
-        layout={layout}
+        layout="vertical"
         column={columns}
         items={[
           {
@@ -104,7 +103,7 @@ export function TrainerTab() {
         title={handledBy('handlingTrainer') ? `${t('trainer.currentHandler')} ✅` : t('trainer.currentHandler')}
         bordered
         size="small"
-        layout={layout}
+        layout="vertical"
         column={columns}
         items={[
           {

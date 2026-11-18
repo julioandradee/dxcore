@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
-import { Button, Flex, Tabs } from 'antd'
+import { useMemo, useState } from 'react'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Flex, Input, Tabs, Tag } from 'antd'
 import type { ItemHandle } from '@pkhex-everywhere/engine'
 import { useInventory } from '@pkhex-everywhere/react'
 import { ItemsTable } from '../../components/ItemsTable'
@@ -15,29 +15,69 @@ export default function ItemsPage() {
   const [activeKey, setActiveKey] = useState<string>()
   const [editing, setEditing] = useState<ItemHandle>()
   const [addingTo, setAddingTo] = useState<string>()
+  const [search, setSearch] = useState('')
 
   const active = inventory.find((pouch) => pouch.name === activeKey) ?? inventory[0]
   const findPouch = (name?: string) => inventory.find((pouch) => pouch.name === name)
   const editingItem = findPouch(editing?.pouch)?.items.find((item) => item.id === editing?.itemId)
   const addingPouch = findPouch(addingTo)
 
+  const filteredItems = useMemo(() => {
+    if (!active) return []
+    const q = search.trim().toLowerCase()
+    if (!q) return active.items
+    return active.items.filter((item) => item.name.toLowerCase().includes(q))
+  }, [active, search])
+
   return (
     <Flex vertical gap={20}>
       <PageHeader
-        title={t('items.title')}
+        title={
+          <Flex align="center" gap={12}>
+            <span>{t('items.title')}</span>
+            {active && <Tag color="blue">{active.items.length} itens</Tag>}
+          </Flex>
+        }
         extra={
-          <Button type="primary" icon={<PlusOutlined />} disabled={!active} onClick={() => setAddingTo(active?.name)}>
-            {t('actions.add')}
-          </Button>
+          <Flex align="center" gap={10} wrap="wrap">
+            <Input
+              prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+              placeholder={t('items.searchPlaceholder', 'Buscar item...')}
+              allowClear
+              style={{ width: 180 }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              disabled={!active || !active.addable || active.addable.length === 0}
+              onClick={() => setAddingTo(active?.name)}
+            >
+              {t('actions.add')}
+            </Button>
+          </Flex>
         }
       />
       <Tabs
         activeKey={active?.name}
-        onChange={setActiveKey}
+        onChange={(k) => {
+          setActiveKey(k)
+          setSearch('')
+        }}
         items={inventory.map((pouch) => ({
           key: pouch.name,
-          label: pouch.name,
-          children: <ItemsTable items={pouch.items} onEdit={(item) => setEditing({ pouch: pouch.name, itemId: item.id })} />,
+          label: (
+            <span>
+              {pouch.name} ({pouch.items.length})
+            </span>
+          ),
+          children: (
+            <ItemsTable
+              items={pouch.name === active?.name ? filteredItems : pouch.items}
+              onEdit={(item) => setEditing({ pouch: pouch.name, itemId: item.id })}
+            />
+          ),
         }))}
       />
       {editing && editingItem && (
@@ -47,3 +87,4 @@ export default function ItemsPage() {
     </Flex>
   )
 }
+

@@ -1,4 +1,4 @@
-import { Alert, Button, Descriptions, Flex, Grid, Typography } from 'antd'
+import { Alert, Button, Descriptions, Flex, Typography } from 'antd'
 import type { DescriptionsProps } from 'antd'
 import type { PokemonHandle } from '@pkhex-everywhere/engine'
 import { useEngine, usePokemon, usePokemonDetails, useQuery } from '@pkhex-everywhere/react'
@@ -18,7 +18,6 @@ export function ReadOnlyPokemon({ at }: ReadOnlyPokemonProps) {
   const { details } = usePokemonDetails(at)
   const options = useQuery('pokemon.options', at)
   const balls = useQuery('game.balls')
-  const screens = Grid.useBreakpoint()
 
   const nameOf = (choices: { id: number; name: string }[], id: number) => choices.find((choice) => choice.id === id)?.name ?? `#${id}`
 
@@ -58,7 +57,7 @@ export function ReadOnlyPokemon({ at }: ReadOnlyPokemonProps) {
       <Descriptions
         bordered
         size="small"
-        layout={screens.sm ? 'horizontal' : 'vertical'}
+        layout="vertical"
         column={{ xs: 1, sm: 2, md: 3 }}
         items={items}
       />

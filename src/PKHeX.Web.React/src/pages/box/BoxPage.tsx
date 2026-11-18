@@ -1,20 +1,30 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react'
-import { DownloadOutlined, SearchOutlined } from '@ant-design/icons'
-import { App, Button, Flex, Input, Select } from 'antd'
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import {
+  AppstoreOutlined,
+  CalculatorOutlined,
+  CopyOutlined,
+  DownOutlined,
+  DownloadOutlined,
+  FolderOpenOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  SwapOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons'
+import { App, Button, Dropdown, Flex, Input, Segmented, Select, Tag, type MenuProps } from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
 import { useBox, useEngine, useLoadedGame } from '@pkhex-everywhere/react'
-import { ButtonOrMenu } from '../../components/ButtonOrMenu'
 import { PageHeader } from '../../components/PageHeader'
 import { PokemonTable } from '../../components/PokemonTable'
 import { useCopyShowdown } from '../../hooks/useCopyShowdown'
 import { useExportPokemon } from '../../hooks/useExportPokemon'
 import { useSupports } from '../../hooks/useSupports'
-import { openCalculator, useNavigate } from '../../host'
+import { changePokemonListView, openCalculator, useNavigate, usePokemonListView, type PokemonListView } from '../../host'
 import { useTranslation } from '../../i18n'
 import { routes } from '../../routes'
-import { boxActions } from './boxActions'
 import { getBoxColumns } from './boxColumns'
 import { ImportedPokemonModal } from './ImportedPokemonModal'
+import { MoveToBoxModal } from './MoveToBoxModal'
 import { TransferModal } from './TransferModal'
 import { useLoadPokemonFile } from './useLoadPokemonFile'
 
@@ -31,12 +41,36 @@ export default function BoxPage() {
   const fileInput = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
   const { exportMultiple, exporting } = useExportPokemon()
+  const listView = usePokemonListView()
 
   const [selected, setSelected] = useState<PokemonSummary[]>([])
   const [transferring, setTransferring] = useState(false)
+  const [movingBox, setMovingBox] = useState(false)
   const [search, setSearch] = useState('')
   const [boxFilter, setBoxFilter] = useState<string>('all')
   const [levelFilter, setLevelFilter] = useState<string>('all')
+  const [batchBusy, setBatchBusy] = useState(false)
+
+  const handleBatchClone = async () => {
+    setBatchBusy(true)
+    try {
+      const editables = selected.filter((p) => p.editable)
+      for (const p of editables) {
+        await engine.pokemon.clone(p.at)
+      }
+      notification.success({
+        message: t('batch.cloneSuccess', 'Pokémon clonados com sucesso!'),
+        description: `${editables.length} cópias adicionadas às caixas.`,
+      })
+    } catch (e) {
+      notification.error({
+        message: t('batch.cloneError', 'Erro ao clonar Pokémon'),
+        description: String(e),
+      })
+    } finally {
+      setBatchBusy(false)
+    }
+  }
 
   const boxOptions = useMemo(() => {
     const boxSet = new Set<number>()
@@ -107,20 +141,20 @@ export default function BoxPage() {
     })
   }, [box, search, boxFilter, levelFilter])
 
-  const openSelectedInCalculator = async () => {
+  const openSelectedInCalculator = useCallback(async () => {
     const showdown = selected.length
       ? (await Promise.all(selected.map((pokemon) => engine.pokemon.showdown(pokemon.at)))).join('\n\n')
       : await engine.box.showdown()
     openCalculator(showdown)
-  }
+  }, [selected, engine])
 
-  const copyBoxShowdown = async () => {
+  const copyBoxShowdown = useCallback(async () => {
     if (box.length === 0) {
       notification.error({ title: t('box.noPokemon', 'No Pokémon found in your box') })
       return
     }
     await copyShowdown(await engine.box.showdown(), `${box.length} entries`)
-  }
+  }, [box, engine, copyShowdown, notification, t])
 
   const loadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -130,10 +164,125 @@ export default function BoxPage() {
     event.target.value = ''
   }
 
+  const menuItems: MenuProps['items'] = useMemo(() => {
+    const hasSelection = selected.length > 0
+    return [
+      {
+        key: 'selection-group',
+        type: 'group',
+        label: `${t('box.selectionGroup', 'Ações de Seleção')} (${selected.length})`,
+        children: [
+          {
+            key: 'move',
+            icon: <SwapOutlined />,
+            label:
+              selected.length === 1
+                ? t('box.moveSingle', 'Mover para outra Caixa')
+                : t('box.moveMultiple', 'Mover ({0}) para outra Caixa').replace('{0}', String(selected.length)),
+            disabled: !hasSelection,
+            onClick: () => setMovingBox(true),
+          },
+          {
+            key: 'export',
+            icon: <DownloadOutlined />,
+            label:
+              selected.length === 1
+                ? t('actions.exportSingle', 'Exportar (.pk)')
+                : t('actions.exportZip', 'Exportar ({0}) como .zip').replace('{0}', String(selected.length || 0)),
+            disabled: !hasSelection || exporting,
+            onClick: () => void exportMultiple(selected, 'box_pokemon.zip'),
+          },
+          {
+            key: 'clone',
+            icon: <CopyOutlined />,
+            label: t('batch.cloneSelected', 'Clonar Selecionados na Caixa'),
+            disabled: !hasSelection || batchBusy,
+            onClick: () => void handleBatchClone(),
+          },
+        ],
+      },
+      { type: 'divider' },
+      {
+        key: 'box-group',
+        type: 'group',
+        label: t('box.managementGroup', 'Gerenciamento da Box'),
+        children: [
+          ...(encountersSupported
+            ? [
+              {
+                key: 'add',
+                icon: <PlusOutlined />,
+                label: t('actions.add', 'Adicionar Pokémon'),
+                onClick: () => navigate(routes.searchEncounter),
+              },
+            ]
+            : []),
+          {
+            key: 'load',
+            icon: <FolderOpenOutlined />,
+            label: t('actions.load', 'Carregar Arquivo (.pk/.zip)'),
+            onClick: () => fileInput.current?.click(),
+          },
+          {
+            key: 'transfer',
+            icon: <SwapOutlined />,
+            label: t('actions.transfer', 'Transferir entre Saves'),
+            onClick: () => setTransferring(true),
+          },
+          ...(showdownSupported
+            ? [
+              {
+                key: 'calculator',
+                icon: <CalculatorOutlined />,
+                label: t('actions.calculator', 'Calculadora de Dano'),
+                onClick: () => void openSelectedInCalculator(),
+              },
+              {
+                key: 'showdown',
+                icon: <CopyOutlined />,
+                label: t('actions.showdown', 'Copiar Showdown da Box'),
+                onClick: () => void copyBoxShowdown(),
+              },
+            ]
+            : []),
+        ],
+      },
+    ]
+  }, [
+    selected,
+    exporting,
+    batchBusy,
+    encountersSupported,
+    showdownSupported,
+    t,
+    navigate,
+    openSelectedInCalculator,
+    copyBoxShowdown,
+    exportMultiple,
+  ])
+
+  const totalShiniesInBox = filteredBox.filter((p) => p.isShiny).length
+
   return (
     <Flex vertical gap={20}>
       <PageHeader
-        title={t('box.title', 'Box')}
+        title={
+          <Flex align="center" gap={12} wrap="wrap">
+            <span>{t('box.title', 'Box')}</span>
+            <Tag
+              style={{
+                backgroundColor: '#DC0A2D',
+                color: '#ffffff',
+                borderColor: '#DC0A2D',
+                fontWeight: 600,
+                borderRadius: 4,
+              }}
+            >
+              {filteredBox.length} Pokémon
+            </Tag>
+            {totalShiniesInBox > 0 && <Tag color="gold">✨ {totalShiniesInBox} Shiny</Tag>}
+          </Flex>
+        }
         extra={
           <Flex align="center" gap={10} wrap="wrap">
             <Input
@@ -156,31 +305,35 @@ export default function BoxPage() {
               options={levelOptions}
               style={{ minWidth: 135 }}
             />
-            {selected.length > 0 && (
-              <Button
-                type="primary"
-                icon={<DownloadOutlined />}
-                loading={exporting}
-                onClick={() => void exportMultiple(selected, 'box_pokemon.zip')}
-              >
-                {selected.length === 1
-                  ? t('actions.exportSingle', 'Exportar (.pk)')
-                  : t('actions.exportZip', 'Exportar ({0}) como .zip').replace('{0}', String(selected.length))}
-              </Button>
-            )}
-            <ButtonOrMenu
-              actions={boxActions(
-                { encounters: encountersSupported, showdown: showdownSupported },
-                {
-                  add: () => navigate(routes.searchEncounter),
-                  load: () => fileInput.current?.click(),
-                  calculator: openSelectedInCalculator,
-                  showdown: copyBoxShowdown,
-                  transfer: () => setTransferring(true),
-                },
-                t,
-              )}
+            <Segmented<PokemonListView>
+              value={listView}
+              onChange={(val) => changePokemonListView(val)}
+              options={[
+                { value: 'gallery', icon: <AppstoreOutlined />, label: t('view.gallery', '') },
+                { value: 'table', icon: <UnorderedListOutlined />, label: t('view.table', '') },
+              ]}
             />
+            <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+              <Button type="primary" icon={<AppstoreOutlined />}>
+                <span>{t('box.actions', 'Ações')}</span>
+                {selected.length > 0 && (
+                  <span
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                      color: '#ffffff',
+                      borderRadius: 10,
+                      padding: '1px 7px',
+                      fontSize: 12,
+                      marginLeft: 6,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {selected.length}
+                  </span>
+                )}
+                <DownOutlined style={{ fontSize: 10, marginLeft: 4 }} />
+              </Button>
+            </Dropdown>
             <input
               ref={fileInput}
               type="file"
@@ -201,6 +354,17 @@ export default function BoxPage() {
         pageSize={50}
       />
       {transferring && game && <TransferModal game={game} onClose={() => setTransferring(false)} />}
+      {movingBox && (
+        <MoveToBoxModal
+          open={movingBox}
+          selected={selected}
+          onClose={() => setMovingBox(false)}
+          onSuccess={() => {
+            setMovingBox(false)
+            setSelected([])
+          }}
+        />
+      )}
       <ImportedPokemonModal
         open={importedPokemon.length > 0}
         imported={importedPokemon}
@@ -210,4 +374,5 @@ export default function BoxPage() {
     </Flex>
   )
 }
+
 

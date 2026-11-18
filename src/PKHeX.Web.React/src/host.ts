@@ -2,9 +2,9 @@ import { useCallback } from 'react'
 import { useNavigate as useRouterNavigate } from 'react-router'
 import { toBase64 } from './base64'
 import { createStore } from './externalStore'
-import { createSettings, type Language, type Theme } from './settings'
+import { createSettings, type EditorLayout, type Language, type PokemonListView, type Theme } from './settings'
 
-export type { Language, Theme } from './settings'
+export type { EditorLayout, Language, PokemonListView, Theme } from './settings'
 
 declare global {
   var showGoogleCmpRevocationMessage: (() => void) | undefined
@@ -14,6 +14,26 @@ export const settings = createSettings()
 const themeStore = createStore(settings.readTheme())
 const languageStore = createStore(settings.readLanguage())
 const calculatorUrlStore = createStore(settings.readCalculatorUrl())
+const editorLayoutStore = createStore(settings.readEditorLayout())
+const pokemonListViewStore = createStore(settings.readPokemonListView())
+
+export function usePokemonListView(): PokemonListView {
+  return pokemonListViewStore.use()
+}
+
+export function changePokemonListView(next: PokemonListView) {
+  settings.writePokemonListView(next)
+  pokemonListViewStore.set(next)
+}
+
+export function useEditorLayout(): EditorLayout {
+  return editorLayoutStore.use()
+}
+
+export function changeEditorLayout(next: EditorLayout) {
+  settings.writeEditorLayout(next)
+  editorLayoutStore.set(next)
+}
 
 export function useTheme(): Theme {
   return themeStore.use()

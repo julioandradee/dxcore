@@ -1,14 +1,14 @@
 import { Suspense, useRef, useState, type ChangeEvent, type CSSProperties } from 'react'
-import { EllipsisOutlined, ExportOutlined, FolderOpenOutlined } from '@ant-design/icons'
+import { EllipsisOutlined, ExportOutlined, FolderOpenOutlined, HistoryOutlined } from '@ant-design/icons'
 import { Badge, Button, Descriptions, Dropdown, Flex, Space, type ButtonProps } from 'antd'
 import type { SaveSummary } from '@pkhex-everywhere/engine'
 import { useEngine, useLoadedGame, useQuery } from '@pkhex-everywhere/react'
 import { gameName } from '../../capabilities'
-import { AdSlot } from '../../components/AdSlot'
 import { downloadFile, useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
 import { journey } from '../../layout/journey'
 import { routes } from '../../routes'
+import { SaveBackupModal } from '../../snapshots/SaveBackupModal'
 import { FormatPickerModal } from './FormatPickerModal'
 import { LoadRomHackModal } from './LoadRomHackModal'
 import { PkhemuCard } from './PkhemuCard'
@@ -17,14 +17,13 @@ import { cardGeneration } from './pkhemuInvite'
 import { showRomHacksBadge } from './romHacksBadge'
 import { useLoadSave } from './useLoadSave'
 
-const topAdSlot = '5784199745'
-const bottomAdSlot = '5148940774'
 const swordVersionId = 44
 
 export default function LoadPage() {
   const { game } = useLoadedGame()
   const { openFile, openDemo, formatChoice, chooseFormat, cancelFormatChoice } = useLoadSave()
   const fileInput = useRef<HTMLInputElement>(null)
+  const [backupModalOpen, setBackupModalOpen] = useState(false)
 
   const openFilePicker = () => fileInput.current?.click()
 
@@ -36,22 +35,26 @@ export default function LoadPage() {
 
   return (
     <SaveFileDrop onOpen={openFile}>
-      <Flex vertical align="center" gap={20} style={{ width: '100%' }}>
-        <AdSlot slot={topAdSlot} format="horizontal" />
+      <Flex vertical align="center" gap={20} style={{ width: '100%', padding: '10px 0' }}>
         {game ? (
-          <LoadedGame key={`${game.fileName}|${game.version}|${game.format?.id}`} game={game} onOpen={openFilePicker} />
+          <LoadedGame
+            key={`${game.fileName}|${game.version}|${game.format?.id}`}
+            game={game}
+            onOpen={openFilePicker}
+            onOpenBackups={() => setBackupModalOpen(true)}
+          />
         ) : (
-          <NoGame onOpen={openFilePicker} onDemo={openDemo} />
+          <NoGame onOpen={openFilePicker} onDemo={openDemo} onOpenBackups={() => setBackupModalOpen(true)} />
         )}
-        <AdSlot slot={bottomAdSlot} format="horizontal" />
         <input ref={fileInput} type="file" hidden onChange={loadFile} />
         {formatChoice && <FormatPickerModal choice={formatChoice} onChoose={chooseFormat} onCancel={cancelFormatChoice} />}
+        <SaveBackupModal open={backupModalOpen} onClose={() => setBackupModalOpen(false)} />
       </Flex>
     </SaveFileDrop>
   )
 }
 
-function LoadedGame({ game, onOpen }: { game: SaveSummary; onOpen: () => void }) {
+function LoadedGame({ game, onOpen, onOpenBackups }: { game: SaveSummary; onOpen: () => void; onOpenBackups: () => void }) {
   const { t } = useTranslation()
   const engine = useEngine()
   const [exported, setExported] = useState(false)
@@ -68,15 +71,19 @@ function LoadedGame({ game, onOpen }: { game: SaveSummary; onOpen: () => void })
         title={t('load.loadedGame')}
         bordered
         size="small"
+        layout="vertical"
         style={{ width: '100%' }}
         items={[
           { key: 'file', label: t('trainer.file'), children: game.fileName },
           { key: 'version', label: t('load.version', 'Version'), children: gameName(game) },
         ]}
       />
-      <Flex vertical gap={20} style={{ width: '100%', maxWidth: 300 }}>
+      <Flex vertical gap={12} style={{ width: '100%', maxWidth: 300 }}>
         <Button type="primary" icon={<ExportOutlined aria-hidden />} onClick={exportSave}>
           {t('load.export')}
+        </Button>
+        <Button icon={<HistoryOutlined />} onClick={onOpenBackups}>
+          {t('backup.title', 'Histórico e Backups')}
         </Button>
         {exported && <PkhemuCard generation={cardGeneration(game)} onClose={() => setExported(false)} />}
         <OpenButton label={t('load.openNew')} onOpen={onOpen} />
@@ -85,7 +92,7 @@ function LoadedGame({ game, onOpen }: { game: SaveSummary; onOpen: () => void })
   )
 }
 
-function NoGame({ onOpen, onDemo }: { onOpen: () => void; onDemo: () => void }) {
+function NoGame({ onOpen, onDemo, onOpenBackups }: { onOpen: () => void; onDemo: () => void; onOpenBackups: () => void }) {
   const { t } = useTranslation()
   const engine = useEngine()
   const navigate = useNavigate()
@@ -96,12 +103,12 @@ function NoGame({ onOpen, onDemo }: { onOpen: () => void; onDemo: () => void }) 
   const versions = useQuery('game.blankVersions')
 
   return (
-    <Flex vertical align="center" gap={20} style={{ width: '100%', maxWidth: 300 }}>
-      <Button style={{ minWidth: 150 }} onClick={goHome}>
+    <Flex vertical align="center" gap={12} style={{ width: '100%', maxWidth: 300 }}>
+      <Button style={{ width: '100%' }} onClick={goHome}>
         {t('menu.home')}
       </Button>
-      <OpenButton label={t('actions.load')} type="primary" style={{ minWidth: 150 }} onOpen={onOpen} />
-      <Space.Compact style={{ minWidth: 150 }}>
+      <OpenButton label={t('actions.load')} type="primary" style={{ width: '100%' }} onOpen={onOpen} />
+      <Space.Compact style={{ width: '100%' }}>
         <Button style={{ flexGrow: 1 }} onClick={() => engine.game.loadBlank(swordVersionId)}>
           {t('load.empty')}
         </Button>
@@ -116,7 +123,10 @@ function NoGame({ onOpen, onDemo }: { onOpen: () => void; onDemo: () => void }) 
           <Button icon={<EllipsisOutlined />} aria-label="Empty save versions" />
         </Dropdown>
       </Space.Compact>
-      <Button style={{ minWidth: 150 }} onClick={onDemo}>
+      <Button style={{ width: '100%' }} icon={<HistoryOutlined />} onClick={onOpenBackups}>
+        {t('backup.title', 'Histórico e Backups')}
+      </Button>
+      <Button style={{ width: '100%' }} onClick={onDemo}>
         {t('load.demo')}
       </Button>
     </Flex>

@@ -5,7 +5,7 @@ import { RoutedContent } from './RoutedContent'
 export function LoadLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Layout.Content style={{ margin: '24px 16px 0', display: 'flex', justifyContent: 'center' }}>
+      <Layout.Content style={{ margin: '20px 16px 0', display: 'flex', justifyContent: 'center' }}>
         <div
           style={{
             width: '100%',

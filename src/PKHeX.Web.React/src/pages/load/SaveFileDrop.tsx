@@ -64,7 +64,7 @@ export function SaveFileDrop({ onOpen, disabled = false, children }: SaveFileDro
       {/* Inside this element, dragging over the overlay doesn't count as leaving the drop area. */}
       {dragging && (
         <Modal open centered title={t('load.dropModalTitle')} footer={null} closable={false} keyboard={false} getContainer={false}>
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <InboxOutlined aria-hidden style={{ fontSize: 48, color: token.colorPrimary }} />
             <Typography.Paragraph style={{ marginTop: 20, marginBottom: 0 }}>
               {t('load.dropModalText')}

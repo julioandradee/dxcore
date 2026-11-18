@@ -1,5 +1,5 @@
-import { DownloadOutlined } from '@ant-design/icons'
-import { Dropdown } from 'antd'
+import { DownloadOutlined, DownOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Space } from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
 import { useEngine } from '@pkhex-everywhere/react'
 import { openCalculator, useNavigate } from '../host'
@@ -22,41 +22,44 @@ export function PokemonActions({ pokemon }: PokemonActionsProps) {
   const { t } = useTranslation()
   const showdown = () => engine.pokemon.showdown(pokemon.at)
 
-  return (
-    <Dropdown.Button
-      type="link"
-      trigger={['click']}
-      onClick={() => navigate(routes.pokemon(pokemon))}
-      menu={{
-        items: [
-          ...(pokemon.editable
-            ? [{ key: 'clone', label: t('actions.clone', 'Clone'), onClick: () => navigate(routes.clonePokemon(pokemon)) }]
-            : []),
+  const menuItems = [
+    ...(pokemon.editable
+      ? [{ key: 'clone', label: t('actions.clone', 'Clone'), onClick: () => navigate(routes.clonePokemon(pokemon)) }]
+      : []),
+    {
+      key: 'export',
+      label: t('actions.exportPk', 'Export *.pk'),
+      icon: <DownloadOutlined />,
+      onClick: () => void exportSingle(pokemon),
+    },
+    ...(showdownSupported
+      ? [
           {
-            key: 'export',
-            label: t('actions.exportPk', 'Export *.pk'),
-            icon: <DownloadOutlined />,
-            onClick: () => void exportSingle(pokemon),
+            key: 'calculator',
+            label: t('actions.calculator', 'Calculator'),
+            onClick: async () => openCalculator(await showdown()),
           },
-          ...(showdownSupported
-            ? [
-                {
-                  key: 'calculator',
-                  label: t('actions.calculator', 'Calculator'),
-                  onClick: async () => openCalculator(await showdown()),
-                },
-                {
-                  key: 'showdown',
-                  label: t('actions.showdown', 'Showdown'),
-                  onClick: async () => copyShowdown(await showdown(), pokemon.species),
-                },
-              ]
-            : []),
-        ],
-      }}
-    >
-      {t('actions.view', 'View')}
-    </Dropdown.Button>
+          {
+            key: 'showdown',
+            label: t('actions.showdown', 'Showdown'),
+            onClick: async () => copyShowdown(await showdown(), pokemon.species),
+          },
+        ]
+      : []),
+  ]
+
+  return (
+    <Space.Compact>
+      <Button type="link" onClick={() => navigate(routes.pokemon(pokemon))}>
+        {t('actions.view', 'View')}
+      </Button>
+      <Dropdown
+        trigger={['click']}
+        menu={{ items: menuItems }}
+      >
+        <Button type="link" className="ant-dropdown-trigger" icon={<DownOutlined />} aria-label="More actions" />
+      </Dropdown>
+    </Space.Compact>
   )
 }
 

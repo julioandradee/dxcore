@@ -1,0 +1,14 @@
+{
+  "name": "dxcore",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm run dev:server --prefix src/PKHeX.Web.React",
+    "dev": "npm run dev:server --prefix src/PKHeX.Web.React",
+    "build": "npm run build:web --prefix src/PKHeX.Web.React",
+    "build:web": "npm run build:web --prefix src/PKHeX.Web.React",
+    "test": "npm test --prefix src/PKHeX.Web.React",
+    "typecheck": "npm run typecheck --prefix src/PKHeX.Web.React"
+  }
+}

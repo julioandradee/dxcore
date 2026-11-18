@@ -109,4 +109,42 @@ describe('settings', () => {
       expect(['pt-BR', 'en', 'es']).toContain(createSettings(localStorage).readLanguage())
     })
   })
+
+  describe('editor layout', () => {
+    it('defaults to showcase when nothing is stored', () => {
+      expect(createSettings(localStorage).readEditorLayout()).toBe('showcase')
+    })
+
+    it('reads classic when stored', () => {
+      localStorage.setItem('__settings__#editorLayout', 'classic')
+      expect(createSettings(localStorage).readEditorLayout()).toBe('classic')
+    })
+
+    it('writes editor layout to localStorage', () => {
+      createSettings(localStorage).writeEditorLayout('classic')
+      expect(localStorage.getItem('__settings__#editorLayout')).toBe('classic')
+
+      createSettings(localStorage).writeEditorLayout('showcase')
+      expect(localStorage.getItem('__settings__#editorLayout')).toBe('showcase')
+    })
+  })
+
+  describe('pokemon list view', () => {
+    it('defaults to gallery when nothing is stored', () => {
+      expect(createSettings(localStorage).readPokemonListView()).toBe('gallery')
+    })
+
+    it('reads table when stored', () => {
+      localStorage.setItem('__settings__#pokemonListView', 'table')
+      expect(createSettings(localStorage).readPokemonListView()).toBe('table')
+    })
+
+    it('writes pokemon list view to localStorage', () => {
+      createSettings(localStorage).writePokemonListView('table')
+      expect(localStorage.getItem('__settings__#pokemonListView')).toBe('table')
+
+      createSettings(localStorage).writePokemonListView('gallery')
+      expect(localStorage.getItem('__settings__#pokemonListView')).toBe('gallery')
+    })
+  })
 })

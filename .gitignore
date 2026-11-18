@@ -413,3 +413,12 @@ plugins/
 # Agent Auto-Pilot runtime state & worktrees
 .autopilot/*
 *.tsbuildinfo
+craft.json
+feed.json
+usage.json
+build-activity.log
+capture/
+inbox/
+investigation.cany/
+.gemini/
+
