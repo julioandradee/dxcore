@@ -6,8 +6,7 @@ import {
   PlusOutlined,
   RollbackOutlined,
 } from '@ant-design/icons'
-import { App, Button, Empty, Flex, Modal, Popconfirm, Space, Table, Tag, Typography } from 'antd'
-import type { TableColumnsType } from 'antd'
+import { App, Button, Card, Empty, Flex, Modal, Popconfirm, Space, Spin, Tag, Typography } from 'antd'
 import { useEngine, useLoadedGame } from '@pkhex-everywhere/react'
 import { gameName } from '../capabilities'
 import { downloadFile } from '../host'
@@ -105,74 +104,6 @@ function SaveBackupModalContent({ onClose }: { onClose: () => void }) {
     reloadSnapshots()
   }
 
-  const columns: TableColumnsType<SaveSnapshot> = [
-    {
-      title: t('backup.date', 'Data / Hora'),
-      dataIndex: 'date',
-      key: 'date',
-      width: 130,
-      render: (dateStr: string) => {
-        const d = new Date(dateStr)
-        return (
-          <Flex vertical gap={2}>
-            <span style={{ fontWeight: 600 }}>{d.toLocaleDateString()}</span>
-            <span style={{ fontSize: '0.8em', color: '#8c8c8c' }}>{d.toLocaleTimeString()}</span>
-          </Flex>
-        )
-      },
-    },
-    {
-      title: t('backup.fileInfo', 'Arquivo / Jogo'),
-      key: 'info',
-      render: (_, s) => (
-        <Flex vertical gap={4}>
-          <span style={{ fontWeight: 600, wordBreak: 'break-all' }}>{s.fileName}</span>
-          <Flex gap={4} wrap="wrap">
-            <Tag color="blue" style={{ margin: 0 }}>{s.versionName}</Tag>
-            {s.trainerName && <Tag color="purple" style={{ margin: 0 }}>{s.trainerName}</Tag>}
-            <Tag style={{ margin: 0 }}>{Math.round(s.sizeBytes / 1024)} KB</Tag>
-          </Flex>
-        </Flex>
-      ),
-    },
-    {
-      title: t('table.action', 'Ações'),
-      key: 'action',
-      width: 170,
-      render: (_, s) => (
-        <Flex vertical gap={6} align="start">
-          <Space size="small" wrap>
-            <Popconfirm
-              title={t('backup.confirmRestore', 'Restaurar este backup?')}
-              description={t('backup.confirmRestoreDesc', 'As alterações não salvas no save atual serão substituídas.')}
-              onConfirm={() => void handleRestore(s)}
-              okText={t('common.yes', 'Sim')}
-              cancelText={t('common.no', 'Não')}
-            >
-              <Button size="small" type="primary" icon={<RollbackOutlined />}>
-                {t('backup.restore', 'Restaurar')}
-              </Button>
-            </Popconfirm>
-            <Button
-              size="small"
-              icon={<CloudDownloadOutlined />}
-              onClick={() => handleDownload(s)}
-              title={t('backup.download', 'Baixar arquivo')}
-            />
-            <Popconfirm
-              title={t('backup.confirmDelete', 'Excluir este backup?')}
-              onConfirm={() => handleDelete(s.id)}
-              okText={t('common.yes', 'Sim')}
-              cancelText={t('common.no', 'Não')}
-            >
-              <Button size="small" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Space>
-        </Flex>
-      ),
-    },
-  ]
-
   return (
     <Modal
       open
@@ -229,14 +160,79 @@ function SaveBackupModalContent({ onClose }: { onClose: () => void }) {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         ) : (
-          <Table<SaveSnapshot>
-            rowKey="id"
-            dataSource={snapshots}
-            columns={columns}
-            size="small"
-            pagination={{ pageSize: 5 }}
-            loading={restoring}
-          />
+          <Spin spinning={restoring}>
+            <Flex vertical gap={10} style={{ maxHeight: 420, overflowY: 'auto', paddingRight: 4 }}>
+              {snapshots.map((s) => {
+                const d = new Date(s.date)
+                return (
+                  <Card
+                    key={s.id}
+                    size="small"
+                    style={{
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
+                      {/* Metadados e Identificação do Save */}
+                      <Flex vertical gap={6} style={{ flex: '1 1 240px', minWidth: 0 }}>
+                        <Flex align="center" gap={8} wrap="wrap">
+                          <Typography.Text strong style={{ fontSize: 14 }}>
+                            {s.fileName}
+                          </Typography.Text>
+                          <Tag color="blue" style={{ margin: 0 }}>
+                            {s.versionName}
+                          </Tag>
+                          {s.trainerName && (
+                            <Tag color="purple" style={{ margin: 0 }}>
+                              👤 {s.trainerName}
+                            </Tag>
+                          )}
+                        </Flex>
+
+                        <Flex align="center" gap={12} wrap="wrap" style={{ fontSize: 12, color: '#8c8c8c' }}>
+                          <span>
+                            📅 {d.toLocaleDateString()} · ⏰ {d.toLocaleTimeString()}
+                          </span>
+                          <span>💾 {Math.round(s.sizeBytes / 1024)} KB</span>
+                        </Flex>
+                      </Flex>
+
+                      {/* Ações em Cada Card */}
+                      <Space size="small" wrap style={{ flexShrink: 0 }}>
+                        <Popconfirm
+                          title={t('backup.confirmRestore', 'Restaurar este backup?')}
+                          description={t('backup.confirmRestoreDesc', 'As alterações não salvas no save atual serão substituídas.')}
+                          onConfirm={() => void handleRestore(s)}
+                          okText={t('common.yes', 'Sim')}
+                          cancelText={t('common.no', 'Não')}
+                        >
+                          <Button size="small" type="primary" icon={<RollbackOutlined />}>
+                            {t('backup.restore', 'Restaurar')}
+                          </Button>
+                        </Popconfirm>
+                        <Button
+                          size="small"
+                          icon={<CloudDownloadOutlined />}
+                          onClick={() => handleDownload(s)}
+                          title={t('backup.download', 'Baixar arquivo')}
+                        >
+                          {t('backup.download', 'Baixar')}
+                        </Button>
+                        <Popconfirm
+                          title={t('backup.confirmDelete', 'Excluir este backup?')}
+                          onConfirm={() => handleDelete(s.id)}
+                          okText={t('common.yes', 'Sim')}
+                          cancelText={t('common.no', 'Não')}
+                        >
+                          <Button size="small" danger icon={<DeleteOutlined />} aria-label={t('common.delete', 'Excluir')} />
+                        </Popconfirm>
+                      </Space>
+                    </Flex>
+                  </Card>
+                )
+              })}
+            </Flex>
+          </Spin>
         )}
       </Flex>
     </Modal>
