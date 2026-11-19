@@ -63,7 +63,7 @@ jobs:
         env:
           VITE_GOOGLE_ANALYTICS: 'false'
           VITE_SENTRY: 'false'
-          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_BASE_PATH: /dxcore/
         run: |
           npm ci
           npm run build
