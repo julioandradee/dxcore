@@ -306,42 +306,44 @@ export default function BoxPage() {
     <Flex vertical gap={20}>
       <PageHeader
         title={
-          <Flex align="center" gap={12} wrap="wrap" style={{ minWidth: 'fit-content' }}>
-            <span style={{ whiteSpace: 'nowrap' }}>{t('box.title', 'Box')}</span>
-            <Tag
-              style={{
-                backgroundColor: '#DC0A2D',
-                color: '#ffffff',
-                borderColor: '#DC0A2D',
-                fontWeight: 600,
-                borderRadius: 4,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '2px 8px',
-              }}
-            >
-              {filteredBox.length} Pokémon
-            </Tag>
-            {totalShiniesInBox > 0 && (
+          <Flex align="center" gap={8} wrap="wrap" style={{ minWidth: 0 }}>
+            <span style={{ fontSize: 20, fontWeight: 600, whiteSpace: 'nowrap' }}>{t('box.title', 'Box')}</span>
+            <Flex align="center" gap={6} wrap="wrap">
               <Tag
-                color="gold"
                 style={{
+                  backgroundColor: '#DC0A2D',
+                  color: '#ffffff',
+                  borderColor: '#DC0A2D',
+                  fontWeight: 600,
+                  borderRadius: 4,
                   whiteSpace: 'nowrap',
-                  flexShrink: 0,
                   display: 'inline-flex',
                   alignItems: 'center',
                   padding: '2px 8px',
+                  margin: 0,
                 }}
               >
-                ✨ {totalShiniesInBox} Shiny
+                {filteredBox.length} Pokémon
               </Tag>
-            )}
+              {totalShiniesInBox > 0 && (
+                <Tag
+                  color="gold"
+                  style={{
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '2px 8px',
+                    margin: 0,
+                  }}
+                >
+                  ✨ {totalShiniesInBox} Shiny
+                </Tag>
+              )}
+            </Flex>
           </Flex>
         }
         extra={
-          <Flex align="center" gap={10} wrap="wrap">
+          <Flex align="center" justify="end" gap={10} wrap="wrap" style={{ marginLeft: 'auto' }}>
             {/* Tag para busca ativa */}
             {search && (
               <Tag

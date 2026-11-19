@@ -13,8 +13,8 @@ export function PageHeader({ title, extra, showBack = false, onBack }: PageHeade
   const shouldShowBack = showBack || Boolean(onBack)
 
   return (
-    <Flex justify="space-between" align="center" wrap="wrap" gap="small" style={{ width: '100%' }}>
-      <Flex align="center" gap={8} wrap="wrap" style={{ minWidth: 0, flexShrink: 0 }}>
+    <Flex justify="space-between" align="center" wrap="wrap" gap={12} style={{ width: '100%' }}>
+      <Flex align="center" gap={8} wrap="wrap" style={{ minWidth: 0, flex: '1 1 auto' }}>
         {shouldShowBack && (
           <Button
             type="text"
@@ -29,7 +29,11 @@ export function PageHeader({ title, extra, showBack = false, onBack }: PageHeade
           </Typography.Title>
         )}
       </Flex>
-      {extra && <Flex align="center" gap={8} wrap="wrap">{extra}</Flex>}
+      {extra && (
+        <Flex align="center" justify="end" gap={8} wrap="wrap" style={{ marginLeft: 'auto' }}>
+          {extra}
+        </Flex>
+      )}
     </Flex>
   )
 }

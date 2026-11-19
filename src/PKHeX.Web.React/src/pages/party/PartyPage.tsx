@@ -5,9 +5,10 @@ import {
   CopyOutlined,
   DownOutlined,
   DownloadOutlined,
+  SearchOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
-import { App, Button, Dropdown, Flex, Segmented, Tag, type MenuProps } from 'antd'
+import { App, Badge, Button, Dropdown, Flex, Input, Modal, Segmented, Tag, Tooltip, type MenuProps } from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
 import { useEngine, useParty } from '@pkhex-everywhere/react'
 import { PageHeader } from '../../components/PageHeader'
@@ -25,6 +26,8 @@ export default function PartyPage() {
   const listView = usePokemonListView()
   const { notification } = App.useApp()
   const [selected, setSelected] = useState<PokemonSummary[]>([])
+  const [search, setSearch] = useState('')
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
   const { exportMultiple, exporting } = useExportPokemon()
   const [batchBusy, setBatchBusy] = useState(false)
   const copyShowdown = useCopyShowdown()
@@ -125,12 +128,22 @@ export default function PartyPage() {
     exportMultiple,
   ])
 
+  const filteredParty = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return party
+    return party.filter(
+      (p) =>
+        p.species.toLowerCase().includes(q) ||
+        (p.nickname && p.nickname.toLowerCase().includes(q)),
+    )
+  }, [party, search])
+
   return (
     <Flex vertical gap={20}>
       <PageHeader
         title={
-          <Flex align="center" gap={12} wrap="wrap" style={{ minWidth: 'fit-content' }}>
-            <span style={{ whiteSpace: 'nowrap' }}>{t('party.title', 'Party')}</span>
+          <Flex align="center" gap={8} wrap="wrap" style={{ minWidth: 0 }}>
+            <span style={{ fontSize: 20, fontWeight: 600, whiteSpace: 'nowrap' }}>{t('party.title', 'Party')}</span>
             <Tag
               style={{
                 backgroundColor: '#DC0A2D',
@@ -139,11 +152,9 @@ export default function PartyPage() {
                 fontWeight: 600,
                 borderRadius: 4,
                 whiteSpace: 'nowrap',
-                flexShrink: 0,
                 display: 'inline-flex',
                 alignItems: 'center',
                 padding: '2px 10px',
-                minWidth: 'fit-content',
                 lineHeight: '1.5',
                 margin: 0,
               }}
@@ -153,7 +164,38 @@ export default function PartyPage() {
           </Flex>
         }
         extra={
-          <Flex align="center" gap={10} wrap="wrap">
+          <Flex align="center" justify="end" gap={10} wrap="wrap" style={{ marginLeft: 'auto' }}>
+            {/* Tag para busca ativa */}
+            {search && (
+              <Tag
+                closable
+                onClose={() => setSearch('')}
+                style={{
+                  margin: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                }}
+              >
+                "{search}"
+              </Tag>
+            )}
+
+            {/* Botão de Busca: Ícone que abre o Overlay Centralizado */}
+            <Tooltip title={t('box.searchTooltip', 'Buscar Pokémon')}>
+              <Badge dot={Boolean(search)} offset={[-2, 2]}>
+                <Button
+                  icon={<SearchOutlined />}
+                  onClick={() => setSearchModalOpen(true)}
+                  type={search ? 'primary' : 'default'}
+                  ghost={Boolean(search)}
+                  aria-label={t('box.searchTooltip', 'Buscar Pokémon')}
+                />
+              </Badge>
+            </Tooltip>
+
+            {/* Modificador de visualização */}
             <Segmented<PokemonListView>
               value={listView}
               onChange={(val) => changePokemonListView(val)}
@@ -162,6 +204,8 @@ export default function PartyPage() {
                 { value: 'table', icon: <UnorderedListOutlined />, label: t('view.table', '') },
               ]}
             />
+
+            {/* Menu de ações */}
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
               <Button type="primary" icon={<AppstoreOutlined />}>
                 <span>{t('party.actions', 'Ações')}</span>
@@ -187,11 +231,57 @@ export default function PartyPage() {
         }
       />
       <PokemonTable
-        pokemon={party}
+        pokemon={filteredParty}
         selected={selected}
         onSelectedChange={setSelected}
         pagination={false}
       />
+
+      {/* Modal Centralizado de Busca com Overlay Escuro */}
+      <Modal
+        open={searchModalOpen}
+        onCancel={() => setSearchModalOpen(false)}
+        footer={null}
+        closable={false}
+        centered
+        width={480}
+        styles={{
+          mask: {
+            backgroundColor: 'rgba(0, 15, 34, 0.75)',
+            backdropFilter: 'blur(4px)',
+          },
+          body: {
+            padding: '8px 4px',
+          },
+        }}
+      >
+        <Flex vertical gap={12}>
+          <Flex justify="space-between" align="center">
+            <span style={{ fontWeight: 600, fontSize: 15 }}>
+              {t('box.searchTitle', 'Buscar na Equipe')}
+            </span>
+            <Button type="text" size="small" onClick={() => setSearchModalOpen(false)}>
+              Esc
+            </Button>
+          </Flex>
+          <Input
+            autoFocus
+            size="large"
+            prefix={<SearchOutlined style={{ color: '#1677ff' }} />}
+            placeholder={t('box.searchPlaceholder', 'Buscar por espécie ou apelido...')}
+            allowClear
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onPressEnter={() => setSearchModalOpen(false)}
+          />
+          <Flex justify="space-between" align="center" style={{ fontSize: 12, color: '#8c8c8c' }}>
+            <span>
+              {filteredParty.length} {t('box.foundCount', 'encontrados')}
+            </span>
+            <span>{t('box.searchTip', 'Pressione Enter para confirmar')}</span>
+          </Flex>
+        </Flex>
+      </Modal>
     </Flex>
   )
 }

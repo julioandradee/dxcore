@@ -21,8 +21,8 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
       title: t('table.name', 'Nome'),
       key: 'name',
       render: (_: unknown, p: PokemonSummary) => (
-        <Flex vertical>
-          <Typography.Text strong>{p.species}</Typography.Text>
+        <Flex vertical gap={2}>
+          <Typography.Text strong style={{ fontSize: 14 }}>{p.species}</Typography.Text>
           {p.nickname && p.nickname !== p.species && (
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               "{p.nickname}"
@@ -36,25 +36,38 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
       key: 'dex',
       width: 110,
       render: (_: unknown, p: PokemonSummary) => (
-        <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600 }}>
-          {p.speciesId !== null ? `#${String(p.speciesId).padStart(4, '0')}` : '—'}
-        </span>
+        <Flex vertical>
+          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
+            {p.speciesId !== null ? `#${String(p.speciesId).padStart(4, '0')}` : '—'}
+          </span>
+        </Flex>
       ),
     },
     {
       title: t('table.level', 'Nível'),
       key: 'level',
       width: 90,
-      render: (_: unknown, p: PokemonSummary) => <Tag color="blue">{t('box.levelPrefix', 'Lvl')} {p.level}</Tag>,
+      render: (_: unknown, p: PokemonSummary) => (
+        <Flex vertical>
+          <Tag color="blue" style={{ margin: 0, width: 'fit-content' }}>
+            {t('box.levelPrefix', 'Lvl')} {p.level}
+          </Tag>
+        </Flex>
+      ),
     },
     {
       title: t('import.location', 'Localização'),
       key: 'location',
-      width: 140,
+      width: 130,
       render: (_: unknown, p: PokemonSummary) => (
-        <Tag color="cyan">
-          {t('box.boxLabel', 'Caixa')} {(p.at.box ?? 0) + 1}, #{ (p.at.slot ?? 0) + 1 }
-        </Tag>
+        <Flex vertical gap={2}>
+          <Tag color="cyan" style={{ margin: 0, width: 'fit-content' }}>
+            {t('box.boxLabel', 'Caixa')} {(p.at.box ?? 0) + 1}
+          </Tag>
+          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            #{ (p.at.slot ?? 0) + 1 }
+          </Typography.Text>
+        </Flex>
       ),
     },
     {

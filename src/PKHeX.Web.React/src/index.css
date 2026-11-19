@@ -37,7 +37,7 @@ code {
     user-select: none;
 }
 
-/* Responsividade Mobile do Header e Logo */
+/* Responsividade Mobile do Header, Logo e Navegação */
 @media (max-width: 768px) {
     .desktop-header-actions {
         display: none !important;
@@ -48,6 +48,12 @@ code {
     .project-title {
         display: none !important;
     }
+    .desktop-sider {
+        display: none !important;
+    }
+    .main-content-wrapper {
+        padding-bottom: 76px !important;
+    }
 }
 
 @media (min-width: 769px) {
@@ -55,6 +61,9 @@ code {
         display: inline-flex !important;
     }
     .mobile-header-actions {
+        display: none !important;
+    }
+    .mobile-bottom-nav {
         display: none !important;
     }
 }
