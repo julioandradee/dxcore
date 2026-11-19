@@ -19,9 +19,11 @@ import { TypeMatchupTab } from './TypeMatchupTab'
 
 interface DraftEditorProps {
   actions: ReactNode
+  notice?: ReactNode
+  onBack?: () => void
 }
 
-export function DraftEditor({ actions }: DraftEditorProps) {
+export function DraftEditor({ actions, notice, onBack }: DraftEditorProps) {
   const { pokemon } = usePokemon(draftHandle)
   const { details } = usePokemonDetails(draftHandle)
   const options = useQuery('pokemon.options', draftHandle)
@@ -139,6 +141,8 @@ export function DraftEditor({ actions }: DraftEditorProps) {
     return (
       <Flex vertical gap={20}>
         <PageHeader
+          showBack
+          onBack={onBack}
           title={pokemon.nickname || pokemon.species || 'Pokémon'}
           extra={
             <Tooltip
@@ -157,6 +161,7 @@ export function DraftEditor({ actions }: DraftEditorProps) {
             </Tooltip>
           }
         />
+        {notice}
         <Row gutter={[20, 20]} align="stretch">
           {/* Coluna Esquerda (~40% no desktop): Card de Destaque Visual */}
           <Col xs={24} lg={10} xl={9}>
@@ -191,6 +196,8 @@ export function DraftEditor({ actions }: DraftEditorProps) {
   return (
     <Flex vertical gap={20}>
       <PageHeader
+        showBack
+        onBack={onBack}
         title={pokemon.nickname || pokemon.species || 'Pokémon'}
         extra={
           <Space size={12} align="center">
@@ -212,6 +219,7 @@ export function DraftEditor({ actions }: DraftEditorProps) {
           </Space>
         }
       />
+      {notice}
       {details.legality && <LegalityBanner legality={details.legality} />}
       <div ref={tabsRef} className="pokemon-editor-tabs-wrapper">
         <Tabs

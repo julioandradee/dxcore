@@ -9,9 +9,10 @@ import { useTranslation } from '../../i18n'
 
 interface ReadOnlyPokemonProps {
   at: PokemonHandle
+  onBack?: () => void
 }
 
-export function ReadOnlyPokemon({ at }: ReadOnlyPokemonProps) {
+export function ReadOnlyPokemon({ at, onBack }: ReadOnlyPokemonProps) {
   const { t } = useTranslation()
   const engine = useEngine()
   const { pokemon } = usePokemon(at)
@@ -52,7 +53,12 @@ export function ReadOnlyPokemon({ at }: ReadOnlyPokemonProps) {
 
   return (
     <Flex vertical gap={20}>
-      <PageHeader title={pokemon.nickname || pokemon.species || 'Pokémon'} extra={<PokemonImage pokemon={pokemon} />} />
+      <PageHeader
+        showBack
+        onBack={onBack}
+        title={pokemon.nickname || pokemon.species || 'Pokémon'}
+        extra={<PokemonImage pokemon={pokemon} />}
+      />
       <Alert type="info" showIcon title={t('editor.readOnlyNotice', "This Pokémon's species is unknown, so it can't be edited.")} />
       <Descriptions
         bordered

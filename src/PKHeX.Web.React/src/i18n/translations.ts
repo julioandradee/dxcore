@@ -172,6 +172,11 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.close': 'Fechar',
 
     // Editor de Pokémon (UI)
+    'editor.saveSuccess': 'Alterações salvas com sucesso!',
+    'editor.savedInPartyNotice': 'O Pokémon foi atualizado na sua Party. Você pode continuar editando ou retornar à equipe.',
+    'editor.savedInBoxNotice': 'O Pokémon foi atualizado nas Boxes. Você pode continuar editando ou retornar às caixas.',
+    'editor.returnToParty': 'Voltar para a Party',
+    'editor.returnToBox': 'Voltar para as Boxes',
     'editor.tabs.description': 'Principal',
     'editor.tabs.ability': 'Habilidade',
     'editor.tabs.matchups': 'Vantagens & Fraquezas',
@@ -698,6 +703,11 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.close': 'Close',
 
     // Pokemon Editor (UI)
+    'editor.saveSuccess': 'Changes saved successfully!',
+    'editor.savedInPartyNotice': 'The Pokémon was updated in your Party. You can continue editing or return to your party.',
+    'editor.savedInBoxNotice': 'The Pokémon was updated in your Boxes. You can continue editing or return to your boxes.',
+    'editor.returnToParty': 'Back to Party',
+    'editor.returnToBox': 'Back to Boxes',
     'editor.tabs.description': 'Description',
     'editor.tabs.ability': 'Ability',
     'editor.tabs.matchups': 'Type Matchups',
@@ -1224,6 +1234,11 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.close': 'Cerrar',
 
     // Editor de Pokémon (UI)
+    'editor.saveSuccess': '¡Cambios guardados con éxito!',
+    'editor.savedInPartyNotice': 'El Pokémon ha sido actualizado en tu Party. Puedes seguir editando o volver al equipo.',
+    'editor.savedInBoxNotice': 'El Pokémon ha sido actualizado en las Cajas. Puedes seguir editando o volver a las cajas.',
+    'editor.returnToParty': 'Volver a la Party',
+    'editor.returnToBox': 'Volver a las Cajas',
     'editor.tabs.description': 'Principal',
     'editor.tabs.ability': 'Habilidad',
     'editor.tabs.matchups': 'Ventajas y Desventajas',

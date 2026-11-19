@@ -56,6 +56,7 @@ export default function PokemonClonePage({ source, id }: PokemonClonePageProps) 
   if (phase === 'opening') return <Spin />
   return (
     <DraftEditor
+      onBack={() => navigate(source === 'party' ? routes.party : routes.box)}
       actions={
         <Button type="primary" onClick={addToBox}>
           {t('editor.clone.addToBox', 'Add to box')}
