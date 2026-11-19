@@ -55,7 +55,8 @@ describe('PokemonShowcaseCard', () => {
 
     expect(container.textContent).toContain('Charizard')
     expect(container.textContent).toContain('#0006')
-    expect(container.textContent).toContain('Normal')
+    expect(container.textContent).not.toContain('Shiny')
+    expect(container.textContent).not.toContain('Normal')
 
     const img = container.querySelector('img')
     expect(img).not.toBeNull()

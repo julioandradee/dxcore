@@ -9,8 +9,8 @@ export function LoadLayout() {
         <div
           style={{
             width: '100%',
-            maxWidth: 728 + 2 * 24,
-            padding: 24,
+            maxWidth: 728 + 2 * 20,
+            padding: 20,
             minHeight: 360,
             display: 'flex',
             flexDirection: 'column',

@@ -1,4 +1,4 @@
-﻿# Script PowerShell para publicar o projeto no GitHub Pages
+# Script PowerShell para publicar o projeto no GitHub Pages
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Continue"
 

@@ -17,6 +17,7 @@ on:
 
 jobs:
   build_and_test:
+    if: github.repository == 'wawesome/PKHeX.Everywhere'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_tag.CLI_VERSION }}
@@ -50,6 +51,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal --filter Category!=E2E
 
   engine_sdk:
+    if: github.repository == 'wawesome/PKHeX.Everywhere'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -65,7 +67,7 @@ jobs:
 
   engine_sdk_packages:
     needs: changes
-    if: always() && (needs.changes.outputs.sdk == 'true' || github.event_name == 'workflow_dispatch')
+    if: github.repository == 'wawesome/PKHeX.Everywhere' && (needs.changes.outputs.sdk == 'true' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -91,6 +93,7 @@ jobs:
         run: ./smoke.sh
 
   changes:
+    if: github.repository == 'wawesome/PKHeX.Everywhere'
     runs-on: ubuntu-latest
     permissions:
       contents: read

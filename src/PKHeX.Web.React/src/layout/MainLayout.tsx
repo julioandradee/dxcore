@@ -230,7 +230,7 @@ export function MainLayout() {
           </div>
         </Layout.Header>
         <Layout.Content style={{ margin: '0' }}>
-          <div style={{ padding: 24, minHeight: 360 }}>
+          <div style={{ padding: 20, minHeight: 360 }}>
             <RoutedContent key={pathname} />
           </div>
         </Layout.Content>

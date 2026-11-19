@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build_and_preview:
-    if: github.ref != 'refs/heads/main'
+    if: github.repository == 'wawesome/PKHeX.Everywhere' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:

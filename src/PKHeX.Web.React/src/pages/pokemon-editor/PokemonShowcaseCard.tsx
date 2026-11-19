@@ -51,12 +51,10 @@ export function PokemonShowcaseCard({ pokemon }: PokemonShowcaseCardProps) {
         <Tag style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 13, margin: 0 }}>
           {dexNumber}
         </Tag>
-        {pokemon.isShiny ? (
+        {pokemon.isShiny && (
           <Tag color="gold" style={{ fontWeight: 600, margin: 0 }}>
             ✨ Shiny
           </Tag>
-        ) : (
-          <Tag style={{ margin: 0 }}>Normal</Tag>
         )}
       </Flex>
 

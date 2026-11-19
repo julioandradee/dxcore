@@ -129,8 +129,8 @@ export default function PartyPage() {
     <Flex vertical gap={20}>
       <PageHeader
         title={
-          <Flex align="center" gap={12}>
-            <span>{t('party.title', 'Party')}</span>
+          <Flex align="center" gap={12} wrap="wrap" style={{ minWidth: 'fit-content' }}>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('party.title', 'Party')}</span>
             <Tag
               style={{
                 backgroundColor: '#DC0A2D',
@@ -138,6 +138,14 @@ export default function PartyPage() {
                 borderColor: '#DC0A2D',
                 fontWeight: 600,
                 borderRadius: 4,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '2px 10px',
+                minWidth: 'fit-content',
+                lineHeight: '1.5',
+                margin: 0,
               }}
             >
               {party.length} / 6

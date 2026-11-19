@@ -2,16 +2,34 @@ import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import {
   AppstoreOutlined,
   CalculatorOutlined,
+  CloseOutlined,
   CopyOutlined,
   DownOutlined,
   DownloadOutlined,
+  FilterOutlined,
   FolderOpenOutlined,
   PlusOutlined,
   SearchOutlined,
   SwapOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
-import { App, Button, Dropdown, Flex, Input, Segmented, Select, Tag, type MenuProps } from 'antd'
+import {
+  App,
+  Badge,
+  Button,
+  Dropdown,
+  Flex,
+  Input,
+  Modal,
+  Popover,
+  Segmented,
+  Select,
+  Space,
+  Tag,
+  Tooltip,
+  Typography,
+  type MenuProps,
+} from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
 import { useBox, useEngine, useLoadedGame } from '@pkhex-everywhere/react'
 import { PageHeader } from '../../components/PageHeader'
@@ -47,9 +65,17 @@ export default function BoxPage() {
   const [transferring, setTransferring] = useState(false)
   const [movingBox, setMovingBox] = useState(false)
   const [search, setSearch] = useState('')
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [boxFilter, setBoxFilter] = useState<string>('all')
   const [levelFilter, setLevelFilter] = useState<string>('all')
+  const [shinyFilter, setShinyFilter] = useState<'all' | 'shiny' | 'normal'>('all')
   const [batchBusy, setBatchBusy] = useState(false)
+
+  const activeFiltersCount =
+    (boxFilter !== 'all' ? 1 : 0) +
+    (levelFilter !== 'all' ? 1 : 0) +
+    (shinyFilter !== 'all' ? 1 : 0)
 
   const handleBatchClone = async () => {
     setBatchBusy(true)
@@ -104,6 +130,15 @@ export default function BoxPage() {
     [t],
   )
 
+  const shinyOptions = useMemo(
+    () => [
+      { value: 'all', label: t('box.allClassifications', 'Todos (Shiny e Normal)') },
+      { value: 'shiny', label: t('box.onlyShiny', '✨ Apenas Shiny') },
+      { value: 'normal', label: t('box.onlyNormal', 'Apenas Normal') },
+    ],
+    [t],
+  )
+
   const filteredBox = useMemo(() => {
     return box.filter((pokemon) => {
       // 1. Text search (species / nickname / pokedex #)
@@ -137,9 +172,13 @@ export default function BoxPage() {
         if (levelFilter === '+50' && lvl <= 50) return false
       }
 
+      // 4. Shiny classification filter
+      if (shinyFilter === 'shiny' && !pokemon.isShiny) return false
+      if (shinyFilter === 'normal' && pokemon.isShiny) return false
+
       return true
     })
-  }, [box, search, boxFilter, levelFilter])
+  }, [box, search, boxFilter, levelFilter, shinyFilter])
 
   const openSelectedInCalculator = useCallback(async () => {
     const showdown = selected.length
@@ -267,8 +306,8 @@ export default function BoxPage() {
     <Flex vertical gap={20}>
       <PageHeader
         title={
-          <Flex align="center" gap={12} wrap="wrap">
-            <span>{t('box.title', 'Box')}</span>
+          <Flex align="center" gap={12} wrap="wrap" style={{ minWidth: 'fit-content' }}>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('box.title', 'Box')}</span>
             <Tag
               style={{
                 backgroundColor: '#DC0A2D',
@@ -276,35 +315,160 @@ export default function BoxPage() {
                 borderColor: '#DC0A2D',
                 fontWeight: 600,
                 borderRadius: 4,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '2px 8px',
               }}
             >
               {filteredBox.length} Pokémon
             </Tag>
-            {totalShiniesInBox > 0 && <Tag color="gold">✨ {totalShiniesInBox} Shiny</Tag>}
+            {totalShiniesInBox > 0 && (
+              <Tag
+                color="gold"
+                style={{
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '2px 8px',
+                }}
+              >
+                ✨ {totalShiniesInBox} Shiny
+              </Tag>
+            )}
           </Flex>
         }
         extra={
           <Flex align="center" gap={10} wrap="wrap">
-            <Input
-              prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
-              placeholder={t('box.searchPlaceholder', 'Buscar Pokémon...')}
-              allowClear
-              style={{ width: 190 }}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Select
-              value={boxFilter}
-              onChange={setBoxFilter}
-              options={boxOptions}
-              style={{ minWidth: 155 }}
-            />
-            <Select
-              value={levelFilter}
-              onChange={setLevelFilter}
-              options={levelOptions}
-              style={{ minWidth: 135 }}
-            />
+            {/* Tag para busca ativa */}
+            {search && (
+              <Tag
+                closable
+                onClose={() => setSearch('')}
+                style={{
+                  margin: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                }}
+              >
+                "{search}"
+              </Tag>
+            )}
+
+            {/* Tag para filtros ativos */}
+            {activeFiltersCount > 0 && (
+              <Tag
+                color="blue"
+                closable
+                onClose={() => {
+                  setBoxFilter('all')
+                  setLevelFilter('all')
+                  setShinyFilter('all')
+                }}
+                style={{ margin: 0, borderRadius: 4 }}
+              >
+                {activeFiltersCount} {t('box.filtersActive', 'filtros')}
+              </Tag>
+            )}
+
+            {/* Botão de Busca: Ícone que abre o Overlay Centralizado */}
+            <Tooltip title={t('box.searchTooltip', 'Buscar Pokémon')}>
+              <Badge dot={Boolean(search)} offset={[-2, 2]}>
+                <Button
+                  icon={<SearchOutlined />}
+                  onClick={() => setSearchModalOpen(true)}
+                  type={search ? 'primary' : 'default'}
+                  ghost={Boolean(search)}
+                  aria-label={t('box.searchTooltip', 'Buscar Pokémon')}
+                />
+              </Badge>
+            </Tooltip>
+
+            {/* Botão de Filtros Agrupados: Ícone com Popover */}
+            <Popover
+              open={filtersOpen}
+              onOpenChange={setFiltersOpen}
+              trigger="click"
+              placement="bottomRight"
+              title={
+                <Flex justify="space-between" align="center" style={{ paddingBottom: 6 }}>
+                  <Space align="center" size={6}>
+                    <FilterOutlined style={{ color: '#1677ff' }} />
+                    <span style={{ fontWeight: 600 }}>{t('box.filtersTitle', 'Filtros de Pokémon')}</span>
+                  </Space>
+                  {activeFiltersCount > 0 && (
+                    <Button
+                      type="link"
+                      size="small"
+                      danger
+                      onClick={() => {
+                        setBoxFilter('all')
+                        setLevelFilter('all')
+                        setShinyFilter('all')
+                      }}
+                      style={{ padding: 0, height: 'auto', fontSize: 12 }}
+                    >
+                      {t('box.clearFilters', 'Limpar filtros')}
+                    </Button>
+                  )}
+                </Flex>
+              }
+              content={
+                <Flex vertical gap={12} style={{ width: 250, paddingTop: 4 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                      {t('box.filterBox', 'Caixa')}
+                    </div>
+                    <Select
+                      value={boxFilter}
+                      onChange={setBoxFilter}
+                      options={boxOptions}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                      {t('box.filterLevel', 'Nível')}
+                    </div>
+                    <Select
+                      value={levelFilter}
+                      onChange={setLevelFilter}
+                      options={levelOptions}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                      {t('box.filterClassification', 'Classificação')}
+                    </div>
+                    <Select
+                      value={shinyFilter}
+                      onChange={setShinyFilter}
+                      options={shinyOptions}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </Flex>
+              }
+            >
+              <Tooltip title={t('box.filterTooltip', 'Filtrar Pokémon')}>
+                <Badge count={activeFiltersCount} size="small" offset={[-2, 2]}>
+                  <Button
+                    icon={<FilterOutlined />}
+                    type={activeFiltersCount > 0 ? 'primary' : 'default'}
+                    ghost={activeFiltersCount > 0}
+                    aria-label={t('box.filterTooltip', 'Filtrar Pokémon')}
+                  />
+                </Badge>
+              </Tooltip>
+            </Popover>
+
             <Segmented<PokemonListView>
               value={listView}
               onChange={(val) => changePokemonListView(val)}
@@ -371,6 +535,70 @@ export default function BoxPage() {
         failed={failedFiles}
         onClose={clearImported}
       />
+
+      {/* Modal Overlay de Busca Centralizado em Destaque */}
+      <Modal
+        open={searchModalOpen}
+        onCancel={() => setSearchModalOpen(false)}
+        footer={null}
+        closable={false}
+        centered
+        width={540}
+        destroyOnClose={false}
+        styles={{
+          mask: {
+            backgroundColor: 'rgba(0, 15, 34, 0.75)',
+            backdropFilter: 'blur(4px)',
+          },
+          body: {
+            padding: '8px 4px',
+          },
+        }}
+      >
+        <Flex vertical gap={16}>
+          <Flex justify="space-between" align="center">
+            <Typography.Text strong style={{ fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <SearchOutlined style={{ color: '#1677ff', fontSize: 18 }} />
+              {t('box.searchTitle', 'Buscar Pokémon nas Caixas')}
+            </Typography.Text>
+            <Button
+              type="text"
+              icon={<CloseOutlined />}
+              onClick={() => setSearchModalOpen(false)}
+              aria-label={t('common.close', 'Fechar')}
+              style={{ color: '#8c8c8c' }}
+            />
+          </Flex>
+
+          <Input
+            autoFocus
+            size="large"
+            prefix={<SearchOutlined style={{ color: '#1677ff', fontSize: 18 }} />}
+            placeholder={t('box.searchPlaceholder', 'Buscar por nome, espécie ou nº da Pokédex...')}
+            allowClear
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onPressEnter={() => setSearchModalOpen(false)}
+            style={{ borderRadius: 8, fontSize: 16 }}
+          />
+
+          <Flex justify="space-between" align="center" style={{ fontSize: 13, color: '#8c8c8c' }}>
+            <span>
+              {t('box.foundCount', '{0} Pokémon encontrados').replace('{0}', String(filteredBox.length))}
+            </span>
+            <Space>
+              {search && (
+                <Button size="small" type="link" onClick={() => setSearch('')}>
+                  {t('box.clearFilters', 'Limpar')}
+                </Button>
+              )}
+              <Button size="small" type="primary" onClick={() => setSearchModalOpen(false)}>
+                {t('common.done', 'Concluir')}
+              </Button>
+            </Space>
+          </Flex>
+        </Flex>
+      </Modal>
     </Flex>
   )
 }
