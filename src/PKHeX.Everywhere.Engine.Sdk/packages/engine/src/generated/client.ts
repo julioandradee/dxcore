@@ -7,7 +7,7 @@ export type Invoke = <T>(call: CallName, args: unknown[]) => Promise<T>
 
 export const queries = ['box.get', 'box.list', 'box.previewFile', 'box.showdown', 'catalog.names', 'encounters.events', 'encounters.search', 'encounters.versions', 'events.flag', 'events.get', 'game.balls', 'game.blankVersions', 'game.formats', 'game.get', 'game.heldItems', 'game.languages', 'game.moves', 'game.natures', 'game.originGames', 'game.progress', 'game.types', 'game.version', 'inventory.get', 'mysteryGift.events', 'mysteryGift.previewEvent', 'mysteryGift.previewFile', 'mysteryGift.status', 'party.get', 'party.showdown', 'plugins.actions', 'plugins.details', 'plugins.failures', 'plugins.installed', 'plugins.isSupported', 'plugins.pageModule', 'plugins.pages', 'plugins.setting', 'plugins.state', 'pokemon.details', 'pokemon.export', 'pokemon.get', 'pokemon.options', 'pokemon.read', 'pokemon.showdown', 'species.list', 'team.get', 'team.list', 'trainer.badges', 'trainer.get', 'transfer.convert', 'transfer.details', 'transfer.export', 'transfer.get', 'transfer.partnerBoxes', 'transfer.preview'] as const
 
-export const commands = ['box.addEncounter', 'box.addFromFile', 'box.moveToBox', 'box.swapSlots', 'events.giveTickets', 'events.setFlag', 'events.setWork', 'game.close', 'game.enableFormat', 'game.export', 'game.file', 'game.load', 'game.loadBlank', 'inventory.setItem', 'mysteryGift.insertEvent', 'mysteryGift.insertFile', 'mysteryGift.remove', 'mysteryGift.setReceived', 'mysteryGift.setUnlocked', 'plugins.dismissFailure', 'plugins.newestCompatible', 'plugins.register', 'plugins.run', 'plugins.setEnabled', 'plugins.setHookEnabled', 'plugins.unregister', 'plugins.updateSetting', 'pokemon.addToBox', 'pokemon.clone', 'pokemon.commit', 'pokemon.edit', 'pokemon.setLevel', 'pokemon.update', 'team.clear', 'team.place', 'trainer.setBadges', 'trainer.setBattlePoints', 'trainer.setGender', 'trainer.setMoney', 'trainer.setName', 'transfer.close', 'transfer.commit', 'transfer.open'] as const
+export const commands = ['box.addEncounter', 'box.addFromFile', 'events.giveTickets', 'events.setFlag', 'events.setWork', 'game.close', 'game.enableFormat', 'game.export', 'game.file', 'game.load', 'game.loadBlank', 'inventory.setItem', 'mysteryGift.insertEvent', 'mysteryGift.insertFile', 'mysteryGift.remove', 'mysteryGift.setReceived', 'mysteryGift.setUnlocked', 'plugins.dismissFailure', 'plugins.newestCompatible', 'plugins.register', 'plugins.run', 'plugins.setEnabled', 'plugins.setHookEnabled', 'plugins.unregister', 'plugins.updateSetting', 'pokemon.addToBox', 'pokemon.clone', 'pokemon.commit', 'pokemon.edit', 'pokemon.setLevel', 'pokemon.update', 'team.clear', 'team.place', 'trainer.setBadges', 'trainer.setBattlePoints', 'trainer.setGender', 'trainer.setMoney', 'trainer.setName', 'transfer.close', 'transfer.commit', 'transfer.open'] as const
 
 export type QueryName = (typeof queries)[number]
 
@@ -29,10 +29,6 @@ export interface EngineClient {
     previewFile(bytes: Binary): Promise<FilePreview>
     /** Requires a loaded save; throws `no-save` otherwise. */
     showdown(): Promise<string>
-    /** Moves one or more Pokémon to a target box, strictly validating box capacity and limits. Requires a loaded save; throws `no-save` otherwise. */
-    moveToBox(pokemons: PokemonHandle[], targetBox: number): Promise<void>
-    /** Swaps the positions of two Pokémon within or between boxes. Requires a loaded save; throws `no-save` otherwise. */
-    swapSlots(a: PokemonHandle, b: PokemonHandle): Promise<void>
   }
   catalog: {
     names(request: CatalogNamesRequest): Promise<CatalogNames>
@@ -291,8 +287,6 @@ export function createClient(invoke: Invoke): EngineClient {
       list: () => invoke('box.list', []),
       previewFile: async (bytes) => invoke('box.previewFile', [await toBase64(bytes)]),
       showdown: () => invoke('box.showdown', []),
-      moveToBox: (pokemons, targetBox) => invoke('box.moveToBox', [pokemons, targetBox]),
-      swapSlots: (a, b) => invoke('box.swapSlots', [a, b]),
     },
     catalog: {
       names: (request) => invoke('catalog.names', [request]),

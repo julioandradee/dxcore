@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => ({
   base: process.env.VITE_BASE_PATH ?? (process.env.NODE_ENV === 'production' ? '/dxcore/' : '/'),
   plugins: [
     react(),
-    pkhexEngine({ frameworkDir: publishedFramework }),
+    pkhexEngine({ frameworkDir: command === 'serve' ? debugFramework : publishedFramework }),
   ],
   resolve: { preserveSymlinks: true, conditions: ['source', ...defaultClientConditions] },
   server: { port: 5173, strictPort: true },

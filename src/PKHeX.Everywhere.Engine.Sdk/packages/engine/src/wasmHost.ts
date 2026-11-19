@@ -35,9 +35,7 @@ export interface WasmHostOptions {
 const cdnDotnetUrl = `https://cdn.jsdelivr.net/npm/@pkhex-everywhere/engine@${version}/_framework/dotnet.js`
 
 function pageDotnetUrl() {
-  const content = globalThis.document?.querySelector<HTMLMetaElement>(
-    `meta[name="${dotnetUrlMeta}"], meta[name="pkhex-engine:dotnet-url"], meta[name="pkhex-engine-dotnet-url"]`
-  )?.content
+  const content = globalThis.document?.querySelector<HTMLMetaElement>(`meta[name="${dotnetUrlMeta}"]`)?.content
   return content ? new URL(content, document.baseURI).href : undefined
 }
 
@@ -79,24 +77,12 @@ function createWasmHost(dotnetUrl: string, load: (url: string) => Promise<Dotnet
 
   let booted: Promise<DotnetRuntime> | undefined
   const boot = () =>
-    (booted ??= (async () => {
-      let module: DotnetModule
-      try {
-        module = await load(dotnetUrl)
-      } catch (err) {
-        if (dotnetUrl !== cdnDotnetUrl) {
-          console.warn(`wasmHost: Failed to load runtime from ${dotnetUrl}, falling back to CDN (${cdnDotnetUrl}).`, err)
-          module = await load(cdnDotnetUrl)
-        } else {
-          throw err
-        }
-      }
-      const { dotnet } = module
+    (booted ??= load(dotnetUrl).then(async ({ dotnet }) => {
       const runtime = await dotnet.withModuleConfig({ onDownloadResourceProgress: reportProgress }).create()
       runtime.setModuleImports('pkhex-crypto', crypto)
       await runtime.runMain()
       return runtime
-    })())
+    }))
 
   return {
     ready: () => boot().then(() => undefined),
