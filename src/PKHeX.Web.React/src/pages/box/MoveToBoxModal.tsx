@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Alert, App, Button, Flex, Modal, Progress, Radio, Space, Tag, Typography } from 'antd'
-import { call, type BoxEntry, type PokemonSummary } from '@pkhex-everywhere/engine'
+import type { BoxEntry, PokemonSummary } from '@pkhex-everywhere/engine'
+import { call } from '@pkhex-everywhere/engine/internal'
 import { useBox, useEngine, useQuery } from '@pkhex-everywhere/react'
 import { useTranslation } from '../../i18n'
 
@@ -12,7 +13,7 @@ interface MoveToBoxModalProps {
 }
 
 export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBoxModalProps) {
-  const { box, moveToBox } = useBox()
+  const { box } = useBox()
   const engine = useEngine()
   const boxList = useQuery('box.list') ?? []
   const { notification } = App.useApp()
@@ -54,12 +55,11 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
     setMoving(true)
     try {
       const handles = selected.map((p) => p.at)
-      if (typeof moveToBox === 'function') {
-        await moveToBox(handles, targetBox)
-      } else if (typeof engine.box?.moveToBox === 'function') {
-        await engine.box.moveToBox(handles, targetBox)
+      const boxEngine = engine.box as unknown as { moveToBox?: (h: unknown[], b: number) => Promise<void> }
+      if (typeof boxEngine?.moveToBox === 'function') {
+        await boxEngine.moveToBox(handles, targetBox)
       } else {
-        await call(engine, 'box.moveToBox', [handles, targetBox])
+        await call(engine, 'box.moveToBox' as never, [handles, targetBox])
       }
       notification.success({
         title: t('box.moveSuccessTitle', 'Pokémon movidos com sucesso!'),
