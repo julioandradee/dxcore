@@ -5,7 +5,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Menu de navegação
     'menu.home': 'Início',
     'menu.party': 'Equipe',
-    'menu.box': 'Caixas Pokémon',
+    'menu.box': 'Caixas',
     'menu.items': 'Itens',
     'menu.events': 'Eventos',
     'menu.plugins': 'Plug-Ins',
@@ -24,7 +24,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.theme.dark': 'Escuro',
     'settings.theme.light': 'Claro',
     'settings.editorLayout': 'Layout do Editor de Pokémon',
-    'settings.editorLayout.showcase': '✨ Destaque em Colunas (Arte Oficial HD)',
+    'settings.editorLayout.showcase': '✨ Destaque (Arte Oficial HD)',
     'settings.editorLayout.classic': '🖼️ Clássico Compacto (GIF Animado)',
     'settings.pokemonListView': 'Visualização da Equipe e Caixas',
     'settings.pokemonListView.gallery': '🖼️ Galeria em Grade (Padrão)',
@@ -114,7 +114,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'load.openDemo': 'Abrir Save de Demonstração',
 
     // Página de Caixas (Box)
-    'box.title': 'Caixas Pokémon',
+    'box.title': 'Caixas',
     'box.searchPlaceholder': 'Buscar Pokémon...',
     'box.searchTooltip': 'Buscar Pokémon',
     'box.searchTitle': 'Buscar Pokémon nas Caixas',
@@ -470,7 +470,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'backup.restore': 'Restaurar',
     'backup.restoredSuccess': 'Save restaurado com sucesso!',
     'backup.restoreError': 'Falha ao restaurar save',
-    'backup.download': 'Baixar arquivo',
+    'backup.download': '',
     'backup.confirmDelete': 'Excluir este backup?',
     'backup.confirmClearAll': 'Limpar todos os backups gravados?',
     'backup.clearAll': 'Limpar Histórico',
@@ -536,7 +536,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Navigation Menu
     'menu.home': 'Home',
     'menu.party': 'Party',
-    'menu.box': 'Pokemon Box',
+    'menu.box': 'Box',
     'menu.items': 'Items',
     'menu.events': 'Events',
     'menu.plugins': 'Plug-Ins',
@@ -555,10 +555,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.theme.dark': 'Dark',
     'settings.theme.light': 'Light',
     'settings.editorLayout': 'Pokémon Editor Layout',
-    'settings.editorLayout.showcase': '✨ Columns Layout (Official HD Artwork)',
-    'settings.editorLayout.classic': '🖼️ Compact Classic (Animated GIF)',
+    'settings.editorLayout.showcase': '✨ Columns (Official HD Artwork)',
+    'settings.editorLayout.classic': '🖼️ Compact (Animated GIF)',
     'settings.pokemonListView': 'Party & Box Pokémon View',
-    'settings.pokemonListView.gallery': '🖼️ Grid Gallery (Default)',
+    'settings.pokemonListView.gallery': '🖼️ Grid Gallery',
     'settings.pokemonListView.table': '📋 Table List',
     'view.gallery': '',
     'view.table': '',
@@ -567,7 +567,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.about': 'About DXCore',
     'settings.aboutDescription': 'Customized PKHeX Web build with enhanced UI, local save snapshot backups, advanced filters, and optimized ad-free performance.',
     'settings.features': 'Features & Functions',
-    'settings.viewFeatures': 'View Complete Feature Catalog',
+    'settings.viewFeatures': 'View Complete Feature',
     'settings.version': 'Current Version',
 
     // Features Page
@@ -645,7 +645,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'load.openDemo': 'Open Demo Save',
 
     // Box page
-    'box.title': 'Pokemon Box',
+    'box.title': 'Box',
     'box.searchPlaceholder': 'Search Pokémon...',
     'box.searchTooltip': 'Search Pokémon',
     'box.searchTitle': 'Search Box Pokémon',
@@ -1001,7 +1001,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'backup.restore': 'Restore',
     'backup.restoredSuccess': 'Save restored successfully!',
     'backup.restoreError': 'Failed to restore save',
-    'backup.download': 'Download file',
+    'backup.download': '',
     'backup.confirmDelete': 'Delete this backup?',
     'backup.confirmClearAll': 'Clear all saved backups?',
     'backup.clearAll': 'Clear History',
@@ -1067,7 +1067,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Menú de navegación
     'menu.home': 'Inicio',
     'menu.party': 'Equipo',
-    'menu.box': 'Cajas Pokémon',
+    'menu.box': 'Cajas',
     'menu.items': 'Objetos',
     'menu.events': 'Eventos',
     'menu.plugins': 'Plug-Ins',
@@ -1086,10 +1086,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.theme.dark': 'Oscuro',
     'settings.theme.light': 'Claro',
     'settings.editorLayout': 'Diseño del Editor de Pokémon',
-    'settings.editorLayout.showcase': '✨ Destacado en Columnas (Arte Oficial HD)',
-    'settings.editorLayout.classic': '🖼️ Clásico Compacto (GIF Animado)',
+    'settings.editorLayout.showcase': '✨ Destacado (Arte Oficial HD)',
+    'settings.editorLayout.classic': '🖼️ Compacto (GIF Animado)',
     'settings.pokemonListView': 'Visualización de Equipo y Cajas',
-    'settings.pokemonListView.gallery': '🖼️ Galería en Cuadrícula (Predeterminado)',
+    'settings.pokemonListView.gallery': '🖼️ Galería en Cuadrícula',
     'settings.pokemonListView.table': '📋 Lista por Tabla',
     'view.gallery': '',
     'view.table': '',
@@ -1098,7 +1098,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.about': 'Acerca de DXCore',
     'settings.aboutDescription': 'Versión personalizada de PKHeX Web con interfaz mejorada, copias de seguridad de guardados locales, filtros avanzados y rendimiento optimizado sin anuncios.',
     'settings.features': 'Recursos y Funciones',
-    'settings.viewFeatures': 'Ver Catálogo Completo de Funciones',
+    'settings.viewFeatures': 'Ver Catálogo de Funciones',
     'settings.version': 'Versión Actual',
 
     // Página de Recursos y Funciones (Features)
@@ -1176,7 +1176,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'load.openDemo': 'Abrir Partida de Demostración',
 
     // Página de Cajas (Box)
-    'box.title': 'Cajas Pokémon',
+    'box.title': 'Cajas',
     'box.searchPlaceholder': 'Buscar Pokémon...',
     'box.searchTooltip': 'Buscar Pokémon',
     'box.searchTitle': 'Buscar Pokémon en las Cajas',
@@ -1520,10 +1520,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'batch.error': 'Error al ejecutar acción por lote',
 
     // Historial y Copias de Seguridad
-    'backup.title': 'Historial y Copias de Seguridad',
+    'backup.title': 'Historial y copias de save',
     'backup.headerBtn': 'Copias',
     'backup.description': 'Crea puntos de restauración antes de modificar tus Pokémon. Las copias quedan guardadas de forma segura en tu navegador.',
-    'backup.createNow': 'Crear Copia del Save Actual',
+    'backup.createNow': 'Crear copia (save actual)',
     'backup.createdSuccess': '¡Copia creada con éxito!',
     'backup.createdDesc': 'Punto de restauración guardado en el almacenamiento local.',
     'backup.createError': 'Error al crear copia de seguridad',
@@ -1532,7 +1532,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'backup.restore': 'Restaurar',
     'backup.restoredSuccess': '¡Partida restaurada con éxito!',
     'backup.restoreError': 'Error al restaurar partida',
-    'backup.download': 'Descargar archivo',
+    'backup.download': '',
     'backup.confirmDelete': '¿Eliminar esta copia?',
     'backup.confirmClearAll': '¿Borrar todas las copias guardadas?',
     'backup.clearAll': 'Limpiar Historial',

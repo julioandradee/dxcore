@@ -214,7 +214,7 @@ function SaveBackupModalContent({ onClose }: { onClose: () => void }) {
                           size="small"
                           icon={<CloudDownloadOutlined />}
                           onClick={() => handleDownload(s)}
-                          title={t('backup.download', 'Baixar arquivo')}
+                          title={t('backup.download', '')}
                         >
                           {t('backup.download', 'Baixar')}
                         </Button>

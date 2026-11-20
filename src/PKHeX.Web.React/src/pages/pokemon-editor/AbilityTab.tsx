@@ -39,8 +39,6 @@ export function AbilityTab() {
     <Flex vertical gap={16}>
       <Alert
         type="info"
-        showIcon
-        icon={<ThunderboltOutlined />}
         message={t('ability.bannerTitle', 'Habilidade Passiva do Pokémon')}
         description={t(
           'ability.bannerDesc',
@@ -87,8 +85,6 @@ export function AbilityTab() {
           <div style={{ marginTop: 12 }}>
             <Alert
               type="info"
-              showIcon
-              icon={<InfoCircleOutlined />}
               style={{ borderRadius: 6 }}
               message={
                 <Flex justify="space-between" align="center" wrap="wrap" gap={8}>

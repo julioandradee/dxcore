@@ -109,7 +109,6 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
       <Flex vertical gap={12} style={{ marginTop: 16 }}>
         <Alert
           type="success"
-          showIcon
           title={
             imported.length === 1
               ? t('import.singleSuccess', '1 Pokémon importado com sucesso!')
@@ -127,7 +126,6 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
         {failed.length > 0 && (
           <Alert
             type="warning"
-            showIcon
             title={t('import.failedCount', '{0} arquivo(s) não puderam ser importados').replace(
               '{0}',
               String(failed.length),

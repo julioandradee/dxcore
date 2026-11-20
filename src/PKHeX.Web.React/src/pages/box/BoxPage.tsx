@@ -560,7 +560,7 @@ export default function BoxPage() {
         <Flex vertical gap={16}>
           <Flex justify="space-between" align="center">
             <Typography.Text strong style={{ fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <SearchOutlined style={{ color: '#1677ff', fontSize: 18 }} />
+              {/* <SearchOutlined style={{ color: '#1677ff', fontSize: 18 }} /> */}
               {t('box.searchTitle', 'Buscar Pokémon nas Caixas')}
             </Typography.Text>
             <Button

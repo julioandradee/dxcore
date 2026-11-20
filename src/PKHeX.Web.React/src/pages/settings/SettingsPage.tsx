@@ -109,7 +109,7 @@ export default function SettingsPage() {
                 options={[
                   {
                     value: 'showcase',
-                    label: t('settings.editorLayout.showcase', '✨ Destaque em Colunas (Arte Oficial HD)'),
+                    label: t('settings.editorLayout.showcase', '✨ Destaque (Arte Oficial HD)'),
                   },
                   {
                     value: 'classic',

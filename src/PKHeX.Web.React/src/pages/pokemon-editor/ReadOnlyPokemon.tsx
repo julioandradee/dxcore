@@ -59,7 +59,7 @@ export function ReadOnlyPokemon({ at, onBack }: ReadOnlyPokemonProps) {
         title={pokemon.nickname || pokemon.species || 'Pokémon'}
         extra={<PokemonImage pokemon={pokemon} />}
       />
-      <Alert type="info" showIcon title={t('editor.readOnlyNotice', "This Pokémon's species is unknown, so it can't be edited.")} />
+      <Alert type="info" title={t('editor.readOnlyNotice', "This Pokémon's species is unknown, so it can't be edited.")} />
       <Descriptions
         bordered
         size="small"

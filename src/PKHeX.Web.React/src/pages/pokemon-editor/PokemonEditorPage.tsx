@@ -73,7 +73,6 @@ export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps
   const notice = saveSuccess ? (
     <Alert
       type="success"
-      showIcon
       closable
       onClose={() => setSaveSuccess(false)}
       style={{ borderRadius: 8 }}

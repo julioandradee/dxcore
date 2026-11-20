@@ -97,7 +97,6 @@ export function StatsTab() {
       {game && statsAreApproximate(game) && (
         <Alert
           type="info"
-          showIcon
           title={`Stats are approximate. They use the original games' base stats, which ${gameName(game)} may change.`}
         />
       )}

@@ -15,7 +15,6 @@ export default function EventsPage() {
       <PageHeader title={t('events.title', 'Events')} />
       <Alert
         type="warning"
-        showIcon
         title={t('events.warning', 'Changing event flags can break story progression. Keep a backup of your save.')}
       />
       {events ? (

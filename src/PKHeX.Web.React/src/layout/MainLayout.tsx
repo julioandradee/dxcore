@@ -54,7 +54,17 @@ function TrainerBadge() {
   const { trainer } = useTrainer()
   if (!trainer?.name) return null
   return (
-    <Tag color="purple" style={{ margin: 0 }}>
+    <Tag
+      style={{
+        fontWeight: 600,
+        margin: 0,
+        backgroundColor: '#38bdf8',
+        color: '#001529',
+        borderColor: '#38bdf8',
+        borderRadius: 4,
+        padding: '0 8px',
+      }}
+    >
       👤 {trainer.name}
     </Tag>
   )
@@ -269,6 +279,20 @@ export function MainLayout() {
           }}
         >
           <Flex align="center" gap={8} wrap="nowrap" style={{ overflow: 'hidden' }}>
+            {/* Esfera do logo visível no mobile no lado esquerdo do badge do jogo */}
+            <span
+              className="mobile-header-sphere"
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: '50%',
+                backgroundColor: '#38bdf8',
+                boxShadow: '0 0 8px #38bdf8, inset 0 0 4px #ffffff',
+                border: '2px solid #ffffff',
+                flexShrink: 0,
+              }}
+              title="DXCore"
+            />
             <Suspense fallback={null}>
               <HeaderGameInfo />
             </Suspense>

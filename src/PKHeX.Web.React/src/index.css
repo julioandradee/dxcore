@@ -51,6 +51,9 @@ code {
     .desktop-sider {
         display: none !important;
     }
+    .mobile-header-sphere {
+        display: inline-block !important;
+    }
     .main-content-wrapper {
         padding-bottom: 76px !important;
     }
@@ -64,6 +67,9 @@ code {
         display: none !important;
     }
     .mobile-bottom-nav {
+        display: none !important;
+    }
+    .mobile-header-sphere {
         display: none !important;
     }
 }

@@ -38,7 +38,6 @@ export function PkhemuCard({ generation, onClose }: { generation: number; onClos
   return (
     <Alert
       type="info"
-      showIcon
       closable={{ onClose: dismiss }}
       title="Edit and play in one app"
       description={

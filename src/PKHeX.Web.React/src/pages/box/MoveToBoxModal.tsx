@@ -194,13 +194,11 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
             {selectedStats.isCurrent ? (
               <Alert
                 type="info"
-                showIcon
                 title={t('box.allSelectedAlreadyInBox', 'Todos os Pokémon selecionados já estão nesta caixa.')}
               />
             ) : !selectedStats.canFit ? (
               <Alert
                 type="error"
-                showIcon
                 title={t('box.capacityExceededTitle', 'Capacidade da caixa excedida!')}
                 description={t(
                   'box.capacityExceededDesc',
@@ -213,7 +211,6 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
             ) : (
               <Alert
                 type="success"
-                showIcon
                 title={t('box.readyToMoveTitle', 'Pronto para transferir')}
                 description={t(
                   'box.readyToMoveDesc',
