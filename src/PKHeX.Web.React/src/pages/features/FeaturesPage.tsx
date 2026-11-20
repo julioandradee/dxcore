@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import {
+  AppstoreOutlined,
   ArrowLeftOutlined,
   BlockOutlined,
   BulbOutlined,
@@ -7,8 +8,12 @@ import {
   CloudDownloadOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
+  EyeOutlined,
+  FilterOutlined,
   GiftOutlined,
   HistoryOutlined,
+  MobileOutlined,
+  PlayCircleOutlined,
   SafetyCertificateOutlined,
   SearchOutlined,
   ShopOutlined,
@@ -42,7 +47,18 @@ export default function FeaturesPage() {
 
   const features: FeatureItem[] = useMemo(
     () => [
-      // 1. Novidades & Melhorias (Considerando o original)
+      // 1. Novidades & Melhorias Exclusivas do DXCore
+      {
+        id: 'captureAnimation',
+        category: 'new',
+        tagColor: 'blue',
+        icon: <PlayCircleOutlined style={{ fontSize: 20, color: '#38bdf8' }} />,
+        titleKey: 'features.item.captureAnimation.title',
+        descKey: 'features.item.captureAnimation.desc',
+        fallbackTitle: 'Animação de Captura na Abertura (Splash Screen)',
+        fallbackDesc:
+          'Abertura imersiva de 2 segundos com Pokébola oscilando com LED pulsante, clique com estrelas e revelação da marca DXCore.',
+      },
       {
         id: 'moveBox',
         category: 'new',
@@ -53,6 +69,28 @@ export default function FeaturesPage() {
         fallbackTitle: 'Mover Pokémon entre Caixas',
         fallbackDesc:
           'Transferência em lote para qualquer caixa do PC com cálculo de vagas em tempo real e proteção contra corrupção do save.',
+      },
+      {
+        id: 'boxFilters',
+        category: 'new',
+        tagColor: 'cyan',
+        icon: <FilterOutlined style={{ fontSize: 20, color: '#13c2c2' }} />,
+        titleKey: 'features.item.boxFilters.title',
+        descKey: 'features.item.boxFilters.desc',
+        fallbackTitle: 'Filtros Avançados por Tipos e Shiny',
+        fallbackDesc:
+          'Menu agrupado com filtros rápidos por Tipo Elemental, Classificação Shiny/Normal, Caixa específica e faixas de nível.',
+      },
+      {
+        id: 'galleryView',
+        category: 'new',
+        tagColor: 'purple',
+        icon: <AppstoreOutlined style={{ fontSize: 20, color: '#722ed1' }} />,
+        titleKey: 'features.item.galleryView.title',
+        descKey: 'features.item.galleryView.desc',
+        fallbackTitle: 'Visualização em Galeria de Cards',
+        fallbackDesc:
+          'Alternância com 1 clique entre modo de galeria em grade visual com sprites animados e tabela analítica detalhada.',
       },
       {
         id: 'visualIndicators',
@@ -75,6 +113,28 @@ export default function FeaturesPage() {
         fallbackTitle: 'Badges de Tipos e Cores por Nível',
         fallbackDesc:
           'Insígnias de tipo com cores autênticas dos jogos oficiais e destaque visual colorido para níveis 50 e 100 na lista.',
+      },
+      {
+        id: 'mobileNav',
+        category: 'new',
+        tagColor: 'magenta',
+        icon: <MobileOutlined style={{ fontSize: 20, color: '#eb2f96' }} />,
+        titleKey: 'features.item.mobileNav.title',
+        descKey: 'features.item.mobileNav.desc',
+        fallbackTitle: 'Navegação Mobile Estilo Aplicativo',
+        fallbackDesc:
+          'Barra inferior de 4 abas com fade dinâmico ao rolar e cabeçalho fixo inteligente que reaparece instantaneamente ao subir a tela.',
+      },
+      {
+        id: 'showcaseColumns',
+        category: 'new',
+        tagColor: 'geekblue',
+        icon: <EyeOutlined style={{ fontSize: 20, color: '#2f54eb' }} />,
+        titleKey: 'features.item.showcaseColumns.title',
+        descKey: 'features.item.showcaseColumns.desc',
+        fallbackTitle: 'Layout em Colunas Otimizado (40/60 e 30/70)',
+        fallbackDesc:
+          'Distribuição proporcional responsiva no editor com card de arte oficial HD e formulário de abas lado a lado.',
       },
       {
         id: 'inventorySearch',
@@ -107,18 +167,18 @@ export default function FeaturesPage() {
         descKey: 'features.item.hybridBackup.desc',
         fallbackTitle: 'Sistema Híbrido de Backups',
         fallbackDesc:
-          'Pontos de restauração manuais ou automáticos com suporte a IndexedDB para salvar até 30 versões com total segurança.',
+          'Pontos de restauração manuais ou automáticos com visualização em cards interativos para salvar até 30 versões com total segurança.',
       },
       {
         id: 'headerTrainer',
         category: 'new',
-        tagColor: 'magenta',
-        icon: <UserOutlined style={{ fontSize: 20, color: '#eb2f96' }} />,
+        tagColor: 'cyan',
+        icon: <UserOutlined style={{ fontSize: 20, color: '#38bdf8' }} />,
         titleKey: 'features.item.headerTrainer.title',
         descKey: 'features.item.headerTrainer.desc',
         fallbackTitle: 'Identificação em Tempo Real no Cabeçalho',
         fallbackDesc:
-          'Exibição dinâmica do título do jogo ativo e do nome do Treinador Original (OT) no cabeçalho da aplicação.',
+          'Exibição do título do jogo ativo com a esfera luminosa DXCore e o badge azul do Treinador Original (OT).',
       },
       {
         id: 'adFree',
@@ -278,63 +338,66 @@ export default function FeaturesPage() {
   const coreCount = features.filter((f) => f.category === 'core').length
 
   return (
-    <Flex vertical gap={20} style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+    <Flex vertical gap={16} style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
       {/* Cabeçalho */}
-      <Card>
-        <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
-          <Flex vertical gap={4}>
+      <Card styles={{ body: { padding: '16px 20px' } }}>
+        <Flex vertical gap={16}>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
             <Flex align="center" gap={10}>
               <Button
                 icon={<ArrowLeftOutlined />}
                 onClick={() => navigate(routes.settings)}
                 aria-label={t('features.backToSettings', 'Voltar para Configurações')}
               />
-              <Typography.Title level={3} style={{ margin: 0 }}>
+              <Typography.Title level={4} style={{ margin: 0 }}>
                 {t('features.headerTitle', 'Catálogo de Recursos do DXCore')}
               </Typography.Title>
             </Flex>
-            <Typography.Text type="secondary" style={{ marginLeft: 42 }}>
-              {t(
-                'features.headerSubtitle',
-                'Visão geral das melhorias adicionadas e de todas as funções principais do editor.',
-              )}
-            </Typography.Text>
+
+            <Input
+              prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+              placeholder={t('features.searchPlaceholder', 'Filtrar funções...')}
+              allowClear
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '100%', maxWidth: 280 }}
+            />
           </Flex>
 
-          <Input
-            prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
-            placeholder={t('features.searchPlaceholder', 'Filtrar funções...')}
-            allowClear
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: 260 }}
-          />
-        </Flex>
-
-        <Flex style={{ marginTop: 20 }} wrap="wrap" gap={12} justify="space-between" align="center">
-          <Segmented
-            value={activeTab}
-            onChange={(val) => setActiveTab(val as 'all' | 'new' | 'core')}
-            options={[
-              {
-                label: `${t('features.tabAll', 'Todas as Funções')} (${features.length})`,
-                value: 'all',
-              },
-              {
-                label: `✨ ${t('features.tabNew', 'Novidades e Melhorias')} (${newCount})`,
-                value: 'new',
-              },
-              {
-                label: `⚙️ ${t('features.tabCore', 'Funções Principais')} (${coreCount})`,
-                value: 'core',
-              },
-            ]}
-          />
-
-          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            {filteredFeatures.length} / {features.length}{' '}
-            {t('features.countSuffix', 'funções')}
+          <Typography.Text type="secondary" style={{ fontSize: 13, lineHeight: 1.4 }}>
+            {t(
+              'features.headerSubtitle',
+              'Visão geral das melhorias adicionadas e de todas as funções principais do editor.',
+            )}
           </Typography.Text>
+
+          <Flex wrap="wrap" gap={12} justify="space-between" align="center">
+            <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+              <Segmented
+                value={activeTab}
+                onChange={(val) => setActiveTab(val as 'all' | 'new' | 'core')}
+                options={[
+                  {
+                    label: `${t('features.tabAll', 'Todas')} (${features.length})`,
+                    value: 'all',
+                  },
+                  {
+                    label: `✨ ${t('features.tabNew', 'Novidades')} (${newCount})`,
+                    value: 'new',
+                  },
+                  {
+                    label: `⚙️ ${t('features.tabCore', 'Sistema')} (${coreCount})`,
+                    value: 'core',
+                  },
+                ]}
+              />
+            </div>
+
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {filteredFeatures.length} / {features.length}{' '}
+              {t('features.countSuffix', 'funções')}
+            </Typography.Text>
+          </Flex>
         </Flex>
       </Card>
 
@@ -344,7 +407,7 @@ export default function FeaturesPage() {
           <Empty description={t('features.noResults', 'Nenhuma função encontrada com esse filtro.')} />
         </Card>
       ) : (
-        <Row gutter={[16, 16]}>
+        <Row gutter={[12, 12]}>
           {filteredFeatures.map((item) => {
             const isNew = item.category === 'new'
             const badgeLabel = isNew
@@ -361,23 +424,36 @@ export default function FeaturesPage() {
                     height: '100%',
                     borderLeft: isNew ? '4px solid #52c41a' : '4px solid #1677ff',
                   }}
-                  styles={{ body: { padding: '16px 20px' } }}
+                  styles={{ body: { padding: '14px 16px' } }}
                 >
-                  <Flex vertical gap={8}>
-                    <Flex justify="space-between" align="center">
-                      <Flex align="center" gap={10}>
-                        {item.icon}
-                        <Typography.Text strong style={{ fontSize: 16 }}>
-                          {title}
-                        </Typography.Text>
-                      </Flex>
-                      <Tag color={item.tagColor} style={{ margin: 0, fontWeight: 500 }}>
+                  <Flex vertical gap={6}>
+                    {/* Badge posicionado ACIMA do título */}
+                    <div>
+                      <Tag
+                        color={item.tagColor}
+                        style={{
+                          margin: 0,
+                          fontWeight: 600,
+                          fontSize: 11,
+                          borderRadius: 3,
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.5,
+                        }}
+                      >
                         {badgeLabel}
                       </Tag>
+                    </div>
+
+                    <Flex align="center" gap={8} style={{ marginTop: 2 }}>
+                      {item.icon}
+                      <Typography.Text strong style={{ fontSize: 15 }}>
+                        {title}
+                      </Typography.Text>
                     </Flex>
+
                     <Typography.Paragraph
                       type="secondary"
-                      style={{ margin: 0, fontSize: 13, lineHeight: '1.5' }}
+                      style={{ margin: 0, fontSize: 12.5, lineHeight: '1.5' }}
                     >
                       {desc}
                     </Typography.Paragraph>
@@ -391,3 +467,4 @@ export default function FeaturesPage() {
     </Flex>
   )
 }
+

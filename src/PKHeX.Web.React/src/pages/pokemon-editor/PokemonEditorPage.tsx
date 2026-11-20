@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Alert, Button, Flex, Result, Spin, Typography } from 'antd'
+import { Alert, Result, Spin, Typography } from 'antd'
 import { useBox, useEngine, useParty } from '@pkhex-everywhere/react'
 import { useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
@@ -39,9 +38,6 @@ export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps
 
   const isParty = source === 'party' || saved?.at?.source === 'party'
   const parentRoute = isParty ? routes.party : routes.box
-  const parentLabel = isParty
-    ? t('editor.returnToParty', 'Voltar para a Party')
-    : t('editor.returnToBox', 'Voltar para as Boxes')
 
   const handleReturnToParent = () => {
     navigate(parentRoute)
@@ -77,19 +73,9 @@ export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps
       onClose={() => setSaveSuccess(false)}
       style={{ borderRadius: 8 }}
       message={
-        <Flex justify="space-between" align="center" wrap="wrap" gap={8} style={{ width: '100%' }}>
-          <Typography.Text strong style={{ fontSize: 14 }}>
-            {t('editor.saveSuccess', 'Alterações salvas com sucesso!')}
-          </Typography.Text>
-          <Button
-            type="primary"
-            size="small"
-            icon={<ArrowLeftOutlined />}
-            onClick={handleReturnToParent}
-          >
-            {parentLabel}
-          </Button>
-        </Flex>
+        <Typography.Text strong style={{ fontSize: 14 }}>
+          {t('editor.saveSuccess', 'Alterações salvas com sucesso!')}
+        </Typography.Text>
       }
       description={
         <Typography.Text type="secondary" style={{ fontSize: 13 }}>

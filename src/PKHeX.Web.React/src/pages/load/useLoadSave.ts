@@ -53,7 +53,8 @@ export function useLoadSave() {
 
   const openDemo = useCallback(async () => {
     try {
-      const response = await fetch('/data/emerald.sav')
+      const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
+      const response = await fetch(`${base}data/emerald.sav`)
       if (!response.ok) throw new Error(`The demo save returned ${response.status}.`)
       await engine.game.load(await response.blob(), 'emerald.sav')
     } catch (error) {

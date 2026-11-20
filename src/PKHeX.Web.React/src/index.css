@@ -177,4 +177,31 @@ code {
     }
 }
 
+/* ==========================================================================
+   Unificação de Altura dos Inputs e Controles do Sistema (38px padrão)
+   ========================================================================== */
+.ant-input:not(textarea),
+.ant-input-affix-wrapper,
+.ant-select-single:not(.ant-select-customize-input) .ant-select-selector,
+.ant-input-number,
+.ant-picker {
+    height: 38px !important;
+    min-height: 38px !important;
+}
+
+.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ant-input-affix-wrapper input.ant-input {
+    height: 100% !important;
+    min-height: auto !important;
+}
+
+.ant-input-number-input {
+    height: 36px !important;
+}
+
+
 

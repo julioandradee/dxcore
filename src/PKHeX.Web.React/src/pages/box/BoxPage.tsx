@@ -45,6 +45,7 @@ import { ImportedPokemonModal } from './ImportedPokemonModal'
 import { MoveToBoxModal } from './MoveToBoxModal'
 import { TransferModal } from './TransferModal'
 import { useLoadPokemonFile } from './useLoadPokemonFile'
+import { typeData } from '../../components/TypeBadge'
 
 export default function BoxPage() {
   const { box } = useBox()
@@ -70,12 +71,14 @@ export default function BoxPage() {
   const [boxFilter, setBoxFilter] = useState<string>('all')
   const [levelFilter, setLevelFilter] = useState<string>('all')
   const [shinyFilter, setShinyFilter] = useState<'all' | 'shiny' | 'normal'>('all')
+  const [typeFilter, setTypeFilter] = useState<string>('all')
   const [batchBusy, setBatchBusy] = useState(false)
 
   const activeFiltersCount =
     (boxFilter !== 'all' ? 1 : 0) +
     (levelFilter !== 'all' ? 1 : 0) +
-    (shinyFilter !== 'all' ? 1 : 0)
+    (shinyFilter !== 'all' ? 1 : 0) +
+    (typeFilter !== 'all' ? 1 : 0)
 
   const handleBatchClone = async () => {
     setBatchBusy(true)
@@ -139,6 +142,31 @@ export default function BoxPage() {
     [t],
   )
 
+  const typeOptions = useMemo(
+    () => [
+      { value: 'all', label: t('box.allTypes', 'Todos os Tipos') },
+      ...Object.entries(typeData).map(([id, data]) => ({
+        value: id,
+        label: (
+          <Flex align="center" gap={8}>
+            <span
+              style={{
+                display: 'inline-block',
+                width: 9,
+                height: 9,
+                borderRadius: '50%',
+                backgroundColor: data.color,
+                flexShrink: 0,
+              }}
+            />
+            <span>{t(`types.${data.name.toLowerCase()}`, data.name)}</span>
+          </Flex>
+        ),
+      })),
+    ],
+    [t],
+  )
+
   const filteredBox = useMemo(() => {
     return box.filter((pokemon) => {
       // 1. Text search (species / nickname / pokedex #)
@@ -176,9 +204,15 @@ export default function BoxPage() {
       if (shinyFilter === 'shiny' && !pokemon.isShiny) return false
       if (shinyFilter === 'normal' && pokemon.isShiny) return false
 
+      // 5. Type elemental filter
+      if (typeFilter !== 'all') {
+        const targetType = Number(typeFilter)
+        if (!pokemon.types || !pokemon.types.includes(targetType)) return false
+      }
+
       return true
     })
-  }, [box, search, boxFilter, levelFilter, shinyFilter])
+  }, [box, search, boxFilter, levelFilter, shinyFilter, typeFilter])
 
   const openSelectedInCalculator = useCallback(async () => {
     const showdown = selected.length
@@ -370,6 +404,7 @@ export default function BoxPage() {
                   setBoxFilter('all')
                   setLevelFilter('all')
                   setShinyFilter('all')
+                  setTypeFilter('all')
                 }}
                 style={{ margin: 0, borderRadius: 4 }}
               >
@@ -411,6 +446,7 @@ export default function BoxPage() {
                         setBoxFilter('all')
                         setLevelFilter('all')
                         setShinyFilter('all')
+                        setTypeFilter('all')
                       }}
                       style={{ padding: 0, height: 'auto', fontSize: 12 }}
                     >
@@ -453,6 +489,18 @@ export default function BoxPage() {
                       value={shinyFilter}
                       onChange={setShinyFilter}
                       options={shinyOptions}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: 12, color: '#8c8c8c', marginBottom: 4 }}>
+                      {t('box.filterType', 'Tipo Elemental')}
+                    </div>
+                    <Select
+                      value={typeFilter}
+                      onChange={setTypeFilter}
+                      options={typeOptions}
                       style={{ width: '100%' }}
                     />
                   </div>

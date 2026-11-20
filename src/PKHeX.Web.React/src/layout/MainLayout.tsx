@@ -208,12 +208,16 @@ export function MainLayout() {
     },
   ]
 
-  const mobileNavItems = [
-    { key: 'home', route: routes.home, icon: <HomeOutlined />, label: t('menu.home', 'Início') },
-    { key: 'party', route: routes.party, icon: <TeamOutlined />, label: t('menu.party', 'Equipe') },
-    { key: 'box', route: routes.box, icon: <InboxOutlined />, label: t('menu.box', 'Caixas') },
-    { key: 'items', route: routes.items, icon: <ShopOutlined />, label: t('menu.items', 'Itens') },
-  ]
+  const mobileNavItems = game
+    ? [
+        { key: 'home', route: routes.home, icon: <HomeOutlined />, label: t('menu.home', 'Início') },
+        { key: 'party', route: routes.party, icon: <TeamOutlined />, label: t('menu.party', 'Equipe') },
+        { key: 'box', route: routes.box, icon: <InboxOutlined />, label: t('menu.box', 'Caixas') },
+        { key: 'items', route: routes.items, icon: <ShopOutlined />, label: t('menu.items', 'Itens') },
+      ]
+    : [
+        { key: 'save', route: routes.save, icon: <SaveOutlined />, label: t('menu.save', 'Salvar / Carregar') },
+      ]
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

@@ -18,8 +18,8 @@ const save = (hasEvents: boolean, capabilities = allCapabilities): SaveSummary =
 const labels = (entries: ReturnType<typeof menuEntries>) => entries.map((entry) => entry.label)
 
 describe('menuEntries', () => {
-  it('shows only Home and Save without a save', () => {
-    expect(labels(menuEntries(null))).toEqual(['Home', 'Save'])
+  it('shows only Save without a save', () => {
+    expect(labels(menuEntries(null))).toEqual(['Save'])
   })
 
   it('shows Party, Pokemon Box and Items with a save', () => {

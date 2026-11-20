@@ -163,13 +163,13 @@ export function DraftEditor({ actions, notice, onBack }: DraftEditorProps) {
         />
         {notice}
         <Row gutter={[20, 20]} align="stretch">
-          {/* Coluna Esquerda (~40% no desktop): Card de Destaque Visual */}
-          <Col xs={24} lg={10} xl={9}>
+          {/* Coluna Esquerda: 40% em lg, 30% em telas maiores (xl) */}
+          <Col xs={24} lg={10} xl={7}>
             <PokemonShowcaseCard pokemon={pokemon} />
           </Col>
 
-          {/* Coluna Direita (~60% no desktop): Formulário de Abas e Informações */}
-          <Col xs={24} lg={14} xl={15}>
+          {/* Coluna Direita: 60% em lg, 70% em telas maiores (xl) */}
+          <Col xs={24} lg={14} xl={17}>
             <Flex vertical gap={16} style={{ height: '100%', justifyContent: 'space-between' }}>
               <Flex vertical gap={16}>
                 {details.legality && <LegalityBanner legality={details.legality} />}

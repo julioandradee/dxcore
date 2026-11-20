@@ -69,14 +69,7 @@ export default function PrivacyPolicyPage() {
         are effective when they are posted on this page.
       </p>
 
-      <h2>7. Plugins</h2>
-      <p>
-        The app supports the installation of plugins. It is advisable to use plugins from the "Default Source" for
-        security and compatibility reasons. We are not responsible for any third-party plugin use of the data or any
-        issues arising from the use of such plugins.
-      </p>
-
-      <h2>8. Cookies, Advertising, and Third-Party Services</h2>
+      <h2>7. Cookies, Advertising, and Third-Party Services</h2>
       <p>
         Our application uses cookies and similar technologies to enhance your experience, understand usage patterns, and
         serve advertisements. If you are in the European Economic Area, the United Kingdom or Switzerland, we ask for
@@ -165,7 +158,7 @@ export default function PrivacyPolicyPage() {
         <Button onClick={showCookiePreferences}>Cookie preferences</Button>
       </Flex>
 
-      <h2>9. Contact Us</h2>
+      <h2>8. Contact Us</h2>
       <p>
         If you have any questions about this Privacy Policy, please open an issue on{' '}
         <a href={gitHubRepositoryIssues} target="_blank">GitHub</a>.

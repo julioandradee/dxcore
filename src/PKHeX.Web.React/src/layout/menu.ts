@@ -18,9 +18,9 @@ export function menuEntries(
   t: TranslateFn = (_key, fallback) => fallback ?? _key,
 ): MenuEntry[] {
   return [
-    { route: routes.home, label: t('menu.home', 'Home'), icon: 'home' },
     ...(game
       ? [
+          { route: routes.home, label: t('menu.home', 'Home'), icon: 'home' as const },
           { route: routes.party, label: t('menu.party', 'Party'), icon: 'team' as const },
           { route: routes.box, label: t('menu.box', 'Pokemon Box'), icon: 'inbox' as const },
           { route: routes.items, label: t('menu.items', 'Items'), icon: 'shop' as const },

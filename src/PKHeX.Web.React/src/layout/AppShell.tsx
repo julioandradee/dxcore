@@ -148,7 +148,7 @@ function AppRoutes({ autoLoad }: { autoLoad: boolean }) {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route element={<LoadLayout />}>
-        <Route path="load" element={<LoadRoute autoLoad={autoLoad} />} />
+        <Route path="load" element={<LoadRoute autoLoad={false} />} />
       </Route>
     </Routes>
   )
@@ -235,6 +235,7 @@ export function AppShell({ autoLoad }: { autoLoad: boolean }) {
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
           fontFamily,
+          controlHeight: 38,
           colorPrimary: '#DC0A2D',
           colorPrimaryHover: '#E8304D',
           colorPrimaryActive: '#B80825',
