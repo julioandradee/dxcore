@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, type ReactNode } from 'react'
+import { Suspense, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { App, Button, ConfigProvider, Result, Spin, theme as antdTheme } from 'antd'
 import ptBR from 'antd/locale/pt_BR'
 import esES from 'antd/locale/es_ES'
@@ -26,6 +26,7 @@ import FeaturesPage from '../pages/features/FeaturesPage'
 import TermsOfUsePage from '../pages/static/TermsOfUsePage'
 import { routes } from '../routes'
 import { useTranslation } from '../i18n'
+import { CaptureAnimation } from '../components/CaptureAnimation'
 import { AutoLoadDemo } from './AutoLoadDemo'
 import { GameJourney } from './GameJourney'
 import { journey } from './journey'
@@ -175,7 +176,52 @@ function NotifyingEngineProvider({ children }: { children: ReactNode }) {
   )
 }
 
+function SplashScreen({ onFinish }: { onFinish: () => void }) {
+  const [fading, setFading] = useState(false)
+
+  const handleComplete = useCallback(() => {
+    setFading(true)
+    setTimeout(onFinish, 350)
+  }, [onFinish])
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 99999,
+        backgroundColor: '#000814',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: fading ? 0 : 1,
+        transition: 'opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        pointerEvents: fading ? 'none' : 'auto',
+        cursor: 'pointer',
+      }}
+      onClick={handleComplete}
+      title="Toque para pular"
+    >
+      <CaptureAnimation onComplete={handleComplete} />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 24,
+          fontSize: 12,
+          color: '#64748b',
+          letterSpacing: 1,
+          opacity: 0.7,
+        }}
+      >
+        Toque para pular
+      </div>
+    </div>
+  )
+}
+
 export function AppShell({ autoLoad }: { autoLoad: boolean }) {
+  const [showSplash, setShowSplash] = useState(true)
   const theme = useTheme()
   const language = useLanguage()
   const antdLocale = language === 'pt-BR' ? ptBR : language === 'es' ? esES : enUS
@@ -221,6 +267,7 @@ export function AppShell({ autoLoad }: { autoLoad: boolean }) {
     >
       <PageBackground />
       <App component={false}>
+        {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
         <NotifyingEngineProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <GameJourney />
