@@ -93,7 +93,7 @@ export function PokemonGrid({
         {displayedPokemon.map((p) => {
           const isSelected = selectedKeySet.has(rowKey(p))
           return (
-            <Col xs={24} sm={12} md={8} lg={6} xl={4} key={rowKey(p)}>
+            <Col xs={12} md={6} xl={4} key={rowKey(p)}>
               <PokemonGridCard
                 pokemon={p}
                 isSelected={isSelected}

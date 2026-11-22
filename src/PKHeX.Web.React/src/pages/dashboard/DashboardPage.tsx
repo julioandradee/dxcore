@@ -279,9 +279,9 @@ export default function DashboardPage() {
       />
 
       {/* Hero KPI Stats Grid */}
-      <Row gutter={[14, 14]}>
+      <Row gutter={[12, 12]}>
         {/* KPI 1: Pokédex Completion */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card
             size="small"
             style={{
@@ -294,41 +294,28 @@ export default function DashboardPage() {
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {t('dashboard.pokedexCompletion', 'Progresso da Pokédex')}
+                  {t('dashboard.kpiProgress', 'Progresso')}
                 </Typography.Text>
-                <CompassOutlined style={{ fontSize: '1.25rem', color: '#38bdf8' }} />
+                <CompassOutlined style={{ fontSize: 18, color: '#38bdf8' }} />
               </Flex>
-              <Flex align="baseline" gap={8}>
-                <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#38bdf8' }}>
-                  {pokedexPercent}%
-                </Typography.Title>
-                <Typography.Text type="secondary" style={{ fontSize: '0.85rem' }}>
-                  ({caughtSpeciesCount} / {totalSpecies})
-                </Typography.Text>
-              </Flex>
+              <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#38bdf8' }}>
+                {pokedexPercent}%
+              </Typography.Title>
               <Progress
                 percent={pokedexPercent}
                 showInfo={false}
                 strokeColor={{ '0%': '#38bdf8', '100%': '#10b981' }}
                 size="small"
               />
-              <Flex wrap="wrap" gap={6} style={{ marginTop: 2 }}>
-                <Tag color="green" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  {t('dashboard.caught', 'Registrados')}: {caughtSpeciesCount}
-                </Tag>
-                <Tag color="orange" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  {t('dashboard.seen', 'Vistos')}: {seenSpeciesCount}
-                </Tag>
-                <Tag color="default" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  {t('dashboard.missing', 'Em Falta')}: {missingSpeciesCount}
-                </Tag>
-              </Flex>
+              <Typography.Text type="secondary" style={{ fontSize: '0.78rem' }}>
+                {caughtSpeciesCount} / {totalSpecies}
+              </Typography.Text>
             </Flex>
           </Card>
         </Col>
 
         {/* KPI 2: Storage Occupancy */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card
             size="small"
             style={{
@@ -341,41 +328,28 @@ export default function DashboardPage() {
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {t('dashboard.storageCapacity', 'Capacidade das Caixas')}
+                  {t('dashboard.kpiBoxes', 'Caixas')}
                 </Typography.Text>
-                <InboxOutlined style={{ fontSize: '1.25rem', color: '#10b981' }} />
+                <InboxOutlined style={{ fontSize: 18, color: '#10b981' }} />
               </Flex>
-              <Flex align="baseline" gap={8}>
-                <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#10b981' }}>
-                  {occupancyPercent}%
-                </Typography.Title>
-                <Typography.Text type="secondary" style={{ fontSize: '0.85rem' }}>
-                  ({totalInCollection} / {totalCapacity})
-                </Typography.Text>
-              </Flex>
+              <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#10b981' }}>
+                {occupancyPercent}%
+              </Typography.Title>
               <Progress
                 percent={occupancyPercent}
                 showInfo={false}
                 strokeColor={{ '0%': '#10b981', '100%': '#f59e0b' }}
                 size="small"
               />
-              <Flex wrap="wrap" gap={6} style={{ marginTop: 2 }}>
-                <Tag color="gold" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  ✨ Shinies: {shinies.length}
-                </Tag>
-                <Tag color="blue" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  🏆 Nv. 100: {maxLevelList.length}
-                </Tag>
-                <Tag color="purple" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  👥 Equipe: {party.length}/6
-                </Tag>
-              </Flex>
+              <Typography.Text type="secondary" style={{ fontSize: '0.78rem' }}>
+                {totalInCollection} / {totalCapacity}
+              </Typography.Text>
             </Flex>
           </Card>
         </Col>
 
         {/* KPI 3: Gym Badges */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card
             size="small"
             style={{
@@ -388,9 +362,9 @@ export default function DashboardPage() {
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {t('dashboard.badges', 'Insígnias')}
+                  {t('dashboard.kpiBadges', 'Insígnias')}
                 </Typography.Text>
-                <TrophyOutlined style={{ fontSize: '1.25rem', color: '#f59e0b' }} />
+                <TrophyOutlined style={{ fontSize: 18, color: '#f59e0b' }} />
               </Flex>
               <Flex align="baseline" gap={8}>
                 <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#f59e0b' }}>
@@ -403,7 +377,7 @@ export default function DashboardPage() {
                 strokeColor="#f59e0b"
                 size="small"
               />
-              <Typography.Text style={{ fontSize: '0.78rem', color: '#8c8c8c' }}>
+              <Typography.Text style={{ fontSize: '0.78rem', color: '#8c8c8c', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {badgesEarnedCount === badgesTotalCount
                   ? t('dashboard.allBadgesEarned', 'Campeão da Liga Pokémon!')
                   : `${badgesTotalCount - badgesEarnedCount} insígnias restantes`}
@@ -413,7 +387,7 @@ export default function DashboardPage() {
         </Col>
 
         {/* KPI 4: Trainer Overview */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={12} sm={12} lg={6}>
           <Card
             size="small"
             style={{
@@ -426,28 +400,23 @@ export default function DashboardPage() {
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {t('dashboard.tabTrainer', 'Ficha & Insígnias')}
+                  {t('dashboard.kpiTrainer', 'Treinador')}
                 </Typography.Text>
-                <UserOutlined style={{ fontSize: '1.25rem', color: '#818cf8' }} />
+                <UserOutlined style={{ fontSize: 18, color: '#818cf8' }} />
               </Flex>
-              <Flex align="baseline" gap={8}>
-                <Typography.Title
-                  level={3}
-                  style={{
-                    margin: 0,
-                    fontWeight: 800,
-                    color: token.colorText,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {trainer?.name || 'Treinador'}
-                </Typography.Title>
-                <Tag color="geekblue" style={{ fontSize: '0.72rem', margin: 0 }}>
-                  ID: {trainer?.id}
-                </Tag>
-              </Flex>
+              <Typography.Title
+                level={3}
+                style={{
+                  margin: 0,
+                  fontWeight: 800,
+                  color: token.colorText,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {trainer?.name || t('dashboard.kpiTrainer', 'Treinador')}
+              </Typography.Title>
               <Flex wrap="wrap" gap={8} style={{ fontSize: '0.8rem', color: '#8c8c8c', marginTop: 4 }}>
                 {progress?.playTime && (
                   <Flex align="center" gap={4}>
@@ -522,7 +491,7 @@ export default function DashboardPage() {
                 }}
                 style={{ borderRadius: 20, fontWeight: 600 }}
               >
-                🎯 {t('dashboard.filterAllNeeded', 'Faltantes')} ({neededSpeciesCount})
+                🎯 {t('dashboard.filterAllNeeded', 'Faltam')} ({neededSpeciesCount})
               </Button>
               <Button
                 type={statusFilter === 'missing' ? 'primary' : 'default'}
@@ -554,233 +523,233 @@ export default function DashboardPage() {
               </Button>
             </Flex>
 
-          {/* Search & Select Controls */}
-          <Card
-            size="small"
-            style={{
-              borderRadius: 12,
-              border: `1px solid ${token.colorBorderSecondary}`,
-              background: token.colorBgContainer,
-            }}
-          >
-            <Row gutter={[12, 12]} align="middle">
-              <Col xs={24} md={10} lg={12}>
-                <Input
-                  prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
-                  placeholder={t('dashboard.searchPlaceholder', 'Filtrar por nome ou número (#001)...')}
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value)
-                    setPage(1)
-                  }}
-                  allowClear
-                  style={{ width: '100%', height: 38 }}
-                />
-              </Col>
-              <Col xs={12} md={7} lg={6}>
-                <Select
-                  value={selectedType ?? -1}
-                  onChange={(val) => {
-                    setSelectedType(val === -1 ? null : val)
-                    setPage(1)
-                  }}
-                  placeholder={t('dashboard.filterType', 'Tipo Elementar')}
-                  style={{ width: '100%', height: 38 }}
-                  options={[
-                    { label: t('dashboard.allTypes', 'Todos os Tipos'), value: -1 },
-                    ...Object.entries(typeData).map(([id, d]) => ({
-                      label: (
-                        <Flex align="center" gap={6}>
-                          <span
-                            style={{
-                              display: 'inline-block',
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              backgroundColor: d.color,
-                            }}
-                          />
-                          <span>{t(`types.${d.name.toLowerCase()}`, d.name)}</span>
-                        </Flex>
-                      ),
-                      value: Number(id),
-                    })),
-                  ]}
-                />
-              </Col>
-              <Col xs={12} md={7} lg={6}>
-                <Select
-                  value={sortBy}
-                  onChange={(val) => setSortBy(val)}
-                  style={{ width: '100%', height: 38 }}
-                  options={[
-                    { label: t('dashboard.sortNumberAsc', 'Número (Crescente)'), value: 'number-asc' },
-                    { label: t('dashboard.sortNumberDesc', 'Número (Decrescente)'), value: 'number-desc' },
-                    { label: t('dashboard.sortNameAsc', 'Nome (A - Z)'), value: 'name-asc' },
-                    { label: t('dashboard.sortNameDesc', 'Nome (Z - A)'), value: 'name-desc' },
-                  ]}
-                />
-              </Col>
-            </Row>
-          </Card>
-
-          {/* Species Results Counter */}
-          <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
-            <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-              {filteredSpecies.length} Pokémon para completar a Pokédex
-            </Typography.Text>
-            {filteredSpecies.length > PAGE_SIZE && (
-              <Pagination
-                current={page}
-                pageSize={PAGE_SIZE}
-                total={filteredSpecies.length}
-                onChange={(p) => setPage(p)}
-                size="small"
-                showSizeChanger={false}
-              />
-            )}
-          </Flex>
-
-          {/* Species Card Grid (Zero Tables, strictly capped 80px images!) */}
-          {filteredSpecies.length === 0 ? (
-            <Card style={{ textAlign: 'center', padding: '40px 20px', borderRadius: 12 }}>
-              <Typography.Title level={4} style={{ color: '#10b981', margin: '0 0 8px 0' }}>
-                🎉 Pokédex Completa!
-              </Typography.Title>
-              <Typography.Text type="secondary" style={{ fontSize: '0.95rem' }}>
-                {neededSpeciesCount === 0
-                  ? t('dashboard.pokedexCompleted', 'Parabéns! Todos os Pokémon disponíveis nesta versão do jogo já foram capturados ou registrados!')
-                  : t('dashboard.noPokemonFound', 'Nenhum Pokémon encontrado com os filtros selecionados.')}
-              </Typography.Text>
+            {/* Search & Select Controls */}
+            <Card
+              size="small"
+              style={{
+                borderRadius: 12,
+                border: `1px solid ${token.colorBorderSecondary}`,
+                background: token.colorBgContainer,
+              }}
+            >
+              <Row gutter={[12, 12]} align="middle">
+                <Col xs={24} md={10} lg={12}>
+                  <Input
+                    prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+                    placeholder={t('dashboard.searchPlaceholder', 'Filtrar por nome ou número (#001)...')}
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value)
+                      setPage(1)
+                    }}
+                    allowClear
+                    style={{ width: '100%', height: 38 }}
+                  />
+                </Col>
+                <Col xs={12} md={7} lg={6}>
+                  <Select
+                    value={selectedType ?? -1}
+                    onChange={(val) => {
+                      setSelectedType(val === -1 ? null : val)
+                      setPage(1)
+                    }}
+                    placeholder={t('dashboard.filterType', 'Tipo Elementar')}
+                    style={{ width: '100%', height: 38 }}
+                    options={[
+                      { label: t('dashboard.allTypes', 'Todos os Tipos'), value: -1 },
+                      ...Object.entries(typeData).map(([id, d]) => ({
+                        label: (
+                          <Flex align="center" gap={6}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                backgroundColor: d.color,
+                              }}
+                            />
+                            <span>{t(`types.${d.name.toLowerCase()}`, d.name)}</span>
+                          </Flex>
+                        ),
+                        value: Number(id),
+                      })),
+                    ]}
+                  />
+                </Col>
+                <Col xs={12} md={7} lg={6}>
+                  <Select
+                    value={sortBy}
+                    onChange={(val) => setSortBy(val)}
+                    style={{ width: '100%', height: 38 }}
+                    options={[
+                      { label: t('dashboard.sortNumberAsc', 'Número (Crescente)'), value: 'number-asc' },
+                      { label: t('dashboard.sortNumberDesc', 'Número (Decrescente)'), value: 'number-desc' },
+                      { label: t('dashboard.sortNameAsc', 'Nome (A - Z)'), value: 'name-asc' },
+                      { label: t('dashboard.sortNameDesc', 'Nome (Z - A)'), value: 'name-desc' },
+                    ]}
+                  />
+                </Col>
+              </Row>
             </Card>
-          ) : (
-            <Row gutter={[16, 16]}>
-              {paginatedSpecies.map((species) => {
-                const dexNumber = `#${String(species.id).padStart(4, '0')}`
-                const artUrl = pokemonOfficialArtworkUrl(species.id, false)
-                const statusIcon = species.seen ? (
-                  <Tooltip title={t('dashboard.statusSeen', 'Apenas Visto')} trigger={['hover', 'click']}>
-                    <span
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ display: 'inline-flex', alignItems: 'center', cursor: 'help' }}
-                      role="img"
-                      aria-label={t('dashboard.statusSeen', 'Apenas Visto')}
-                    >
-                      <EyeFilled style={{ color: '#f59e0b', fontSize: 14 }} />
-                    </span>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={t('dashboard.statusMissing', 'Não capturado')} trigger={['hover', 'click']}>
-                    <span
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ display: 'inline-flex', alignItems: 'center', cursor: 'help' }}
-                      role="img"
-                      aria-label={t('dashboard.statusMissing', 'Não capturado')}
-                    >
-                      <CloseCircleOutlined style={{ color: '#8c8c8c', fontSize: 14 }} />
-                    </span>
-                  </Tooltip>
-                )
 
-                return (
-                  <Col key={species.id} xs={24} sm={12} md={8} lg={6} xl={4}>
-                    <Card
-                      size="small"
-                      hoverable
-                      onClick={() => setCatchModalSpecies(species)}
-                      style={{
-                        height: '100%',
-                        borderRadius: 10,
-                        position: 'relative',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease-in-out',
-                      }}
-                      styles={{
-                        body: {
-                          padding: '10px 8px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: 6,
-                          height: '100%',
-                          justifyContent: 'space-between',
-                        },
-                      }}
-                    >
-                      {/* Topo do Card: Ícone de Status + Número da Pokédex (ordem padrão das outras páginas) */}
-                      <Flex justify="space-between" align="center" style={{ width: '100%' }}>
-                        <Flex align="center" gap={6}>
-                          {statusIcon}
-                          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
-                            {dexNumber}
-                          </span>
-                        </Flex>
-                        <span />
-                      </Flex>
+            {/* Species Results Counter */}
+            <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
+              <Typography.Text type="secondary" style={{ fontSize: '0.65rem', fontWeight: 600 }}>
+                {filteredSpecies.length} Pokémon para completar a Pokédex
+              </Typography.Text>
+              {filteredSpecies.length > PAGE_SIZE && (
+                <Pagination
+                  current={page}
+                  pageSize={PAGE_SIZE}
+                  total={filteredSpecies.length}
+                  onChange={(p) => setPage(p)}
+                  size="small"
+                  showSizeChanger={false}
+                />
+              )}
+            </Flex>
 
-                      {/* Imagem do Pokémon (80x80px padrão das caixas) */}
-                      <div
+            {/* Species Card Grid (Zero Tables, strictly capped 80px images!) */}
+            {filteredSpecies.length === 0 ? (
+              <Card style={{ textAlign: 'center', padding: '40px 20px', borderRadius: 12 }}>
+                <Typography.Title level={4} style={{ color: '#10b981', margin: '0 0 8px 0' }}>
+                  🎉 Pokédex Completa!
+                </Typography.Title>
+                <Typography.Text type="secondary" style={{ fontSize: '0.95rem' }}>
+                  {neededSpeciesCount === 0
+                    ? t('dashboard.pokedexCompleted', 'Parabéns! Todos os Pokémon disponíveis nesta versão do jogo já foram capturados ou registrados!')
+                    : t('dashboard.noPokemonFound', 'Nenhum Pokémon encontrado com os filtros selecionados.')}
+                </Typography.Text>
+              </Card>
+            ) : (
+              <Row gutter={[16, 16]}>
+                {paginatedSpecies.map((species) => {
+                  const dexNumber = `#${String(species.id).padStart(4, '0')}`
+                  const artUrl = pokemonOfficialArtworkUrl(species.id, false)
+                  const statusIcon = species.seen ? (
+                    <Tooltip title={t('dashboard.statusSeen', 'Apenas Visto')} trigger={['hover', 'click']}>
+                      <span
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ display: 'inline-flex', alignItems: 'center', cursor: 'help' }}
+                        role="img"
+                        aria-label={t('dashboard.statusSeen', 'Apenas Visto')}
+                      >
+                        <EyeFilled style={{ color: '#f59e0b', fontSize: 14 }} />
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title={t('dashboard.statusMissing', 'Não capturado')} trigger={['hover', 'click']}>
+                      <span
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ display: 'inline-flex', alignItems: 'center', cursor: 'help' }}
+                        role="img"
+                        aria-label={t('dashboard.statusMissing', 'Não capturado')}
+                      >
+                        <CloseCircleOutlined style={{ color: '#8c8c8c', fontSize: 14 }} />
+                      </span>
+                    </Tooltip>
+                  )
+
+                  return (
+                    <Col key={species.id} xs={12} md={6} xl={4}>
+                      <Card
+                        size="small"
+                        hoverable
+                        onClick={() => setCatchModalSpecies(species)}
                         style={{
-                          width: '100%',
-                          height: 80,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: 2,
+                          height: '100%',
+                          borderRadius: 10,
                           position: 'relative',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease-in-out',
+                        }}
+                        styles={{
+                          body: {
+                            padding: '10px 8px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 6,
+                            height: '100%',
+                            justifyContent: 'space-between',
+                          },
                         }}
                       >
-                        <img
-                          src={artUrl ?? undefined}
-                          alt={species.name}
-                          style={{
-                            width: 80,
-                            height: 80,
-                            maxHeight: 80,
-                            maxWidth: 80,
-                            objectFit: 'contain',
-                            filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
-                            transition: 'transform 0.15s ease',
-                          }}
-                        />
-                      </div>
-
-                      {/* Nome da Espécie */}
-                      <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
-                        <Flex align="center" justify="center" gap={6} wrap="wrap">
-                          <Typography.Text strong style={{ fontSize: 14 }}>
-                            {species.name}
-                          </Typography.Text>
+                        {/* Topo do Card: Ícone de Status + Número da Pokédex (ordem padrão das outras páginas) */}
+                        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+                          <Flex align="center" gap={6}>
+                            {statusIcon}
+                            <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
+                              {dexNumber}
+                            </span>
+                          </Flex>
+                          <span />
                         </Flex>
-                      </Flex>
 
-                      {/* Badges de Tipos */}
-                      <Space size={4} wrap style={{ justifyContent: 'center' }}>
-                        {species.types.map((tid) => (
-                          <TypeBadge key={tid} typeId={tid} size="small" />
-                        ))}
-                      </Space>
-                    </Card>
-                  </Col>
-                )
-              })}
-            </Row>
-          )}
+                        {/* Imagem do Pokémon (80x80px padrão das caixas) */}
+                        <div
+                          style={{
+                            width: '100%',
+                            height: 80,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: 2,
+                            position: 'relative',
+                          }}
+                        >
+                          <img
+                            src={artUrl ?? undefined}
+                            alt={species.name}
+                            style={{
+                              width: 80,
+                              height: 80,
+                              maxHeight: 80,
+                              maxWidth: 80,
+                              objectFit: 'contain',
+                              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
+                              transition: 'transform 0.15s ease',
+                            }}
+                          />
+                        </div>
 
-          {/* Bottom Pagination */}
-          {filteredSpecies.length > PAGE_SIZE && (
-            <Flex justify="center" style={{ marginTop: 16 }}>
-              <Pagination
-                current={page}
-                pageSize={PAGE_SIZE}
-                total={filteredSpecies.length}
-                onChange={(p) => setPage(p)}
-                showSizeChanger={false}
-              />
-            </Flex>
-          )}
-        </Flex>
-      </div>
+                        {/* Nome da Espécie */}
+                        <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
+                          <Flex align="center" justify="center" gap={6} wrap="wrap">
+                            <Typography.Text strong style={{ fontSize: 14 }}>
+                              {species.name}
+                            </Typography.Text>
+                          </Flex>
+                        </Flex>
+
+                        {/* Badges de Tipos */}
+                        <Space size={4} wrap style={{ justifyContent: 'center' }}>
+                          {species.types.map((tid) => (
+                            <TypeBadge key={tid} typeId={tid} size="small" />
+                          ))}
+                        </Space>
+                      </Card>
+                    </Col>
+                  )
+                })}
+              </Row>
+            )}
+
+            {/* Bottom Pagination */}
+            {filteredSpecies.length > PAGE_SIZE && (
+              <Flex justify="center" style={{ marginTop: 16 }}>
+                <Pagination
+                  current={page}
+                  pageSize={PAGE_SIZE}
+                  total={filteredSpecies.length}
+                  onChange={(p) => setPage(p)}
+                  showSizeChanger={false}
+                />
+              </Flex>
+            )}
+          </Flex>
+        </div>
       )}
 
       {/* TAB 2: COLLECTION ANALYTICS */}
@@ -796,138 +765,68 @@ export default function DashboardPage() {
           }}
         >
           <Flex vertical gap={20} style={{ width: '100%' }}>
-          {/* Type Distribution Breakdown */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <FireOutlined style={{ color: '#f59e0b' }} />
-                <span>{t('dashboard.typeBreakdown', 'Distribuição por Tipos Elementares na Coleção')}</span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            <Row gutter={[16, 12]}>
-              {typeDistribution.map(({ typeId, count, percent }) => {
-                const info = typeData[typeId]
-                if (!info) return null
-                return (
-                  <Col key={typeId} xs={24} sm={12} md={8} lg={6}>
-                    <Card
-                      size="small"
-                      style={{
-                        borderRadius: 8,
-                        background: token.colorBgContainer,
-                        border: `1px solid ${token.colorBorderSecondary}`,
-                      }}
-                    >
-                      <Flex vertical gap={6}>
-                        <Flex justify="space-between" align="center">
-                          <TypeBadge typeId={typeId} size="middle" />
-                          <Typography.Text strong style={{ fontSize: '0.85rem' }}>
-                            {count} ({percent}%)
-                          </Typography.Text>
-                        </Flex>
-                        <Progress
-                          percent={percent}
-                          showInfo={false}
-                          strokeColor={info.color}
-                          size="small"
-                        />
-                      </Flex>
-                    </Card>
-                  </Col>
-                )
-              })}
-            </Row>
-          </Card>
-
-          {/* Current Party Showcase */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <TeamOutlined style={{ color: '#38bdf8' }} />
-                <span>
-                  {t('dashboard.partyShowcase', 'Equipe Atual')} ({party.length} / 6)
-                </span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            <Row gutter={[12, 12]}>
-              {party.map((p, idx) => (
-                <Col key={idx} xs={24} sm={12} md={8} lg={4}>
-                  <Card
-                    size="small"
-                    hoverable
-                    onClick={() => navigate(routes.pokemon(p))}
-                    style={{
-                      borderRadius: 10,
-                      textAlign: 'center',
-                      background: token.colorBgContainer,
-                      border: `1px solid ${token.colorBorderSecondary}`,
-                    }}
-                  >
-                    <Flex vertical align="center" gap={4}>
-                      <Badge count={p.isShiny ? '✨' : 0} color="gold">
-                        <div
-                          className="dashboard-pokemon-thumb"
-                          style={{
-                            width: 64,
-                            height: 64,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          <SpeciesImage
-                            name={p.species}
-                            src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
-                            placeholderSize={44}
+            {/* Type Distribution Breakdown */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <FireOutlined style={{ color: '#f59e0b' }} />
+                  <span>{t('dashboard.typeBreakdown', 'Distribuição por Tipagem na Coleção')}</span>
+                </Flex>
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
+              <Row gutter={[16, 12]}>
+                {typeDistribution.map(({ typeId, count, percent }) => {
+                  const info = typeData[typeId]
+                  if (!info) return null
+                  return (
+                    <Col key={typeId} xs={24} sm={12} md={8} lg={6}>
+                      <Card
+                        size="small"
+                        style={{
+                          borderRadius: 8,
+                          background: token.colorBgContainer,
+                          border: `1px solid ${token.colorBorderSecondary}`,
+                        }}
+                      >
+                        <Flex vertical gap={6}>
+                          <Flex justify="space-between" align="center">
+                            <TypeBadge typeId={typeId} size="middle" />
+                            <Typography.Text strong style={{ fontSize: '0.65rem' }}>
+                              {count} ({percent}%)
+                            </Typography.Text>
+                          </Flex>
+                          <Progress
+                            percent={percent}
+                            showInfo={false}
+                            strokeColor={info.color}
+                            size="small"
                           />
-                        </div>
-                      </Badge>
-                      <Typography.Text strong style={{ fontSize: '0.85rem', marginTop: 4 }}>
-                        {p.nickname || p.species}
-                      </Typography.Text>
-                      <Tag color="blue" style={{ fontSize: '0.72rem', margin: 0 }}>
-                        Nv. {p.level}
-                      </Tag>
-                      <Flex wrap="wrap" justify="center" gap={2}>
-                        {p.types.map((t) => (
-                          <TypeBadge key={t} typeId={t} size="small" />
-                        ))}
-                      </Flex>
-                    </Flex>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          </Card>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  )
+                })}
+              </Row>
+            </Card>
 
-          {/* Shiny Showcase */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <StarFilled style={{ color: '#faad14' }} />
-                <span>
-                  {t('dashboard.shinyGallery', 'Galeria de Shinies')} ({shinies.length})
-                </span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            {shinies.length === 0 ? (
-              <Typography.Text type="secondary">
-                {t('dashboard.noShinies', 'Nenhum Pokémon Shiny encontrado nas caixas ou equipe.')}
-              </Typography.Text>
-            ) : (
+            {/* Current Party Showcase */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <TeamOutlined style={{ color: '#38bdf8' }} />
+                  <span>
+                    {t('dashboard.partyShowcase', 'Equipe Atual')} ({party.length} / 6)
+                  </span>
+                </Flex>
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
               <Row gutter={[12, 12]}>
-                {shinies.map((p, idx) => (
-                  <Col key={idx} xs={24} sm={12} md={8} lg={4}>
+                {party.map((p, idx) => (
+                  <Col key={idx} xs={12} md={6} xl={4}>
                     <Card
                       size="small"
                       hoverable
@@ -935,32 +834,34 @@ export default function DashboardPage() {
                       style={{
                         borderRadius: 10,
                         textAlign: 'center',
-                        borderColor: '#faad1480',
-                        background: token.colorBgElevated,
+                        background: token.colorBgContainer,
+                        border: `1px solid ${token.colorBorderSecondary}`,
                       }}
                     >
                       <Flex vertical align="center" gap={4}>
-                        <div
-                          className="dashboard-pokemon-thumb"
-                          style={{
-                            width: 64,
-                            height: 64,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          <SpeciesImage
-                            name={p.species}
-                            src={pokemonOfficialArtworkUrl(p.speciesId, true)}
-                            placeholderSize={44}
-                          />
-                        </div>
-                        <Typography.Text strong style={{ fontSize: '0.85rem' }}>
-                          ✨ {p.nickname || p.species}
+                        <Badge count={p.isShiny ? '✨' : 0} color="gold">
+                          <div
+                            className="dashboard-pokemon-thumb"
+                            style={{
+                              width: 64,
+                              height: 64,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <SpeciesImage
+                              name={p.species}
+                              src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
+                              placeholderSize={44}
+                            />
+                          </div>
+                        </Badge>
+                        <Typography.Text strong style={{ fontSize: '0.65rem', marginTop: 4 }}>
+                          {p.nickname || p.species}
                         </Typography.Text>
-                        <Tag color="gold" style={{ fontSize: '0.72rem', margin: 0 }}>
+                        <Tag color="blue" style={{ fontSize: '0.72rem', margin: 0 }}>
                           Nv. {p.level}
                         </Tag>
                         <Flex wrap="wrap" justify="center" gap={2}>
@@ -973,75 +874,143 @@ export default function DashboardPage() {
                   </Col>
                 ))}
               </Row>
-            )}
-          </Card>
+            </Card>
 
-          {/* Level 100 Max Level Showcase */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <TrophyFilled style={{ color: '#10b981' }} />
-                <span>
-                  {t('dashboard.maxLevelShowcase', 'Destaques Nível 100')} ({maxLevelList.length})
-                </span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            {maxLevelList.length === 0 ? (
-              <Typography.Text type="secondary">
-                {t('dashboard.noMaxLevel', 'Nenhum Pokémon no nível 100 encontrado.')}
-              </Typography.Text>
-            ) : (
-              <Row gutter={[12, 12]}>
-                {maxLevelList.map((p, idx) => (
-                  <Col key={idx} xs={24} sm={12} md={8} lg={4}>
-                    <Card
-                      size="small"
-                      hoverable
-                      onClick={() => navigate(routes.pokemon(p))}
-                      style={{
-                        borderRadius: 10,
-                        textAlign: 'center',
-                        borderColor: '#10b98180',
-                        background: token.colorBgElevated,
-                      }}
-                    >
-                      <Flex vertical align="center" gap={4}>
-                        <div
-                          className="dashboard-pokemon-thumb"
-                          style={{
-                            width: 64,
-                            height: 64,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          <SpeciesImage
-                            name={p.species}
-                            src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
-                            placeholderSize={44}
-                          />
-                        </div>
-                        <Typography.Text strong style={{ fontSize: '0.85rem' }}>
-                          {p.isShiny ? '✨ ' : ''}
-                          {p.nickname || p.species}
-                        </Typography.Text>
-                        <Tag color="green" style={{ fontSize: '0.72rem', margin: 0 }}>
-                          MAX LVL 100
-                        </Tag>
-                      </Flex>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            )}
-          </Card>
-        </Flex>
-      </div>
+            {/* Shiny Showcase */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <StarFilled style={{ color: '#faad14' }} />
+                  <span>
+                    {t('dashboard.shinyGallery', 'Galeria de Shinies')} ({shinies.length})
+                  </span>
+                </Flex>
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
+              {shinies.length === 0 ? (
+                <Typography.Text type="secondary">
+                  {t('dashboard.noShinies', 'Nenhum Pokémon Shiny encontrado nas caixas ou equipe.')}
+                </Typography.Text>
+              ) : (
+                <Row gutter={[12, 12]}>
+                  {shinies.map((p, idx) => (
+                    <Col key={idx} xs={24} sm={12} md={8} lg={4}>
+                      <Card
+                        size="small"
+                        hoverable
+                        onClick={() => navigate(routes.pokemon(p))}
+                        style={{
+                          borderRadius: 10,
+                          textAlign: 'center',
+                          borderColor: '#faad1480',
+                          background: token.colorBgElevated,
+                        }}
+                      >
+                        <Flex vertical align="center" gap={4}>
+                          <div
+                            className="dashboard-pokemon-thumb"
+                            style={{
+                              width: 64,
+                              height: 64,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <SpeciesImage
+                              name={p.species}
+                              src={pokemonOfficialArtworkUrl(p.speciesId, true)}
+                              placeholderSize={44}
+                            />
+                          </div>
+                          <Typography.Text strong style={{ fontSize: '0.65rem' }}>
+                            ✨ {p.nickname || p.species}
+                          </Typography.Text>
+                          <Tag color="gold" style={{ fontSize: '0.72rem', margin: 0 }}>
+                            Nv. {p.level}
+                          </Tag>
+                          <Flex wrap="wrap" justify="center" gap={2}>
+                            {p.types.map((t) => (
+                              <TypeBadge key={t} typeId={t} size="small" />
+                            ))}
+                          </Flex>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+            </Card>
+
+            {/* Level 100 Max Level Showcase */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <TrophyFilled style={{ color: '#10b981' }} />
+                  <span>
+                    {t('dashboard.maxLevelShowcase', 'Destaques Nível 100')} ({maxLevelList.length})
+                  </span>
+                </Flex>
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
+              {maxLevelList.length === 0 ? (
+                <Typography.Text type="secondary">
+                  {t('dashboard.noMaxLevel', 'Nenhum Pokémon no nível 100 encontrado.')}
+                </Typography.Text>
+              ) : (
+                <Row gutter={[12, 12]}>
+                  {maxLevelList.map((p, idx) => (
+                    <Col key={idx} xs={24} sm={12} md={8} lg={4}>
+                      <Card
+                        size="small"
+                        hoverable
+                        onClick={() => navigate(routes.pokemon(p))}
+                        style={{
+                          borderRadius: 10,
+                          textAlign: 'center',
+                          borderColor: '#10b98180',
+                          background: token.colorBgElevated,
+                        }}
+                      >
+                        <Flex vertical align="center" gap={4}>
+                          <div
+                            className="dashboard-pokemon-thumb"
+                            style={{
+                              width: 64,
+                              height: 64,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <SpeciesImage
+                              name={p.species}
+                              src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
+                              placeholderSize={44}
+                            />
+                          </div>
+                          <Typography.Text strong style={{ fontSize: '0.85rem' }}>
+                            {p.isShiny ? '✨ ' : ''}
+                            {p.nickname || p.species}
+                          </Typography.Text>
+                          <Tag color="green" style={{ fontSize: '0.72rem', margin: 0 }}>
+                            MAX LVL 100
+                          </Tag>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+            </Card>
+          </Flex>
+        </div>
       )}
 
       {/* TAB 3: TRAINER & BADGES */}
@@ -1057,162 +1026,162 @@ export default function DashboardPage() {
           }}
         >
           <Flex vertical gap={20} style={{ width: '100%' }}>
-          {/* Gym Badges Visual Board with Real Illustrated Badges */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <TrophyOutlined style={{ color: '#f59e0b' }} />
-                <span>
-                  {t('dashboard.badges', 'Insígnias de Ginásio')} ({badgesEarnedCount} / {badgesTotalCount})
-                </span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            {badgesList && badgesList.length > 0 ? (
-              <Row gutter={[12, 12]}>
-                {badgesList.map((badge, idx) => (
-                  <Col key={idx} xs={12} sm={8} md={6} lg={3}>
-                    <Card
-                      size="small"
-                      style={{
-                        borderRadius: 10,
-                        textAlign: 'center',
-                        border: `1px solid ${badge.earned ? '#f59e0b80' : token.colorBorderSecondary}`,
-                        background: badge.earned ? token.colorBgElevated : token.colorBgLayout,
-                        transition: 'all 0.25s ease',
-                      }}
-                    >
-                      <Flex vertical align="center" gap={6}>
-                        <GymBadgeImage name={badge.name} earned={badge.earned} />
-                        <Typography.Text strong style={{ fontSize: '0.82rem' }}>
-                          {badge.name}
-                        </Typography.Text>
-                        <Tag
-                          color={badge.earned ? 'gold' : 'default'}
-                          style={{ margin: 0, fontSize: '0.68rem', fontWeight: 600 }}
-                        >
-                          {badge.earned
-                            ? t('dashboard.badgesEarned', 'Conquistada')
-                            : t('dashboard.badgesPending', 'Pendente')}
-                        </Tag>
-                      </Flex>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            ) : (
-              <Flex vertical gap={8} align="center" style={{ padding: '20px 0' }}>
-                <TrophyFilled style={{ fontSize: '2.5rem', color: '#f59e0b' }} />
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                  {badgesEarnedCount} / {badgesTotalCount} {t('dashboard.badges', 'Insígnias')}
-                </Typography.Title>
-                <Progress
-                  percent={badgesTotalCount > 0 ? Math.round((badgesEarnedCount / badgesTotalCount) * 100) : 0}
-                  strokeColor="#f59e0b"
-                  style={{ maxWidth: 300 }}
-                />
-              </Flex>
-            )}
-          </Card>
+            {/* Gym Badges Visual Board with Real Illustrated Badges */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <TrophyOutlined style={{ color: '#f59e0b' }} />
+                  <span>
+                    {t('dashboard.badges', 'Insígnias de Ginásio')} ({badgesEarnedCount} / {badgesTotalCount})
+                  </span>
+                </Flex>
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
+              {badgesList && badgesList.length > 0 ? (
+                <Row gutter={[12, 12]}>
+                  {badgesList.map((badge, idx) => (
+                    <Col key={idx} xs={12} sm={8} md={6} lg={3}>
+                      <Card
+                        size="small"
+                        style={{
+                          borderRadius: 10,
+                          textAlign: 'center',
+                          border: `1px solid ${badge.earned ? '#f59e0b80' : token.colorBorderSecondary}`,
+                          background: badge.earned ? token.colorBgElevated : token.colorBgLayout,
+                          transition: 'all 0.25s ease',
+                        }}
+                      >
+                        <Flex vertical align="center" gap={6}>
+                          <GymBadgeImage name={badge.name} earned={badge.earned} />
+                          <Typography.Text strong style={{ fontSize: '0.82rem' }}>
+                            {badge.name}
+                          </Typography.Text>
+                          <Tag
+                            color={badge.earned ? 'gold' : 'default'}
+                            style={{ margin: 0, fontSize: '0.68rem', fontWeight: 600 }}
+                          >
+                            {badge.earned
+                              ? t('dashboard.badgesEarned', 'Conquistada')
+                              : t('dashboard.badgesPending', 'Pendente')}
+                          </Tag>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              ) : (
+                <Flex vertical gap={8} align="center" style={{ padding: '20px 0' }}>
+                  <TrophyFilled style={{ fontSize: '2.5rem', color: '#f59e0b' }} />
+                  <Typography.Title level={4} style={{ margin: 0 }}>
+                    {badgesEarnedCount} / {badgesTotalCount} {t('dashboard.badges', 'Insígnias')}
+                  </Typography.Title>
+                  <Progress
+                    percent={badgesTotalCount > 0 ? Math.round((badgesEarnedCount / badgesTotalCount) * 100) : 0}
+                    strokeColor="#f59e0b"
+                    style={{ maxWidth: 300 }}
+                  />
+                </Flex>
+              )}
+            </Card>
 
-          {/* Trainer Identity Card (Modern Card, Zero Tables) */}
-          <Card
-            title={
-              <Flex align="center" gap={8}>
-                <UserOutlined style={{ color: '#818cf8' }} />
-                <span>{t('dashboard.tabTrainer', 'Ficha & Insígnias')}</span>
-              </Flex>
-            }
-            size="small"
-            style={{ borderRadius: 12 }}
-          >
-            <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={8}>
-                <Flex vertical gap={4}>
-                  <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                    Nome do Treinador (OT)
-                  </Typography.Text>
-                  <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                    {trainer?.name || '—'}
-                  </Typography.Title>
+            {/* Trainer Identity Card (Modern Card, Zero Tables) */}
+            <Card
+              title={
+                <Flex align="center" gap={8}>
+                  <UserOutlined style={{ color: '#818cf8' }} />
+                  <span>{t('dashboard.tabTrainer', 'Ficha & Insígnias')}</span>
                 </Flex>
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Flex vertical gap={4}>
-                  <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                    TID / SID
-                  </Typography.Text>
-                  <Typography.Title level={4} style={{ margin: 0, fontFamily: 'monospace', fontWeight: 700 }}>
-                    {trainer?.id || '—'}
-                  </Typography.Title>
-                </Flex>
-              </Col>
-              {trainer?.gender !== null && trainer?.gender !== undefined && (
+              }
+              size="small"
+              style={{ borderRadius: 12 }}
+            >
+              <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={8}>
                   <Flex vertical gap={4}>
                     <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      Gênero
+                      Nome do Treinador (OT)
                     </Typography.Text>
                     <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                      {trainer.gender === 'female' ? '♀ Feminino' : '♂ Masculino'}
+                      {trainer?.name || '—'}
                     </Typography.Title>
                   </Flex>
                 </Col>
-              )}
-              {progress?.playTime && (
                 <Col xs={24} sm={12} md={8}>
                   <Flex vertical gap={4}>
                     <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      {t('dashboard.playTime', 'Tempo de Jogo')}
+                      TID / SID
                     </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#38bdf8' }}>
-                      {progress.playTime.hours}h {progress.playTime.minutes}m {progress.playTime.seconds}s
+                    <Typography.Title level={4} style={{ margin: 0, fontFamily: 'monospace', fontWeight: 700 }}>
+                      {trainer?.id || '—'}
                     </Typography.Title>
                   </Flex>
                 </Col>
-              )}
-              {trainer?.money !== null && trainer?.money !== undefined && (
-                <Col xs={24} sm={12} md={8}>
-                  <Flex vertical gap={4}>
-                    <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      {t('dashboard.money', 'Dinheiro')}
-                    </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#10b981' }}>
-                      $ {trainer.money.toLocaleString()}
-                    </Typography.Title>
-                  </Flex>
-                </Col>
-              )}
-              {trainer?.battlePoints !== null && trainer?.battlePoints !== undefined && (
-                <Col xs={24} sm={12} md={8}>
-                  <Flex vertical gap={4}>
-                    <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      {t('dashboard.battlePoints', 'Pontos de Batalha (BP)')}
-                    </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#f59e0b' }}>
-                      {trainer.battlePoints} BP
-                    </Typography.Title>
-                  </Flex>
-                </Col>
-              )}
-              {trainer?.rival && (
-                <Col xs={24} sm={12} md={8}>
-                  <Flex vertical gap={4}>
-                    <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      Rival
-                    </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                      {trainer.rival}
-                    </Typography.Title>
-                  </Flex>
-                </Col>
-              )}
-            </Row>
-          </Card>
-        </Flex>
-      </div>
+                {trainer?.gender !== null && trainer?.gender !== undefined && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Flex vertical gap={4}>
+                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                        Gênero
+                      </Typography.Text>
+                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
+                        {trainer.gender === 'female' ? '♀ Feminino' : '♂ Masculino'}
+                      </Typography.Title>
+                    </Flex>
+                  </Col>
+                )}
+                {progress?.playTime && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Flex vertical gap={4}>
+                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                        {t('dashboard.playTime', 'Tempo de Jogo')}
+                      </Typography.Text>
+                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#38bdf8' }}>
+                        {progress.playTime.hours}h {progress.playTime.minutes}m {progress.playTime.seconds}s
+                      </Typography.Title>
+                    </Flex>
+                  </Col>
+                )}
+                {trainer?.money !== null && trainer?.money !== undefined && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Flex vertical gap={4}>
+                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                        {t('dashboard.money', 'Dinheiro')}
+                      </Typography.Text>
+                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#10b981' }}>
+                        $ {trainer.money.toLocaleString()}
+                      </Typography.Title>
+                    </Flex>
+                  </Col>
+                )}
+                {trainer?.battlePoints !== null && trainer?.battlePoints !== undefined && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Flex vertical gap={4}>
+                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                        {t('dashboard.battlePoints', 'Pontos de Batalha (BP)')}
+                      </Typography.Text>
+                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#f59e0b' }}>
+                        {trainer.battlePoints} BP
+                      </Typography.Title>
+                    </Flex>
+                  </Col>
+                )}
+                {trainer?.rival && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Flex vertical gap={4}>
+                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                        Rival
+                      </Typography.Text>
+                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
+                        {trainer.rival}
+                      </Typography.Title>
+                    </Flex>
+                  </Col>
+                )}
+              </Row>
+            </Card>
+          </Flex>
+        </div>
       )}
 
       {/* Modal: Como Capturar / Obter */}

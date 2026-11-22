@@ -154,15 +154,15 @@ export function DescriptionTab() {
             <div className="editor-field-item">
               <span className="editor-field-label">{t('editor.fields.characteristics', 'Características Especiais')}</span>
               <div style={{ height: 38, minHeight: 38, boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
-                <Space size={12} wrap align="center">
-                  {details.isShiny && (
-                    <Tag
-                      color="gold"
-                      style={{ fontSize: '13px', padding: '2px 8px', margin: 0 }}
-                    >
-                      ✨ Shiny
-                    </Tag>
-                  )}
+                <Space size={16} wrap align="center">
+                  <Space size={6} align="center">
+                    <span style={{ fontSize: 13 }}>✨ {t('editor.fields.shiny', 'Shiny')}:</span>
+                    <Switch
+                      aria-label={t('editor.fields.shiny', 'Shiny')}
+                      checked={details.isShiny}
+                      onChange={(isShiny: boolean) => submit({ isShiny })}
+                    />
+                  </Space>
                   {details.isAlpha !== null && (
                     <Space size={6} align="center">
                       <span style={{ fontSize: 13 }}>{t('editor.fields.alpha', 'Alpha')}:</span>
@@ -172,9 +172,6 @@ export function DescriptionTab() {
                         onChange={(isAlpha: boolean) => submit({ isAlpha })}
                       />
                     </Space>
-                  )}
-                  {!details.isShiny && details.isAlpha === null && (
-                    <span style={{ color: '#8c8c8c', fontSize: 13 }}>-</span>
                   )}
                 </Space>
               </div>

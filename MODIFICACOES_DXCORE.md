@@ -102,6 +102,15 @@
    - Na tela principal das caixas, os cards utilizam a arte oficial em alta resolução (HD), porém com dimensões compactas padronizadas em 80x80 pixels. Isso reduz drasticamente o scroll vertical na tela de caixas, enquanto a vitrine do editor de Pokémon continua exibindo a arte oficial em escala ampliada.
 10. **Paginação Responsiva com Contador Superior:**
    - O contador de total de Pokémon foi reposicionado acima dos botões de página com suporte a flex-wrap, evitando quebras de layout em telas de smartphones mesmo com dezenas de páginas.
+11. **Transferência Externa entre Saves em Grade Responsiva de Cards (`TransferModal`):**
+   - Substituição do antigo padrão em tabela por uma **grade moderna de cards responsivos** (`xs={12} sm={8} md={6}`), tornando a visualização dos Pokémon muito mais agradável e intuitiva em qualquer dispositivo.
+   - Utilização de ilustrações ícones/sprites compactos com margem inferior de `6px` para perfeito alinhamento visual.
+   - Detalhes das alterações de transferência (adaptação de golpes, status, rotas, etc.) exibidos através de um ícone discreto `<InfoCircleOutlined>` ao lado do número da Pokédex.
+   - **Tooltip persistente ao clique:** o balão informativo permanece aberto até o usuário clicar fora, corrigindo a limitação em telas touch mobile onde o hover não se sustenta.
+   - Otimização do campo de busca e seletor de caixas para caberem alinhados na mesma linha em telas de smartphones.
+   - Tradução completa e rigorosa para Português, Inglês e Espanhol de todos os cabeçalhos, descrições e rotas de transferência.
+12. **Grade de Exibição Unificada a partir de 2 Colunas (`xs={12} md={6} xl={4}`):**
+   - O componente `PokemonGrid` compartilhado por Caixas e Equipe foi configurado para exibir 2 colunas no mobile (`xs={12}`), 4 colunas em tablets/desktops médios (`md={6}`) e 6 colunas em telas amplas (`xl={4}`), eliminando cards excessivamente largos em telas verticais e aproveitando ao máximo a largura útil.
 
 ---
 
@@ -149,6 +158,8 @@
      - **Gaveta Expansível de Detalhes Técnicos:** Botão *"Detalhes técnicos da auditoria"* que exibe as pendências categorizadas com badges coloridas (`PID / Natureza`, `Golpes`, `Encontro`, `Habilidade`), tradução amigável do motivo e a mensagem técnica original do PKHeX em fonte monoespaçada.
 8. **Uniformização de Altura dos Containers de Edição:**
    - Campos de Apelido, PID, Tipos e Características ajustados de 32px para o padrão de 38px com padding harmônico.
+9. **Restauração do Seletor Interativo de Shiny (`<Switch>`):**
+   - Restauração do controle `<Switch>` para transformar qualquer Pokémon em Shiny (ou desativar) na seção de *Características Especiais* (`DescriptionTab.tsx`), corrigindo uma regressão anterior que mantinha o campo somente como tag estática. A alteração sincroniza imediatamente no rascunho e atualiza a arte oficial da vitrine em tempo real.
 
 ---
 
@@ -183,11 +194,13 @@
    - Adicionada rota dedicada `/dashboard` como a página principal logo após abrir um save, oferecendo um panorama imediato de todo o jogo.
    - Design moderno alinhado à identidade visual do DXCore, cards responsivos e **zero tabelas**, garantindo excelente legibilidade em smartphones e tablets.
    - Cabeçalho limpo sem botões redundantes.
-2. **Cards Hero KPI no Topo:**
-   - **Progresso da Pokédex:** barra de progresso com porcentagem calculada, total de espécies no jogo, contadores de espécies Registradas, Apenas Vistas e Em Falta.
-   - **Armazenamento:** porcentagem de ocupação das caixas (total de Pokémon vs. capacidade total), contagem de Shinies ✨, Pokémon no Nível 100 🏆 e membros na equipe ativa 👥.
-   - **Insígnias de Ginásio:** total conquistado com barra de progresso e indicador de Campeão da Região ao completar todas.
-   - **Ficha do Treinador:** nome do treinador (OT), Trainer ID (TID/SID), tempo de jogo decorrido e dinheiro/Battle Points em carteira.
+2. **Cards Hero KPI no Topo Otimizados para Mobile (2 Colunas):**
+   - **Títulos Objetivos:** Redução dos títulos para palavras-chave diretas (*Progresso*, *Caixas*, *Insígnias* e *Treinador*), viabilizando layout compacto em 2 colunas no mobile (`xs={12}`).
+   - **Progresso:** Barra de progresso com porcentagem em destaque e fração (`capturados / total`) reposicionada com tipografia secundária abaixo da barra.
+   - **Caixas:** Porcentagem de ocupação das caixas com fração (`ocupados / capacidade total`) abaixo da barra de progresso.
+   - **Insígnias:** Total conquistado com barra de progresso e indicador de Campeão ao completar todas.
+   - **Treinador Minimalista:** Foco em Nome do Treinador, Dinheiro e Tempo de Jogo. O ID foi retirado do card de topo para despoluir a visualização (permanecendo com TID/SID completo na aba detalhada de Ficha).
+   - **Ícones Padronizados:** Redimensionamento dos 4 ícones superiores para `18x18px` (`fontSize: 18`).
 3. **Diferenciação Visual das Abas Mãe e Alinhamento Mobile:**
    - O conteúdo de cada aba principal (**Rastreador**, **Estatísticas da Coleção** e **Ficha & Insígnias**) agora é envolvido em um painel com fundo diferenciado e bordas suaves, destacando o conteúdo da aba em relação ao corpo da página.
    - Centralização perfeita dos seletores e botões de filtro no mobile (`justify="center"`), eliminando desalinhamentos em telas estreitas.
@@ -220,6 +233,8 @@
    - Criação e compilação da query `species.pokedex` nos hosts Debug e Release do motor WASM C#, sincronizando os binários do WebAssembly (`dotnet build` e `dotnet publish`) e o gerador de tipos (`PKHeX.Everywhere.Engine.CodeGen`), eliminando em definitivo a mensagem de `Unknown call 'species.pokedex'`.
    - Mapeamento eficiente dos bits de Pokédex do save (`GetSeen` e `GetCaught`) com validações defensivas de limites de espécies e suporte a gerações 1 a 9.
    - Tratamento resiliente na troca de saves na mesma sessão do navegador, permitindo carregar saves sucessivos sem erros de cache ou chamadas inválidas.
+9. **Padronização das Grades em 2 Colunas no Mobile (`xs={12} md={6} xl={4}`):**
+   - Implementação da grade consistente iniciando em 2 colunas no mobile tanto no **Rastreador da Pokédex** quanto na exibição da **Equipe Atual** na aba de Estatísticas da Coleção, harmonizando todo o ecossistema do Dashboard com as páginas de Caixas e Equipe.
 
 ---
 

@@ -155,9 +155,9 @@ function renderTransfer(
       await flush()
     },
     succeeded: () => document.querySelector('.ant-notification-notice-success') !== null,
-    rows: () => [...dialogs()[0].querySelectorAll('tbody tr[data-row-key]')].map((row) => row.textContent),
+    rows: () => [...dialogs()[0].querySelectorAll('[data-row-key]')].map((row) => row.textContent),
     pick: async (species: string) => {
-      const row = [...dialogs()[0].querySelectorAll('tbody tr[data-row-key]')].find((r) => r.textContent?.includes(species))!
+      const row = [...dialogs()[0].querySelectorAll('[data-row-key]')].find((r) => r.textContent?.includes(species))!
       act(() => row.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click())
       await flush()
     },
@@ -392,6 +392,39 @@ describe('TransferModal', () => {
       send: [],
       receive: [kadabra.at, swampert.at, zigzagoon.at, pikachu.at],
     })
+  })
+
+  it('renders grid cards with 2-column layout on small screens and sprite icons', async () => {
+    const modal = renderTransfer(async () => opened)
+    await modal.openSave(partnerFile)
+
+    const cols = document.querySelectorAll('.ant-col-xs-12')
+    expect(cols.length).toBeGreaterThan(0)
+    // Checks that cards have the sprite icon
+    const sprites = document.querySelectorAll('img[alt="Kadabra"]')
+    expect(sprites.length).toBeGreaterThan(0)
+  })
+
+  it('shows info icon next to pokedex number when pokemon has transfer changes', async () => {
+    const modal = renderTransfer(async () => opened, {
+      preview: async (offer) => {
+        const p = await movable(offer)
+        p.offers[0].changes = [{ field: 'species', before: 'Kadabra', after: 'Alakazam', reason: 'tradeEvolution' }]
+        return p
+      },
+    })
+    await modal.openSave(partnerFile)
+
+    // Before selection, no info icon
+    expect(document.querySelector('[aria-label="Transfer details"]')).toBeNull()
+
+    // Select Kadabra
+    await modal.pick('Kadabra')
+
+    // Info icon is now present next to pokedex number
+    const infoIcon = document.querySelector('[aria-label="Transfer details"]')
+    expect(infoIcon).not.toBeNull()
+    expect(infoIcon?.textContent).toContain('Alakazam')
   })
 })
 

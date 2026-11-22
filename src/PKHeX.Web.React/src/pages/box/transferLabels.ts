@@ -16,7 +16,7 @@ export const refusalReasons: Record<TransferRefusal, string> = {
   shadow: "A shadow Pokémon can't be traded until it's purified.",
 }
 
-const fieldNames: Record<TransferField, string> = {
+export const fieldNames: Record<TransferField, string> = {
   species: 'Species',
   form: 'Form',
   heldItem: 'Held item',
@@ -38,5 +38,15 @@ const fieldNames: Record<TransferField, string> = {
   metDate: 'Met date',
 }
 
-export const describeChange = (change: TransferChange) =>
-  `${fieldNames[change.field]}: ${change.before ?? '—'} → ${change.after ?? '—'}`
+export const getRefusalReason = (reason: TransferRefusal, t?: (key: string, fallback?: string) => string): string => {
+  if (t) return t(`transfer.refusal.${reason}`, refusalReasons[reason] ?? reason)
+  return refusalReasons[reason] ?? reason
+}
+
+export const getFieldName = (field: TransferField, t?: (key: string, fallback?: string) => string): string => {
+  if (t) return t(`transfer.field.${field}`, fieldNames[field] ?? field)
+  return fieldNames[field] ?? field
+}
+
+export const describeChange = (change: TransferChange, t?: (key: string, fallback?: string) => string): string =>
+  `${getFieldName(change.field, t)}: ${change.before ?? '—'} → ${change.after ?? '—'}`

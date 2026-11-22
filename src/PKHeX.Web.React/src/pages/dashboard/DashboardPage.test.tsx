@@ -151,13 +151,17 @@ describe('DashboardPage', () => {
     )
 
     expect(container.textContent).toContain('Dashboard do Jogo')
-    expect(container.textContent).toContain('Progresso da Pokédex')
-    expect(container.textContent).toContain('Capacidade das Caixas')
+    expect(container.textContent).toContain('Progresso')
+    expect(container.textContent).toContain('Caixas')
     expect(container.textContent).toContain('Insígnias')
+    expect(container.textContent).toContain('Treinador')
     expect(container.textContent).toContain('Ash')
-    expect(container.textContent).toContain('ID: 12345/67890')
     expect(container.textContent).toContain('$ 50.000')
     expect(container.textContent).toContain('42h 15m')
+
+    // Verifies 2-column layout on mobile (xs=12)
+    const kpiCols = container.querySelectorAll('.ant-col-xs-12')
+    expect(kpiCols.length).toBeGreaterThanOrEqual(4)
   })
 
   it('renders pokédex tracker cards with species and status tags', () => {
@@ -217,7 +221,7 @@ describe('DashboardPage', () => {
       collectionTab!.click()
     })
 
-    expect(container.textContent).toContain('Distribuição por Tipos Elementares')
+    expect(container.textContent).toContain('Distribuição por Tipagem')
     expect(container.textContent).toContain('Equipe Atual')
     expect(container.textContent).toContain('Galeria de Shinies')
     expect(container.textContent).toContain('Sparky')
@@ -234,6 +238,7 @@ describe('DashboardPage', () => {
     expect(container.textContent).toContain('Stone')
     expect(container.textContent).toContain('Knuckle')
     expect(container.textContent).toContain('Nome do Treinador (OT)')
+    expect(container.textContent).toContain('12345/67890')
     expect(container.textContent).toContain('120 BP')
     expect(container.textContent).toContain('Gary')
   })
