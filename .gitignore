@@ -422,3 +422,9 @@ inbox/
 investigation.cany/
 .gemini/
 
+# Anotações e documentação local de desenvolvimento
+MODIFICACOES_DXCORE.md
+MODIFICACOES*.md
+*MODIFICACOES*
+
+

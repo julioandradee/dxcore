@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert, Result, Spin, Typography } from 'antd'
+import type { PokemonHandle } from '@pkhex-everywhere/engine'
 import { useBox, useEngine, useParty } from '@pkhex-everywhere/react'
 import { useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
@@ -14,6 +15,15 @@ interface PokemonEditorPageProps {
   id?: string
 }
 
+function isSameSlot(a?: PokemonHandle | null, b?: PokemonHandle | null): boolean {
+  if (!a || !b) return false
+  if (a.source !== b.source) return false
+  if (a.slot !== b.slot) return false
+  if (a.source === 'box' && b.source === 'box') return a.box === b.box
+  if (a.source === 'team' && b.source === 'team') return a.team === b.team
+  return true
+}
+
 export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps) {
   const { t } = useTranslation()
   const { party } = useParty()
@@ -22,8 +32,23 @@ export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps
   const navigate = useNavigate()
   const [phase, setPhase] = useState<'opening' | 'editing' | 'saving'>('opening')
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [targetId, setTargetId] = useState(id)
 
-  const saved = (source === 'party' ? party : box).find((pokemon) => pokemon.id === id)
+  useEffect(() => {
+    setTargetId(id)
+  }, [id])
+
+  const list = source === 'party' ? party : box
+  const lastSlotRef = useRef<PokemonHandle | null>(null)
+
+  const saved =
+    list.find((pokemon) => pokemon.id === targetId || pokemon.id === id) ??
+    (lastSlotRef.current ? list.find((pokemon) => isSameSlot(pokemon.at, lastSlotRef.current)) : undefined)
+
+  if (saved) {
+    lastSlotRef.current = saved.at
+  }
+
   const key = saved && JSON.stringify(saved.at)
   const view = saved && editorView(saved)
 
@@ -50,6 +75,7 @@ export default function PokemonEditorPage({ source, id }: PokemonEditorPageProps
     try {
       const committed = await engine.pokemon.commit()
       if (committed !== id) {
+        setTargetId(committed)
         await navigate(routes.pokemon({ at: saved.at, id: committed }), { replace: true })
       }
       await engine.pokemon.edit(saved.at)

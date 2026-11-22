@@ -293,6 +293,34 @@ describe('TransferModal', () => {
     expect(downloadFile).toHaveBeenCalledWith(moved.partner.bytes, 'partner.sav')
   })
 
+  it('truncates long partner file name in notification with ellipsis and downloads with original file name', async () => {
+    const longFileName = 'Pokemon - Emerald Version (USA, Europe) (Rev 1).sav'
+    const longMoved: TransferResult = {
+      save: { bytes: new Uint8Array([1]), fileName: 'mine.sav' },
+      partner: { bytes: new Uint8Array([2]), fileName: longFileName },
+      arrived: [],
+    }
+    const longOpened: TransferSummary = {
+      ...opened,
+      partner: { ...emerald, fileName: longFileName },
+    }
+    const file = new File([new Uint8Array(8)], longFileName)
+    const modal = renderTransfer(async () => longOpened)
+    modal.transfer.commit = vi.fn(async (offer: TransferOffer) => ({
+      ...longMoved,
+      arrived: offer.receive.map((at) => ({ direction: 'receive' as const, id: '' as unknown as PokemonId, at })),
+    }))
+
+    await modal.openSave(file)
+    await modal.pick('Kadabra')
+    await modal.move()
+
+    const downloadBtn = document.querySelector<HTMLButtonElement>('.ant-notification-notice button.ant-btn-link')!
+    expect(downloadBtn.textContent).toContain('...')
+    await modal.downloadPartner()
+    expect(downloadFile).toHaveBeenCalledWith(longMoved.partner.bytes, longFileName)
+  })
+
   it("can't move with nothing picked", async () => {
     const modal = renderTransfer(async () => opened)
     await modal.openSave(partnerFile)

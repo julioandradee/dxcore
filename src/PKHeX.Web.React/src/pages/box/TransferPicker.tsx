@@ -44,6 +44,17 @@ import { transferPick } from './transferPick'
 
 type View = 'party' | 'box'
 
+function formatFileName(fileName: string, maxLength = 24): string {
+  if (!fileName || fileName.length <= maxLength) return fileName
+  const dotIndex = fileName.lastIndexOf('.')
+  if (dotIndex > 0 && fileName.length - dotIndex <= 6) {
+    const ext = fileName.slice(dotIndex)
+    const base = fileName.slice(0, maxLength - ext.length - 3)
+    return `${base}...${ext}`
+  }
+  return `${fileName.slice(0, maxLength - 3)}...`
+}
+
 const handleKey = (at: PokemonHandle) => JSON.stringify(at)
 const pickKey = (pokemon: PokemonSummary) => handleKey(pokemon.at)
 
@@ -370,8 +381,32 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
         ),
         description: t('transfer.exportHint', 'Exporte este save na página Salvar para mantê-los.'),
         actions: (
-          <Button type="link" onClick={() => downloadFile(result.partner.bytes, result.partner.fileName)}>
-            {t('transfer.downloadPartner', 'Baixar {0}').replace('{0}', result.partner.fileName)}
+          <Button
+            type="link"
+            style={{
+              padding: 0,
+              height: 'auto',
+              maxWidth: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+            title={result.partner.fileName}
+            onClick={() => downloadFile(result.partner.bytes, result.partner.fileName)}
+          >
+            <span
+              style={{
+                maxWidth: 240,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                display: 'inline-block',
+              }}
+            >
+              {t('transfer.downloadPartner', 'Baixar {0}').replace(
+                '{0}',
+                formatFileName(result.partner.fileName, 24),
+              )}
+            </span>
           </Button>
         ),
       })
@@ -390,8 +425,23 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
       width={720}
       style={{ maxWidth: '95vw', top: 20 }}
       title={
-        <Flex vertical>
-          {t('transfer.fromPartner', 'Transferir de {0}').replace('{0}', transfer.partner.fileName ?? '')}
+        <Flex vertical style={{ maxWidth: '100%', overflow: 'hidden' }}>
+          <Typography.Text
+            style={{
+              fontWeight: 600,
+              fontSize: 16,
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            title={transfer.partner.fileName}
+          >
+            {t('transfer.fromPartner', 'Transferir de {0}').replace(
+              '{0}',
+              transfer.partner.fileName ? formatFileName(transfer.partner.fileName, 28) : '',
+            )}
+          </Typography.Text>
           <Typography.Text type="secondary" style={{ fontWeight: 'normal', fontSize: 13 }}>
             {`${gameName(transfer.partner)} · ${transfer.trainer.name}`}
           </Typography.Text>
@@ -405,8 +455,8 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
               'transfer.freeSlotsCount',
               '{0} vagas livres',
             ).replace('{0}', String(pick.freeSlots))}${pick.refused
-                ? ` · ${t('transfer.cannotMoveCount', '{0} não podem ser movidos').replace('{0}', String(pick.refused))}`
-                : ''
+              ? ` · ${t('transfer.cannotMoveCount', '{0} não podem ser movidos').replace('{0}', String(pick.refused))}`
+              : ''
               }`}
           </Typography.Text>
           <Space>
