@@ -108,7 +108,7 @@ export function PokemonGrid({
 
       {/* Paginação */}
       {pagination !== false && pokemon.length > activePageSize && (
-        <Flex justify="center" style={{ marginTop: 8 }}>
+        <Flex vertical align="center" gap={8} style={{ width: '100%', marginTop: 8 }}>
           <Pagination
             current={currentPage}
             pageSize={activePageSize}
@@ -176,11 +176,11 @@ function PokemonGridCard({
       }}
       styles={{
         body: {
-          padding: '12px',
+          padding: '10px 8px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 8,
+          gap: 6,
           height: '100%',
           justifyContent: 'space-between',
         },
@@ -218,15 +218,15 @@ function PokemonGridCard({
         </Flex>
       </Flex>
 
-      {/* Imagem do Pokémon */}
+      {/* Imagem HD do Pokémon: Reduzida para 80x80px */}
       <div
         style={{
           width: '100%',
-          height: 120,
+          height: 80,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 4,
+          padding: 2,
           position: 'relative',
         }}
       >
@@ -236,17 +236,19 @@ function PokemonGridCard({
             alt={pokemon.species}
             onError={() => setArtworkFailed(true)}
             style={{
-              maxHeight: 110,
-              maxWidth: '100%',
+              width: 80,
+              height: 80,
+              maxHeight: 80,
+              maxWidth: 80,
               objectFit: 'contain',
               filter: pokemon.isShiny
-                ? 'drop-shadow(0 0 8px rgba(250, 173, 20, 0.5))'
-                : 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1))',
+                ? 'drop-shadow(0 0 6px rgba(250, 173, 20, 0.5))'
+                : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
               transition: 'transform 0.15s ease',
             }}
           />
         ) : (
-          <div style={{ transform: 'scale(1.5)' }}>
+          <div style={{ transform: 'scale(1.3)' }}>
             <PokemonSprite pokemon={pokemon} />
           </div>
         )}

@@ -11,6 +11,7 @@ import { useSupports } from '../hooks/useSupports'
 import { useLanguage, useTheme } from '../host'
 import BoxPage from '../pages/box/BoxPage'
 import CreditsPage from '../pages/static/CreditsPage'
+import DashboardPage from '../pages/dashboard/DashboardPage'
 import EncountersPage from '../pages/encounters/EncountersPage'
 import EventsPage from '../pages/events/EventsPage'
 import HomePage from '../pages/home/HomePage'
@@ -66,16 +67,16 @@ function RequireCapability({ capability, children }: { capability: SaveCapabilit
 
 const integer = (value: string | null) => (value && /^-?\d+$/.test(value) ? Number(value) : null)
 
-function HomeRoute() {
+function RootRoute() {
   const { game } = useLoadedGame()
   const redirect = journey.redirectsToLoad(game !== null)
   useEffect(() => journey.reachedHome(), [])
-  return redirect ? <Navigate to={routes.load} replace /> : <HomePage />
+  return redirect ? <Navigate to={routes.load} replace /> : <Navigate to={routes.dashboard} replace />
 }
 
 function LoadRoute({ autoLoad }: { autoLoad: boolean }) {
   const { game } = useLoadedGame()
-  if (game) return <Navigate to={routes.home} replace />
+  if (game) return <Navigate to={routes.dashboard} replace />
   return (
     <>
       {autoLoad && <AutoLoadDemo />}
@@ -117,7 +118,7 @@ function NotFoundPage() {
         title="404"
         subTitle={<span role="alert">{t('common.pageNotFound', "Sorry, there's nothing at this address.")}</span>}
         extra={
-          <Button type="primary" onClick={() => navigate(game ? routes.home : routes.load)}>
+          <Button type="primary" onClick={() => navigate(game ? routes.dashboard : routes.load)}>
             {game ? t('common.backToHome', 'Voltar ao Início') : t('load.title', 'Carregar Save')}
           </Button>
         }
@@ -130,7 +131,9 @@ function AppRoutes({ autoLoad }: { autoLoad: boolean }) {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route index element={<Page title="Home"><HomeRoute /></Page>} />
+        <Route index element={<RootRoute />} />
+        <Route path="dashboard" element={<Page title="Dashboard" requiresSave><DashboardPage /></Page>} />
+        <Route path="trainer" element={<Page title="Treinador" requiresSave><HomePage /></Page>} />
         <Route path="party" element={<Page title="Party" requiresSave><PartyPage /></Page>} />
         <Route path="pokemon-box" element={<Page title="Pokemon Box" requiresSave><BoxPage /></Page>} />
         <Route path="items" element={<Page title="Items" requiresSave><ItemsPage /></Page>} />
@@ -203,7 +206,7 @@ function SplashScreen({ onFinish }: { onFinish: () => void }) {
       onClick={handleComplete}
       title="Toque para pular"
     >
-      <CaptureAnimation onComplete={handleComplete} />
+      <CaptureAnimation textColor="#f8fafc" onComplete={handleComplete} />
       <div
         style={{
           position: 'absolute',

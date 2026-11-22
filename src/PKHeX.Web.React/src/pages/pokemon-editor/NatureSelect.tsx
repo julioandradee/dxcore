@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Flex, Select, Space, Tag } from 'antd'
 import type { Choice, StatValues } from '@pkhex-everywhere/engine'
-import { getNatureInfo, getShortStatName, isNatureSuitableForStats } from '../../utils/natureEffects'
+import { getNatureInfo, getShortStatName } from '../../utils/natureEffects'
 
 interface NatureSelectProps {
   label: string
@@ -17,7 +17,6 @@ export function NatureSelect({
   label,
   choices,
   value,
-  stats,
   disabled,
   onChange,
   onInteract,
@@ -26,12 +25,10 @@ export function NatureSelect({
 
   const options = choices.map((choice) => {
     const info = getNatureInfo(choice.id)
-    const isSuitable = isNatureSuitableForStats(choice.id, stats)
 
     return {
       value: choice.id,
       label: choice.name,
-      isSuitable,
       info,
     }
   })
@@ -72,36 +69,36 @@ export function NatureSelect({
           if (open && onInteract) onInteract()
         }}
         optionRender={(option) => {
-          const { label: name, isSuitable, info } = option.data
-          const opacity = isSuitable ? 1 : 0.45
+          const { label: name, info } = option.data
+          const isCurrent = value === option.data.value
+
           return (
             <Flex
               justify="space-between"
               align="center"
               style={{
                 width: '100%',
-                opacity,
-                transition: 'opacity 0.2s ease',
               }}
             >
               <Space size={6}>
-                <span style={{ fontWeight: isSuitable && !info.isNeutral ? 600 : 400 }}>
+                <span style={{ fontWeight: 500 }}>
                   {name}
                 </span>
-                {isSuitable && !info.isNeutral && (
-                  <Tag color="success" style={{ margin: 0, padding: '0 4px', fontSize: 10, lineHeight: '16px' }}>
-                    Ideal
+                {isCurrent && (
+                  <Tag color="blue" style={{ fontSize: 10, margin: 0, padding: '0 4px', lineHeight: '16px' }}>
+                    Atual
                   </Tag>
                 )}
-                {!isSuitable && (
-                  <span style={{ fontSize: 10, color: '#8c8c8c' }}>
-                    (Inadequada)
-                  </span>
-                )}
               </Space>
-              <span style={{ fontSize: 11, color: isSuitable ? '#1677ff' : '#8c8c8c' }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: info.isNeutral ? '#8c8c8c' : '#1677ff',
+                  fontWeight: info.isNeutral ? 400 : 500,
+                }}
+              >
                 {info.isNeutral
-                  ? '—'
+                  ? 'Neutra'
                   : `+${getShortStatName(info.increased)} / -${getShortStatName(info.decreased)}`}
               </span>
             </Flex>

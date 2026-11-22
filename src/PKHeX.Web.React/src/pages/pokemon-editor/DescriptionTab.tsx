@@ -23,7 +23,7 @@ import { useQuery } from '@pkhex-everywhere/react'
 import { ItemSelect } from '../../components/ItemSelect'
 import { TypeBadge } from '../../components/TypeBadge'
 import { useTranslation } from '../../i18n'
-import { getNatureDescription, getNatureInfo, isNatureSuitableForStats } from '../../utils/natureEffects'
+import { getNatureDescription, getNatureInfo } from '../../utils/natureEffects'
 import { ChoiceSelect } from './ChoiceSelect'
 import { ExperienceModal } from './ExperienceModal'
 import { isLocked } from './locked'
@@ -47,7 +47,7 @@ export function DescriptionTab() {
   const { t } = useTranslation()
 
   const natureInfo = getNatureInfo(details.nature)
-  const natureSuitable = isNatureSuitableForStats(details.nature, details.stats)
+  const isNatureFieldLocked = isLocked(options, 'nature')
 
   return (
     <Flex vertical gap={16}>
@@ -81,7 +81,9 @@ export function DescriptionTab() {
               <span className="editor-field-label">{t('editor.fields.nickname', 'Apelido')}</span>
               <div
                 style={{
-                  minHeight: 32,
+                  height: 38,
+                  minHeight: 38,
+                  boxSizing: 'border-box',
                   display: 'flex',
                   alignItems: 'center',
                   padding: '4px 11px',
@@ -106,7 +108,7 @@ export function DescriptionTab() {
           <Col xs={24} sm={12}>
             <div className="editor-field-item">
               <span className="editor-field-label">{t('editor.fields.types', 'Tipos')}</span>
-              <div style={{ minHeight: 32, display: 'flex', alignItems: 'center' }}>
+              <div style={{ height: 38, minHeight: 38, boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
                 <Space size={6} wrap align="center">
                   {details.types.map((type) => (
                     <TypeBadge key={type} typeId={type} size="middle" />
@@ -151,7 +153,7 @@ export function DescriptionTab() {
           <Col xs={24} sm={12}>
             <div className="editor-field-item">
               <span className="editor-field-label">{t('editor.fields.characteristics', 'Características Especiais')}</span>
-              <div style={{ minHeight: 32, display: 'flex', alignItems: 'center' }}>
+              <div style={{ height: 38, minHeight: 38, boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
                 <Space size={12} wrap align="center">
                   {details.isShiny && (
                     <Tag
@@ -230,21 +232,21 @@ export function DescriptionTab() {
                   label={t('editor.fields.nature', 'Natureza')}
                   choices={natures}
                   value={details.nature}
-                  stats={details.stats}
-                  disabled={isLocked(options, 'nature')}
+                  disabled={isNatureFieldLocked}
                   onChange={(nature) => submit({ nature })}
                   onInteract={() => setNatureInfoVisible(true)}
                 />
+                {isNatureFieldLocked && (
+                  <div style={{ marginTop: 6 }}>
+                    <Tag color="warning" style={{ margin: 0, padding: '4px 8px', fontSize: 12 }}>
+                      🔒 {t('editor.fields.natureLocked', 'Natureza imutável para este Pokémon (vinculada ao PID / save)')}
+                    </Tag>
+                  </div>
+                )}
                 {natureInfoVisible && (
                   <div style={{ marginTop: 6 }}>
                     <Tag
-                      color={
-                        natureInfo.isNeutral
-                          ? 'default'
-                          : natureSuitable
-                            ? 'blue'
-                            : 'warning'
-                      }
+                      color={natureInfo.isNeutral ? 'default' : 'blue'}
                       style={{
                         margin: 0,
                         padding: '4px 8px',
@@ -360,7 +362,9 @@ export function DescriptionTab() {
               <span className="editor-field-label">PID</span>
               <div
                 style={{
-                  minHeight: 32,
+                  height: 38,
+                  minHeight: 38,
+                  boxSizing: 'border-box',
                   display: 'flex',
                   alignItems: 'center',
                   padding: '4px 11px',

@@ -19,7 +19,6 @@ export function LoadLayout() {
             gap: 20,
           }}
         >
-          Open a save file
           <RoutedContent />
         </div>
       </Layout.Content>

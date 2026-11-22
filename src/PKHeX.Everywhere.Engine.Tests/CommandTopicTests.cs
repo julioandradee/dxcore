@@ -29,6 +29,26 @@ public class CommandTopicTests
             ? []
             : [Args(Convert.ToBase64String(game.Trainer.Party.Pokemons[0].ToFile().Bytes))],
         ["box.list"] = (_, _) => ["[]"],
+        ["box.moveToBox"] = (game, _) =>
+        {
+            if (FirstBoxPokemon(game) is var (at, _))
+            {
+                var slotCount = game.SaveFile.BoxSlotCount;
+                var targetBox = Enumerable.Range(0, game.SaveFile.BoxCount)
+                    .FirstOrDefault(b => b != at.Box && Enumerable.Range(b * slotCount, slotCount).Any(idx => game.Trainer.PokemonBox.All[idx].IsEmpty), -1);
+                if (targetBox >= 0)
+                    return [Args(new object[] { new[] { at }, targetBox })];
+            }
+            return [];
+        },
+        ["box.moveToParty"] = (game, _) =>
+        {
+            if (game.SaveFile is not SAV7b && FirstBoxPokemon(game) is var (at, _) && game.Trainer.Party.Members().Count() < 6)
+            {
+                return [Args(new object[] { new[] { at } })];
+            }
+            return [];
+        },
         ["box.showdown"] = (_, _) => ["[]"],
         ["catalog.names"] = (_, _) => [Args(new { speciesIds = new[] { 25 }, itemIds = new[] { 1 } })],
         ["encounters.events"] = (_, _) => [Args((int)Species.Mew)],
@@ -77,6 +97,7 @@ public class CommandTopicTests
         ["pokemon.clone"] = (game, _) => Pokemons(game).Select(p => Args(p.At)),
         ["pokemon.addToBox"] = (_, _) => ["[]"],
         ["species.list"] = (_, _) => ["[]"],
+        ["species.pokedex"] = (_, _) => ["[]"],
         ["mysteryGift.status"] = (game, _) => game.MysteryGifts is null ? [] : ["[]"],
         ["mysteryGift.events"] = (game, _) => game.MysteryGifts is null ? [] : ["[]"],
         // A Pokémon's preview rolls a new PID each time, so the previews read an item card.

@@ -14,6 +14,7 @@ import { SaveFileDrop } from './SaveFileDrop'
 import { cardGeneration } from './pkhemuInvite'
 import { showRomHacksBadge } from './romHacksBadge'
 import { useLoadSave } from './useLoadSave'
+import { CaptureAnimation } from '../../components/CaptureAnimation'
 
 const swordVersionId = 44
 
@@ -62,7 +63,7 @@ export default function LoadPage() {
             setDemoConfirmOpen(false)
             await openDemo()
           }}
-          okText={t('load.confirmLoadDemo', 'Carregar Demonstração')}
+          okText={t('load.confirmLoadDemo', 'Carregar')}
           cancelText={t('common.cancel', 'Cancelar')}
           title={t('load.demoConfirmTitle', 'Carregar Save de Demonstração?')}
           centered
@@ -70,13 +71,13 @@ export default function LoadPage() {
           <p style={{ marginTop: 12, lineHeight: 1.6 }}>
             {game
               ? t(
-                  'load.demoConfirmWithGame',
-                  'Você já possui um save carregado. Carregar o save de demonstração do Pokémon Emerald (GBA) substituirá os dados atuais da sessão. Se desejar guardar sua partida, exporte ou crie um backup antes. Deseja continuar?',
-                )
+                'load.demoConfirmWithGame',
+                'Você já possui um save carregado. Carregar o save de demonstração do Pokémon Emerald (GBA) substituirá os dados atuais da sessão. Se desejar guardar sua partida, exporte ou crie um backup antes. Deseja continuar?',
+              )
               : t(
-                  'load.demoConfirmNoGame',
-                  'Ainda não há nenhum save carregado no sistema. Deseja carregar o save de demonstração do Pokémon Emerald (GBA) para explorar e testar todas as funções do DXCore?',
-                )}
+                'load.demoConfirmNoGame',
+                'Ainda não há nenhum save carregado no sistema. Deseja carregar o save de demonstração do Pokémon Emerald (GBA) para explorar e testar todas as funções do DXCore?',
+              )}
           </p>
         </Modal>
       </Flex>
@@ -177,7 +178,30 @@ function NoGame({
   const versions = useQuery('game.blankVersions')
 
   return (
-    <Flex vertical align="center" gap={12} style={{ width: '100%', maxWidth: 300 }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: 300,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 14,
+        animation: 'dxcoreFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+      }}
+    >
+      <style>{`
+        @keyframes dxcoreFadeUp {
+          from {
+            opacity: 0;
+            transform: translateY(16px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      <CaptureAnimation staticFinal size={96} style={{ padding: '0 0 4px 0' }} />
       <OpenButton label={t('actions.load')} type="primary" style={{ width: '100%', height: 40 }} onOpen={onOpen} />
       <Space.Compact style={{ width: '100%', height: 40 }}>
         <Button style={{ flexGrow: 1, height: 40 }} onClick={() => engine.game.loadBlank(swordVersionId)}>
@@ -200,7 +224,7 @@ function NoGame({
       <Button style={{ width: '100%', height: 40 }} onClick={onDemo}>
         {t('load.demo')}
       </Button>
-    </Flex>
+    </div>
   )
 }
 
@@ -244,7 +268,7 @@ function OpenButton({ label, type, style, onOpen }: OpenButtonProps) {
           color="yellow"
           // antd sets the badge to width: fit-content, and Space.Compact items to z-index 2-4.
           styles={{
-            root: { display: 'flex', flexDirection: 'column', width: 'auto' },
+            root: { display: 'flex', flexDirection: 'column', width: '100%' },
             indicator: { zIndex: 5, color: 'rgba(0, 0, 0, 0.88)' },
           }}
         >

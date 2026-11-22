@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+  DashboardOutlined,
   ExportOutlined,
   HistoryOutlined,
   InboxOutlined,
@@ -11,6 +12,7 @@ import { EngineError } from '@pkhex-everywhere/engine'
 import { useBox, useEngine, useLoadedGame, useParty, useTrainer } from '@pkhex-everywhere/react'
 import { gameName } from '../../capabilities'
 import { TrainerGenderRadio } from '../../components/TrainerGenderRadio'
+import { BattleIcon } from '../../components/BattleIcon'
 import { downloadFile, useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
 import { routes } from '../../routes'
@@ -77,7 +79,7 @@ function SaveOverviewCard() {
             title={t('home.partyCount', 'Na Equipe')}
             value={totalPartyPokemon}
             suffix="/ 6"
-            prefix={<TeamOutlined style={{ color: '#1677ff' }} />}
+            prefix={<BattleIcon style={{ color: '#1677ff' }} />}
           />
         </Col>
         <Col xs={12} sm={8} md={6}>
@@ -104,7 +106,14 @@ function SaveOverviewCard() {
       </Row>
 
       <Flex wrap="wrap" gap={10} style={{ marginTop: 20 }}>
-        <Button icon={<TeamOutlined />} onClick={() => navigate(routes.party)}>
+        <Button
+          icon={<DashboardOutlined />}
+          onClick={() => navigate(routes.dashboard)}
+          style={{ borderColor: '#38bdf8', color: '#38bdf8', fontWeight: 600 }}
+        >
+          {t('menu.dashboard', 'Dashboard')}
+        </Button>
+        <Button icon={<BattleIcon />} onClick={() => navigate(routes.party)}>
           {t('menu.party', 'Equipe')}
         </Button>
         <Button icon={<InboxOutlined />} onClick={() => navigate(routes.box)}>

@@ -723,6 +723,15 @@ export interface PokedexCount {
   caught: number
 }
 
+/** A species in the game's Pokédex with its seen and caught status in the save file and its types. */
+export interface PokedexSpeciesEntry {
+  id: number
+  name: string
+  seen: boolean
+  caught: boolean
+  types: number[]
+}
+
 /** Where a Pokémon added to the box came from: an imported Pokémon file (`box.addFromFile`) or an encounter search result (`box.addEncounter`). */
 export type PokemonAddSource = 'file' | 'encounter'
 

@@ -15,6 +15,10 @@ export function useBox() {
       addEncounter: (index: number) => engine.box.addEncounter(index),
       /** Adds a Pokémon file to the first empty box slot, converted to the loaded save's format. Fails with `unparseable`, `not-in-game` and `conversion-failed` as `box.previewFile` does, and with `box-full` when no slot is empty. A file no game can move into the save fails with `conversion-failed` unless `allowUnofficial` is set. Requires a loaded save; throws `no-save` otherwise. Wrap in `<RequireGame>`. */
       addFromFile: (bytes: Binary, options?: AddFromFileOptions | null) => engine.box.addFromFile(bytes, options),
+      /** Moves one or more Pokémon to a target box, strictly validating box capacity and limits. Can move Pokémon from other boxes or from the party. Requires a loaded save; throws `no-save` otherwise. Wrap in `<RequireGame>`. */
+      moveToBox: (pokemons: PokemonHandle[], targetBox: number) => engine.box.moveToBox(pokemons, targetBox),
+      /** Moves one or more Pokémon from the box to the trainer's party. Requires a loaded save; throws `no-save` otherwise. Wrap in `<RequireGame>`. */
+      moveToParty: (pokemons: PokemonHandle[]) => engine.box.moveToParty(pokemons),
     }),
     [engine],
   )

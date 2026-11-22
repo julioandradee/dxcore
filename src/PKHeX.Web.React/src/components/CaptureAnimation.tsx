@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { theme } from 'antd'
 
 export interface CaptureAnimationProps {
   /** Callback disparado quando a animação de 2 segundos é concluída */
@@ -9,6 +10,12 @@ export interface CaptureAnimationProps {
   showControls?: boolean
   /** Tamanho da Pokébola em pixels (padrão: 100) */
   size?: number
+  /** Cor personalizada do texto do nome do app (padrão: cor do texto do tema) */
+  textColor?: string
+  /** Estilos inline opcionais para o contêiner raiz */
+  style?: React.CSSProperties
+  /** Se true, renderiza diretamente com a Pokébola no estado final capturado e estável (sem animações de oscilação ou temporizador) */
+  staticFinal?: boolean
 }
 
 /**
@@ -22,21 +29,26 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
   loop = false,
   showControls = false,
   size = 110,
+  textColor,
+  style,
+  staticFinal = false,
 }) => {
   const [animKey, setAnimKey] = useState(0)
+  const { token } = theme.useToken()
 
   const handleReplay = () => {
     setAnimKey((prev) => prev + 1)
   }
 
   useEffect(() => {
+    if (staticFinal) return
     const timer = setTimeout(() => {
       if (onComplete) onComplete()
       if (loop) setAnimKey((prev) => prev + 1)
     }, 2100)
 
     return () => clearTimeout(timer)
-  }, [animKey, loop, onComplete])
+  }, [animKey, loop, onComplete, staticFinal])
 
   return (
     <div
@@ -48,6 +60,7 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
         justifyContent: 'center',
         padding: '24px',
         userSelect: 'none',
+        ...style,
       }}
     >
       <style>{`
@@ -197,41 +210,45 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
           justifyContent: 'center',
         }}
       >
-        {/* Onda de choque emitida no momento do clique (1.7s) */}
-        <div
-          style={{
-            position: 'absolute',
-            width: size * 1.1,
-            height: size * 1.1,
-            borderRadius: '50%',
-            border: '3px solid #38bdf8',
-            pointerEvents: 'none',
-            animation: 'ringShockwave 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards',
-          }}
-        />
+        {/* Onda de choque emitida no momento do clique (1.7s) - apenas quando animado */}
+        {!staticFinal && (
+          <div
+            style={{
+              position: 'absolute',
+              width: size * 1.1,
+              height: size * 1.1,
+              borderRadius: '50%',
+              border: '3px solid #38bdf8',
+              pointerEvents: 'none',
+              animation: 'ringShockwave 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards',
+            }}
+          />
+        )}
 
-        {/* Estrelas / partículas de captura */}
-        <div
-          style={{
-            position: 'absolute',
-            top: -16,
-            left: -16,
-            right: -16,
-            bottom: -16,
-            pointerEvents: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            animation: 'starsBurst 2s ease-out forwards',
-          }}
-        >
-          <span style={{ position: 'absolute', top: 4, left: 10, fontSize: 18, color: '#facc15' }}>✨</span>
-          <span style={{ position: 'absolute', top: 6, right: 12, fontSize: 16, color: '#38bdf8' }}>★</span>
-          <span style={{ position: 'absolute', bottom: 12, left: 8, fontSize: 14, color: '#38bdf8' }}>✦</span>
-          <span style={{ position: 'absolute', bottom: 8, right: 10, fontSize: 17, color: '#facc15' }}>✨</span>
-        </div>
+        {/* Estrelas / partículas de captura - apenas quando animado */}
+        {!staticFinal && (
+          <div
+            style={{
+              position: 'absolute',
+              top: -16,
+              left: -16,
+              right: -16,
+              bottom: -16,
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              animation: 'starsBurst 2s ease-out forwards',
+            }}
+          >
+            <span style={{ position: 'absolute', top: 4, left: 10, fontSize: 18, color: '#facc15' }}>✨</span>
+            <span style={{ position: 'absolute', top: 6, right: 12, fontSize: 16, color: '#38bdf8' }}>★</span>
+            <span style={{ position: 'absolute', bottom: 12, left: 8, fontSize: 14, color: '#38bdf8' }}>✦</span>
+            <span style={{ position: 'absolute', bottom: 8, right: 10, fontSize: 17, color: '#facc15' }}>✨</span>
+          </div>
+        )}
 
-        {/* A Pokébola animada */}
+        {/* A Pokébola (estática com sombra suave se staticFinal, ou animada) */}
         <div
           style={{
             position: 'relative',
@@ -242,7 +259,8 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
             border: '4px solid #1e293b',
             boxSizing: 'border-box',
             transformOrigin: '50% 90%',
-            animation: 'pokeballCapture 2s cubic-bezier(0.3, 0.1, 0.3, 1) forwards',
+            animation: staticFinal ? 'none' : 'pokeballCapture 2s cubic-bezier(0.3, 0.1, 0.3, 1) forwards',
+            filter: staticFinal ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.35))' : undefined,
             overflow: 'hidden',
           }}
         >
@@ -304,14 +322,16 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
                 justifyContent: 'center',
               }}
             >
-              {/* Botão LED pulsante */}
+              {/* Botão LED: azul fixo no modo staticFinal ou pulsante durante captura */}
               <div
                 style={{
                   width: '56%',
                   height: '56%',
                   borderRadius: '50%',
                   border: '1.5px solid #64748b',
-                  animation: 'ledBlink 2s ease-in-out forwards',
+                  backgroundColor: staticFinal ? '#38bdf8' : undefined,
+                  boxShadow: staticFinal ? '0 0 10px #38bdf8, inset 0 0 3px #ffffff' : undefined,
+                  animation: staticFinal ? 'none' : 'ledBlink 2s ease-in-out forwards',
                 }}
               />
             </div>
@@ -323,10 +343,11 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
       <div
         style={{
           marginTop: 18,
+          marginBottom: 20,
           display: 'flex',
           alignItems: 'center',
           gap: 9,
-          animation: 'dxcoreReveal 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards',
+          animation: staticFinal ? 'none' : 'dxcoreReveal 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards',
         }}
       >
         <span
@@ -348,8 +369,8 @@ export const CaptureAnimation: React.FC<CaptureAnimationProps> = ({
             letterSpacing: 2,
             fontFamily:
               "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-            color: '#f8fafc',
-            textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            color: textColor || token.colorText,
+            textShadow: '0 2px 8px rgba(0,0,0,0.3)',
           }}
         >
           DXCore

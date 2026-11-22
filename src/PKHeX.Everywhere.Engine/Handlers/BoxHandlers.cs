@@ -1,3 +1,4 @@
+using PKHeX.Core;
 using PKHeX.Everywhere.Engine.Dtos;
 using PKHeX.Facade;
 using PKHeX.Facade.Extensions;
@@ -103,5 +104,124 @@ public static class BoxHandlers
         var at = PokemonSlots.BoxHandle(game.SaveFile, index);
         session.Raise(new PokemonAdded(at, source, box.All[index].ToOverview()));
         return new AddedPokemon(new PokemonId(box.All[index].UniqueId.Value), at);
+    }
+
+    /// <summary>
+    /// Moves one or more Pokémon to a target box, strictly validating box capacity and limits.
+    /// Can move Pokémon from other boxes or from the party.
+    /// </summary>
+    [Requires(Requirement.Save)]
+    [Command("box.moveToBox", Topics.Box)]
+    public static void MoveToBox(Session session, Game game, PokemonHandle[] pokemons, int targetBox)
+    {
+        var save = game.SaveFile;
+        if (targetBox < 0 || targetBox >= save.BoxCount)
+            throw new EngineException(ErrorCodes.BadArguments, $"Caixa inválida: {targetBox + 1}. O save possui {save.BoxCount} caixas.");
+
+        var slotCount = save.BoxSlotCount;
+        var targetStart = targetBox * slotCount;
+
+        var boxIndices = pokemons
+            .Where(p => p.Source == SlotSource.Box && p.Box.HasValue && p.Box.Value != targetBox)
+            .Select(p => p.Box!.Value * slotCount + p.Slot)
+            .Where(idx => idx >= 0 && idx < game.Trainer.PokemonBox.All.Count && !game.Trainer.PokemonBox.All[idx].IsEmpty)
+            .Distinct()
+            .ToList();
+
+        var partySlots = pokemons
+            .Where(p => p.Source == SlotSource.Party)
+            .Select(p => p.Slot)
+            .Where(s => s >= 0 && s < game.Trainer.Party.Pokemons.Count && !game.Trainer.Party.Pokemons[s].IsEmpty)
+            .Distinct()
+            .ToList();
+
+        var totalToMove = boxIndices.Count + partySlots.Count;
+        if (totalToMove == 0) return;
+
+        if (partySlots.Count > 0)
+        {
+            if (save is SAV7b)
+                throw new EngineException(ErrorCodes.NotSupported, "Saves de Let's Go gerenciam a equipe diretamente pelo Box.");
+
+            var currentPartyCount = game.Trainer.Party.Members().Count();
+            if (currentPartyCount - partySlots.Count < 1)
+                throw new EngineException(ErrorCodes.BadArguments, "A equipe não pode ficar vazia. Deve restar pelo menos 1 Pokémon na equipe.");
+        }
+
+        var targetEmptySlots = new List<int>();
+        for (var s = 0; s < slotCount; s++)
+        {
+            var flat = targetStart + s;
+            if (save.IsBoxSlotOverwriteProtected(flat)) continue;
+            if (game.Trainer.PokemonBox.All[flat].IsEmpty)
+                targetEmptySlots.Add(flat);
+        }
+
+        if (totalToMove > targetEmptySlots.Count)
+            throw new EngineException(ErrorCodes.BoxFull, $"A Caixa {targetBox + 1} possui apenas {targetEmptySlots.Count} vaga(s) disponível(is), mas {totalToMove} Pokémon foram selecionados.");
+
+        var dstIndex = 0;
+        foreach (var src in boxIndices)
+        {
+            var dst = targetEmptySlots[dstIndex++];
+            var pkm = game.Trainer.PokemonBox.All[src].Pkm;
+            game.Trainer.PokemonBox.Write(pkm, dst);
+            game.Trainer.PokemonBox.Write(save.BlankPKM, src);
+        }
+
+        foreach (var slot in partySlots)
+        {
+            var dst = targetEmptySlots[dstIndex++];
+            var pkm = game.Trainer.Party.Pokemons[slot].Pkm;
+            game.Trainer.PokemonBox.Write(pkm, dst);
+        }
+
+        game.Trainer.PokemonBox.Reload();
+
+        if (partySlots.Count > 0)
+        {
+            game.Trainer.Party.Remove(partySlots);
+            session.AlsoWrote(Topics.Party);
+        }
+    }
+
+    /// <summary>
+    /// Moves one or more Pokémon from the box to the trainer's party.
+    /// </summary>
+    [Requires(Requirement.Save)]
+    [Command("box.moveToParty", Topics.Box, Topics.Party)]
+    public static void MoveToParty(Session session, Game game, PokemonHandle[] pokemons)
+    {
+        var save = game.SaveFile;
+        if (save is SAV7b)
+            throw new EngineException(ErrorCodes.NotSupported, "Saves de Let's Go gerenciam a equipe diretamente pelo Box.");
+
+        var slotCount = save.BoxSlotCount;
+
+        var boxIndices = pokemons
+            .Where(p => p.Source == SlotSource.Box && p.Box.HasValue)
+            .Select(p => p.Box!.Value * slotCount + p.Slot)
+            .Where(idx => idx >= 0 && idx < game.Trainer.PokemonBox.All.Count && !game.Trainer.PokemonBox.All[idx].IsEmpty)
+            .Distinct()
+            .ToList();
+
+        if (boxIndices.Count == 0) return;
+
+        var currentPartyCount = game.Trainer.Party.Members().Count();
+        var freeSlots = 6 - currentPartyCount;
+
+        if (boxIndices.Count > freeSlots)
+            throw new EngineException(ErrorCodes.BadArguments, $"A equipe possui apenas {freeSlots} vaga(s) disponível(is), mas {boxIndices.Count} Pokémon foram selecionados.");
+
+        var toAdd = new List<PKM>();
+        foreach (var src in boxIndices)
+        {
+            var pkm = game.Trainer.PokemonBox.All[src].Pkm.Clone();
+            toAdd.Add(pkm);
+            game.Trainer.PokemonBox.Write(save.BlankPKM, src);
+        }
+
+        game.Trainer.Party.Add(toAdd);
+        game.Trainer.PokemonBox.Reload();
     }
 }

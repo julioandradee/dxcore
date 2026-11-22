@@ -25,6 +25,8 @@ import {
 } from '@ant-design/icons'
 import { Button, Card, Col, Empty, Flex, Input, Row, Segmented, Tag, Typography } from 'antd'
 import { useNavigate } from 'react-router'
+import { PageHeader } from '../../components/PageHeader'
+import { BattleIcon } from '../../components/BattleIcon'
 import { useTranslation } from '../../i18n'
 import { routes } from '../../routes'
 
@@ -230,7 +232,7 @@ export default function FeaturesPage() {
         id: 'partyManager',
         category: 'core',
         tagColor: 'blue',
-        icon: <TeamOutlined style={{ fontSize: 20, color: '#1677ff' }} />,
+        icon: <BattleIcon style={{ fontSize: 20, color: '#1677ff' }} />,
         titleKey: 'features.item.partyManager.title',
         descKey: 'features.item.partyManager.desc',
         fallbackTitle: 'Gerenciador da Equipe Ativa',
@@ -339,67 +341,57 @@ export default function FeaturesPage() {
 
   return (
     <Flex vertical gap={16} style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
-      {/* Cabeçalho */}
-      <Card styles={{ body: { padding: '16px 20px' } }}>
-        <Flex vertical gap={16}>
-          <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
-            <Flex align="center" gap={10}>
-              <Button
-                icon={<ArrowLeftOutlined />}
-                onClick={() => navigate(routes.settings)}
-                aria-label={t('features.backToSettings', 'Voltar para Configurações')}
-              />
-              <Typography.Title level={4} style={{ margin: 0 }}>
-                {t('features.headerTitle', 'Catálogo de Recursos do DXCore')}
-              </Typography.Title>
-            </Flex>
+      {/* Cabeçalho Padronizado do Sistema */}
+      <PageHeader
+        showBack
+        onBack={() => navigate(routes.settings)}
+        title={t('features.headerTitle', 'Catálogo de Recursos do DXCore')}
+        extra={
+          <Input
+            prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+            placeholder={t('features.searchPlaceholder', 'Filtrar funções...')}
+            allowClear
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: '100%', maxWidth: 280 }}
+          />
+        }
+      />
 
-            <Input
-              prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
-              placeholder={t('features.searchPlaceholder', 'Filtrar funções...')}
-              allowClear
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', maxWidth: 280 }}
-            />
-          </Flex>
+      <Typography.Text type="secondary" style={{ fontSize: 13, lineHeight: 1.4, marginTop: -4 }}>
+        {t(
+          'features.headerSubtitle',
+          'Visão geral das melhorias adicionadas e de todas as funções principais do editor.',
+        )}
+      </Typography.Text>
 
-          <Typography.Text type="secondary" style={{ fontSize: 13, lineHeight: 1.4 }}>
-            {t(
-              'features.headerSubtitle',
-              'Visão geral das melhorias adicionadas e de todas as funções principais do editor.',
-            )}
-          </Typography.Text>
+      <Flex wrap="wrap" gap={12} justify="space-between" align="center">
+        <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
+          <Segmented
+            value={activeTab}
+            onChange={(val) => setActiveTab(val as 'all' | 'new' | 'core')}
+            options={[
+              {
+                label: `${t('features.tabAll', 'Todas')} (${features.length})`,
+                value: 'all',
+              },
+              {
+                label: `✨ ${t('features.tabNew', 'Novidades')} (${newCount})`,
+                value: 'new',
+              },
+              {
+                label: `⚙️ ${t('features.tabCore', 'Sistema')} (${coreCount})`,
+                value: 'core',
+              },
+            ]}
+          />
+        </div>
 
-          <Flex wrap="wrap" gap={12} justify="space-between" align="center">
-            <div style={{ maxWidth: '100%', overflowX: 'auto' }}>
-              <Segmented
-                value={activeTab}
-                onChange={(val) => setActiveTab(val as 'all' | 'new' | 'core')}
-                options={[
-                  {
-                    label: `${t('features.tabAll', 'Todas')} (${features.length})`,
-                    value: 'all',
-                  },
-                  {
-                    label: `✨ ${t('features.tabNew', 'Novidades')} (${newCount})`,
-                    value: 'new',
-                  },
-                  {
-                    label: `⚙️ ${t('features.tabCore', 'Sistema')} (${coreCount})`,
-                    value: 'core',
-                  },
-                ]}
-              />
-            </div>
-
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {filteredFeatures.length} / {features.length}{' '}
-              {t('features.countSuffix', 'funções')}
-            </Typography.Text>
-          </Flex>
-        </Flex>
-      </Card>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          {filteredFeatures.length} / {features.length}{' '}
+          {t('features.countSuffix', 'funções')}
+        </Typography.Text>
+      </Flex>
 
       {/* Grid de Funções */}
       {filteredFeatures.length === 0 ? (

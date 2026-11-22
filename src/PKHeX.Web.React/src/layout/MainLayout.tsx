@@ -2,6 +2,7 @@ import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import {
   BulbFilled,
   BulbOutlined,
+  DashboardOutlined,
   FlagOutlined,
   HistoryOutlined,
   HomeOutlined,
@@ -10,6 +11,7 @@ import {
   SettingOutlined,
   ShopOutlined,
   TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons'
 import { Button, Dropdown, Flex, Grid, Layout, Menu, Space, Tag, type MenuProps } from 'antd'
 import { Link, useLocation } from 'react-router'
@@ -19,14 +21,17 @@ import { changeTheme, useNavigate, useTheme } from '../host'
 import { routes } from '../routes'
 import { useTranslation } from '../i18n'
 import { SaveBackupModal } from '../snapshots/SaveBackupModal'
-import { Footer } from './Footer'
 import { RoutedContent } from './RoutedContent'
 import { menuEntries, type MenuEntry, type MenuIcon } from './menu'
 import { NewsBanner } from './NewsBanner'
+import { BattleIcon } from '../components/BattleIcon'
 
 const icons: Record<MenuIcon, ReactNode> = {
   home: <HomeOutlined />,
-  team: <TeamOutlined />,
+  user: <UserOutlined />,
+  dashboard: <DashboardOutlined />,
+  team: <BattleIcon />,
+  battle: <BattleIcon />,
   inbox: <InboxOutlined />,
   shop: <ShopOutlined />,
   flag: <FlagOutlined />,
@@ -168,13 +173,13 @@ export function MainLayout() {
   const mobileMenuItems: MenuProps['items'] = [
     ...(game && game.hasEvents && supports(game, 'events')
       ? [
-          {
-            key: 'events',
-            icon: <FlagOutlined />,
-            label: t('menu.events', 'Eventos'),
-            onClick: () => navigate(routes.events),
-          },
-        ]
+        {
+          key: 'events',
+          icon: <FlagOutlined />,
+          label: t('menu.events', 'Eventos'),
+          onClick: () => navigate(routes.events),
+        },
+      ]
       : []),
     {
       key: 'save',
@@ -210,14 +215,15 @@ export function MainLayout() {
 
   const mobileNavItems = game
     ? [
-        { key: 'home', route: routes.home, icon: <HomeOutlined />, label: t('menu.home', 'Início') },
-        { key: 'party', route: routes.party, icon: <TeamOutlined />, label: t('menu.party', 'Equipe') },
-        { key: 'box', route: routes.box, icon: <InboxOutlined />, label: t('menu.box', 'Caixas') },
-        { key: 'items', route: routes.items, icon: <ShopOutlined />, label: t('menu.items', 'Itens') },
-      ]
+      { key: 'dashboard', route: routes.dashboard, icon: <DashboardOutlined />, label: t('menu.dashboard', 'Dashboard') },
+      { key: 'trainer', route: routes.trainer, icon: <UserOutlined />, label: t('menu.trainer', 'Treinador') },
+      { key: 'party', route: routes.party, icon: <BattleIcon />, label: t('menu.party', 'Equipe') },
+      { key: 'box', route: routes.box, icon: <InboxOutlined />, label: t('menu.box', 'Caixas') },
+      { key: 'items', route: routes.items, icon: <ShopOutlined />, label: t('menu.items', 'Itens') },
+    ]
     : [
-        { key: 'save', route: routes.save, icon: <SaveOutlined />, label: t('menu.save', 'Salvar / Carregar') },
-      ]
+      { key: 'save', route: routes.save, icon: <SaveOutlined />, label: t('menu.save', 'Salvar / Carregar') },
+    ]
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -233,7 +239,7 @@ export function MainLayout() {
           style={{
             color: 'white',
             marginTop: 10,
-            padding: '16px 12px',
+            padding: '24px 12px',
             textAlign: 'center',
             fontWeight: 'bold',
             letterSpacing: 1,
@@ -345,7 +351,6 @@ export function MainLayout() {
             <RoutedContent key={pathname} />
           </div>
         </Layout.Content>
-        <Footer />
         <SaveBackupModal open={backupModalOpen} onClose={() => setBackupModalOpen(false)} />
 
         {/* Barra de Navegação Inferior estilo App no Mobile */}
@@ -397,22 +402,20 @@ export function MainLayout() {
                   flex: 1,
                   height: '100%',
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '4px 0',
+                  padding: 0,
                   color,
                   transition: 'color 0.2s',
                   WebkitTapHighlightColor: 'transparent',
                 }}
                 aria-label={item.label}
               >
-                <span style={{ fontSize: 19, marginBottom: 2 }}>{item.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: isActive ? 600 : 400, lineHeight: 1.1 }}>
-                  {item.label}
+                <span style={{ fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {item.icon}
                 </span>
               </button>
             )

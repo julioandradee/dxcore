@@ -61,7 +61,7 @@ public class PokemonBox : IMutablePokemonCollection
         TakeSnapshot();
     }
 
-    private void Write(PKM pkm, int index)
+    internal void Write(PKM pkm, int index)
     {
         _game.SaveFile.SetBoxSlotAtIndex(pkm, index, EntityImportSettings.None);
         XDShadows.Write(_game.SaveFile, pkm);

@@ -34,8 +34,8 @@ describe('journey', () => {
     expect(journey.redirectsToLoad(false)).toBe(false)
   })
 
-  it('goes Home after a save loads and to the load page after it closes', () => {
-    expect(routeAfter({ type: 'gameLoaded', game: emerald })).toBe('/')
+  it('goes to dashboard after a save loads and to the load page after it closes', () => {
+    expect(routeAfter({ type: 'gameLoaded', game: emerald })).toBe('/dashboard')
     expect(routeAfter({ type: 'gameClosed' })).toBe('/load')
     expect(routeAfter({ type: 'itemChanged', itemId: 1, count: 1 })).toBeNull()
   })

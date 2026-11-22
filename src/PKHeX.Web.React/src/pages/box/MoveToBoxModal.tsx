@@ -23,13 +23,14 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
 
   // Calculate box statistics
   const boxStats = useMemo(() => {
+    const isFromParty = selected.length > 0 && selected[0]?.at.source === 'party'
     return boxList.map((b: BoxEntry) => {
       const occupied = box.filter((p) => p.at.box === b.box).length
       const freeSlots = Math.max(0, b.slots - occupied)
-      const selectedInBox = selected.filter((p) => p.at.box === b.box).length
+      const selectedInBox = isFromParty ? 0 : selected.filter((p) => p.at.box === b.box).length
       const netToMove = selected.length - selectedInBox
       const canFit = freeSlots >= netToMove && netToMove > 0
-      const isCurrent = selectedInBox === selected.length
+      const isCurrent = !isFromParty && selectedInBox === selected.length
       const displayName = b.name && b.name.trim().length > 0 ? b.name : `${t('box.boxLabel', 'Caixa')} ${b.box + 1}`
 
       return {
@@ -55,9 +56,8 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
     setMoving(true)
     try {
       const handles = selected.map((p) => p.at)
-      const boxEngine = engine.box as unknown as { moveToBox?: (h: unknown[], b: number) => Promise<void> }
-      if (typeof boxEngine?.moveToBox === 'function') {
-        await boxEngine.moveToBox(handles, targetBox)
+      if (typeof engine.box?.moveToBox === 'function') {
+        await engine.box.moveToBox(handles, targetBox)
       } else {
         await call(engine, 'box.moveToBox' as never, [handles, targetBox])
       }
@@ -81,12 +81,18 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
     }
   }
 
+  const isFromParty = selected.length > 0 && selected[0]?.at.source === 'party'
+
   return (
     <Modal
       open={open}
       title={
         <Space align="center">
-          <span>{t('box.moveModalTitle', 'Mover Pokémon para outra Caixa')}</span>
+          <span>
+            {isFromParty
+              ? t('party.moveToBoxModalTitle', 'Mover Pokémon da Equipe para o Box')
+              : t('box.moveModalTitle', 'Mover Pokémon para outra Caixa')}
+          </span>
           <Tag color="blue">
             {selected.length === 1
               ? t('box.oneSelected', '1 Pokémon selecionado')
@@ -106,7 +112,7 @@ export function MoveToBoxModal({ open, selected, onClose, onSuccess }: MoveToBox
           disabled={!selectedStats || !selectedStats.canFit || moving}
           onClick={() => void handleMove()}
         >
-          {t('box.confirmMove', 'Confirmar Transferência')}
+          {t('box.confirmMove', 'Transferir')}
         </Button>,
       ]}
       width={600}

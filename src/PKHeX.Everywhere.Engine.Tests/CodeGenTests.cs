@@ -7,7 +7,7 @@ namespace PKHeX.Everywhere.Engine.Tests;
 public class CodeGenTests
 {
     private static readonly Contract Contract = Contract.Read(typeof(Session).Assembly, [typeof(PlugInHandlers).Assembly]);
-    private static readonly Dictionary<string, string> Files = TypeScript.Write(Contract).ToDictionary(f => f.File, f => f.Content);
+    private static readonly Dictionary<string, string> Files = TypeScript.Write(Contract).ToDictionary(f => f.File, f => f.Content.ReplaceLineEndings("\n"));
 
     private static string Client => Files["engine/src/generated/client.ts"];
     private static string Types => Files["engine/src/generated/types.ts"];

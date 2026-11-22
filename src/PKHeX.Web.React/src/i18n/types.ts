@@ -7,7 +7,7 @@ export interface LanguageOption {
 }
 
 export const availableLanguages: LanguageOption[] = [
-  { code: 'pt-BR', label: 'Português (Brasil)', flag: '🇧🇷' },
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'pt-BR', label: 'Português (Brasil)', flag: '' },
+  { code: 'en', label: 'English', flag: '' },
+  { code: 'es', label: 'Español', flag: '' },
 ]

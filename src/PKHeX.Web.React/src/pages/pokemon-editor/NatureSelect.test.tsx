@@ -64,4 +64,18 @@ describe('NatureSelect', () => {
     })
     expect(onInteract).toHaveBeenCalled()
   })
+
+  it('renders with all natures available for free selection', () => {
+    const { container } = render(
+      <NatureSelect
+        label="Natureza"
+        choices={natures}
+        value={3}
+        onChange={() => {}}
+      />,
+    )
+
+    expect(container.querySelector('.ant-select')).not.toBeNull()
+    expect(container.textContent).toContain('Adamant')
+  })
 })

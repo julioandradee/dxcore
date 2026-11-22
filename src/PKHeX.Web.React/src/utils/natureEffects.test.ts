@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { StatValues } from '@pkhex-everywhere/engine'
-import { getNatureDescription, getNatureInfo, getShortStatName, isNatureSuitableForStats } from './natureEffects'
+import {
+  checkNatureApplicability,
+  getNatureDescription,
+  getNatureInfo,
+  getShortStatName,
+  isNatureSuitableForStats,
+} from './natureEffects'
 
 describe('natureEffects', () => {
   it('correctly identifies neutral natures', () => {
@@ -123,6 +129,48 @@ describe('natureEffects', () => {
       expect(isNatureSuitableForStats(3, alakazamStats)).toBe(false) // Adamant
       expect(isNatureSuitableForStats(13, alakazamStats)).toBe(false) // Jolly
       expect(isNatureSuitableForStats(4, alakazamStats)).toBe(false) // Naughty (+Atk, -SpD: boosts attack)
+    })
+  })
+
+  describe('checkNatureApplicability', () => {
+    it('always marks current nature as applicable', () => {
+      const details = { nature: 3, version: 3 } // Emerald (Gen 3), Adamant
+      const result = checkNatureApplicability(3, details, null, 3)
+      expect(result.canApply).toBe(true)
+    })
+
+    it('rejects other natures in Gen 3 for non-egg Pokemon (PID correlation invalidity)', () => {
+      const details = { nature: 3, version: 3, isEgg: false } // Gen 3 Emerald
+      const jolly = checkNatureApplicability(13, details, null, 3)
+      expect(jolly.canApply).toBe(false)
+      expect(jolly.reason).toContain('PID-Natureza')
+    })
+
+    it('allows all natures for bred eggs in Gen 3/4', () => {
+      const details = { nature: 3, version: 3, isEgg: true }
+      const jolly = checkNatureApplicability(13, details, null, 3)
+      expect(jolly.canApply).toBe(true)
+    })
+
+    it('allows other natures in Gen 5+ where PID and nature are decoupled', () => {
+      const details = { nature: 3, version: 20, isEgg: false } // Gen 5
+      const jolly = checkNatureApplicability(13, details, null, 5)
+      expect(jolly.canApply).toBe(true)
+    })
+
+    it('rejects changes when nature is locked in ROM hack options', () => {
+      const details = { nature: 3, version: 4 }
+      const options = { locked: ['nature'] }
+      const jolly = checkNatureApplicability(13, details, options, 3)
+      expect(jolly.canApply).toBe(false)
+      expect(jolly.reason).toContain('Bloqueado')
+    })
+
+    it('rejects changes for fateful encounter / event Pokemon', () => {
+      const details = { nature: 3, fatefulEncounter: true, version: 20 }
+      const jolly = checkNatureApplicability(13, details, null, 5)
+      expect(jolly.canApply).toBe(false)
+      expect(jolly.reason).toContain('evento')
     })
   })
 })

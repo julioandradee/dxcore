@@ -37,6 +37,15 @@ public class SpeciesHandlerTests
         species.Select(s => s!["name"]!.GetValue<string>()).Should().Contain("Abra");
     }
 
+    [Theory]
+    [SupportedSaveFiles]
+    public void PokedexReturnsForAnySaveFile(string saveFile)
+    {
+        var session = Loaded(saveFile);
+        var pokedex = Value(Dispatch(session, "species.pokedex", "[]"))!.AsArray();
+        pokedex.Should().NotBeNull();
+    }
+
     [Fact]
     public void ListReturnsNoSaveWithoutALoadedSave() =>
         Error(Dispatch(new Session(), "species.list", "[]")).Should().Be("no-save");

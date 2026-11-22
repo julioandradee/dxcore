@@ -23,12 +23,13 @@ describe('menuEntries', () => {
   })
 
   it('shows Party, Pokemon Box and Items with a save', () => {
-    expect(labels(menuEntries(save(false)))).toEqual(['Home', 'Party', 'Pokemon Box', 'Items', 'Save'])
+    expect(labels(menuEntries(save(false)))).toEqual(['Dashboard', 'Trainer', 'Party', 'Pokemon Box', 'Items', 'Save'])
   })
 
   it('shows Events when the save has events', () => {
     expect(labels(menuEntries(save(true)))).toEqual([
-      'Home',
+      'Dashboard',
+      'Trainer',
       'Party',
       'Pokemon Box',
       'Items',

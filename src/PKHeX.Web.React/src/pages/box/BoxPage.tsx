@@ -31,7 +31,9 @@ import {
   type MenuProps,
 } from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
-import { useBox, useEngine, useLoadedGame } from '@pkhex-everywhere/react'
+import { call } from '@pkhex-everywhere/engine/internal'
+import { useBox, useEngine, useLoadedGame, useParty } from '@pkhex-everywhere/react'
+import { BattleIcon } from '../../components/BattleIcon'
 import { PageHeader } from '../../components/PageHeader'
 import { PokemonTable } from '../../components/PokemonTable'
 import { useCopyShowdown } from '../../hooks/useCopyShowdown'
@@ -49,6 +51,7 @@ import { typeData } from '../../components/TypeBadge'
 
 export default function BoxPage() {
   const { box } = useBox()
+  const { party } = useParty()
   const { game } = useLoadedGame()
   const engine = useEngine()
   const navigate = useNavigate()
@@ -95,6 +98,56 @@ export default function BoxPage() {
       notification.error({
         message: t('batch.cloneError', 'Erro ao clonar Pokémon'),
         description: String(e),
+      })
+    } finally {
+      setBatchBusy(false)
+    }
+  }
+
+  const handleMoveToParty = async () => {
+    if (selected.length === 0) return
+    const currentPartyCount = party.length
+    const availableSlots = 6 - currentPartyCount
+    if (availableSlots <= 0) {
+      notification.warning({
+        message: t('party.partyFullTitle', 'Equipe Lotada'),
+        description: t('party.partyFullDesc', 'A equipe já possui o limite máximo de 6 Pokémon.'),
+      })
+      return
+    }
+    if (selected.length > availableSlots) {
+      notification.warning({
+        message: t('party.notEnoughSlotsTitle', 'Vagas Insuficientes na Equipe'),
+        description: t(
+          'party.notEnoughSlotsDesc',
+          'A equipe possui apenas {0} vaga(s) disponível(is), mas foram selecionados {1} Pokémon.',
+        )
+          .replace('{0}', String(availableSlots))
+          .replace('{1}', String(selected.length)),
+      })
+      return
+    }
+
+    setBatchBusy(true)
+    try {
+      const handles = selected.map((p) => p.at)
+      if (typeof engine.box?.moveToParty === 'function') {
+        await engine.box.moveToParty(handles)
+      } else {
+        await call(engine, 'box.moveToParty' as never, [handles])
+      }
+      notification.success({
+        message: t('box.moveToPartySuccessTitle', 'Pokémon movidos para a equipe!'),
+        description: t(
+          'box.moveToPartySuccessDesc',
+          '{0} Pokémon foram transferidos para a equipe com sucesso.',
+        ).replace('{0}', String(selected.length)),
+      })
+      setSelected([])
+    } catch (err: unknown) {
+      notification.error({
+        message: t('box.moveToPartyErrorTitle', 'Erro ao mover para a equipe'),
+        description: String((err as { message?: string })?.message || err),
       })
     } finally {
       setBatchBusy(false)
@@ -254,6 +307,16 @@ export default function BoxPage() {
                 : t('box.moveMultiple', 'Mover ({0}) para outra Caixa').replace('{0}', String(selected.length)),
             disabled: !hasSelection,
             onClick: () => setMovingBox(true),
+          },
+          {
+            key: 'move-to-party',
+            icon: <BattleIcon />,
+            label:
+              selected.length === 1
+                ? t('box.moveToPartySingle', 'Mover para a Equipe')
+                : t('box.moveToPartyMultiple', 'Mover ({0}) para a Equipe').replace('{0}', String(selected.length)),
+            disabled: !hasSelection || batchBusy,
+            onClick: () => void handleMoveToParty(),
           },
           {
             key: 'export',
@@ -528,7 +591,7 @@ export default function BoxPage() {
               ]}
             />
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-              <Button type="primary" icon={<AppstoreOutlined />}>
+              <Button type="primary">
                 <span>{t('box.actions', 'Ações')}</span>
                 {selected.length > 0 && (
                   <span

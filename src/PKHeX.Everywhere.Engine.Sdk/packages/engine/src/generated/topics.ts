@@ -52,6 +52,7 @@ export const queryTopics: Record<QueryName, readonly Topic[]> = {
   'pokemon.read': [],
   'pokemon.showdown': ['party', 'box', 'team', 'draft'],
   'species.list': ['game'],
+  'species.pokedex': ['game', 'party', 'box'],
   'team.get': ['team'],
   'team.list': ['team'],
   'trainer.badges': ['trainer', 'events'],

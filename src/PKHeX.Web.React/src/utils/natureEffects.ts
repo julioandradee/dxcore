@@ -148,3 +148,65 @@ export function isNatureSuitableForStats(natureId: number, stats?: StatValues | 
 
   return true
 }
+
+export interface NatureApplicability {
+  canApply: boolean
+  reason?: string
+}
+
+export function checkNatureApplicability(
+  natureId: number,
+  details?: {
+    nature: number
+    isEgg?: boolean
+    fatefulEncounter?: boolean
+    version?: number
+  } | null,
+  options?: { locked?: string[] } | null,
+  generation?: number,
+): NatureApplicability {
+  if (!details) {
+    return { canApply: true }
+  }
+
+  // 1. A própria natureza atual é sempre legal e compatível (não causa novo erro)
+  if (natureId === details.nature) {
+    return { canApply: true }
+  }
+
+  // 2. Natureza explicitamente bloqueada nas opções do jogo ou ROM hack
+  if (options?.locked?.includes('nature')) {
+    return {
+      canApply: false,
+      reason: 'Bloqueado (Não permitido alterar natureza neste jogo)',
+    }
+  }
+
+  // 3. Fateful encounter / Pokémon de evento com natureza fixa
+  if (details.fatefulEncounter) {
+    return {
+      canApply: false,
+      reason: 'Incompatível (Pokémon de evento com natureza fixa)',
+    }
+  }
+
+  // 4. Gerações 3 e 4 (exceto se for ovo / chocado):
+  // A natureza é matematicamente vinculada ao PID (PID % 25).
+  // Modificar a natureza gera um novo PID arbitrário que quebra a correlação do LCRNG com os IVs do encontro
+  // (provocando PIDTypeMismatch / PIDNatureMismatch no PKHeX).
+  const gen3And4Versions = [1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 15, 16]
+  const isGen3or4 =
+    generation === 3 ||
+    generation === 4 ||
+    (details.version !== undefined && gen3And4Versions.includes(details.version))
+
+  if (isGen3or4 && !details.isEgg) {
+    return {
+      canApply: false,
+      reason: 'Incompatível (Vínculo PID-Natureza causará erro de invalidade)',
+    }
+  }
+
+  return { canApply: true }
+}
+

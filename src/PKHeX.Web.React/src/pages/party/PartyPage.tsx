@@ -17,6 +17,7 @@ import { useExportPokemon } from '../../hooks/useExportPokemon'
 import { useSupports } from '../../hooks/useSupports'
 import { changePokemonListView, openCalculator, usePokemonListView, type PokemonListView } from '../../host'
 import { useTranslation } from '../../i18n'
+import { MoveToBoxModal } from '../box/MoveToBoxModal'
 
 export default function PartyPage() {
   const { party } = useParty()
@@ -25,6 +26,7 @@ export default function PartyPage() {
   const listView = usePokemonListView()
   const { notification } = App.useApp()
   const [selected, setSelected] = useState<PokemonSummary[]>([])
+  const [movingBox, setMovingBox] = useState(false)
   const { exportMultiple, exporting } = useExportPokemon()
   const [batchBusy, setBatchBusy] = useState(false)
   const copyShowdown = useCopyShowdown()
@@ -59,6 +61,24 @@ export default function PartyPage() {
         type: 'group',
         label: `${t('party.selectionGroup', 'Ações de Seleção')} (${selected.length})`,
         children: [
+          {
+            key: 'move-to-box',
+            label:
+              selected.length === 1
+                ? t('party.moveToBoxSingle', 'Mover para o Box')
+                : t('party.moveToBoxMultiple', 'Mover ({0}) para o Box').replace('{0}', String(selected.length)),
+            disabled: !hasSelection || selected.length >= party.length,
+            onClick: () => {
+              if (selected.length >= party.length) {
+                notification.warning({
+                  message: t('party.cannotEmptyTitle', 'A equipe não pode ficar vazia'),
+                  description: t('party.cannotEmptyDesc', 'Pelo menos 1 Pokémon deve permanecer na equipe.'),
+                })
+                return
+              }
+              setMovingBox(true)
+            },
+          },
           {
             key: 'export',
             icon: <DownloadOutlined />,
@@ -164,7 +184,7 @@ export default function PartyPage() {
 
             {/* Menu de ações */}
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-              <Button type="primary" icon={<AppstoreOutlined />}>
+              <Button type="primary">
                 <span>{t('party.actions', 'Ações')}</span>
                 {selected.length > 0 && (
                   <span
@@ -193,6 +213,17 @@ export default function PartyPage() {
         onSelectedChange={setSelected}
         pagination={false}
       />
+      {movingBox && (
+        <MoveToBoxModal
+          open={movingBox}
+          selected={selected}
+          onClose={() => setMovingBox(false)}
+          onSuccess={() => {
+            setMovingBox(false)
+            setSelected([])
+          }}
+        />
+      )}
     </Flex>
   )
 }

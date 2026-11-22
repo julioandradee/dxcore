@@ -1,3 +1,4 @@
+using PKHeX.Core;
 using PKHeX.Facade.Repositories;
 
 namespace PKHeX.Everywhere.Engine.Dtos;
@@ -76,6 +77,26 @@ public static class EncounterMapping
     public static EncounterRow ToRow(this Encounter encounter, int index)
     {
         var ball = encounter.Ball;
+        var location = encounter.Location.Name;
+        if (string.IsNullOrWhiteSpace(location) || location == "(Unknown)")
+        {
+            var gen = encounter.Data.Generation;
+            if (gen == 0 && (int)encounter.Data.Version > 0)
+                gen = (byte)encounter.Data.Version.Generation;
+
+            if (encounter.Data is ILocation l)
+            {
+                var resolved = l.GetEncounterLocation(gen, encounter.Data.Version);
+                if (!string.IsNullOrWhiteSpace(resolved))
+                    location = resolved;
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(location) || location == "(Unknown)")
+        {
+            location = encounter.Data.Name;
+        }
+
         return new EncounterRow(
             index,
             (int)encounter.Species,
@@ -85,7 +106,7 @@ public static class EncounterMapping
             encounter.Data.IsEgg,
             ball.IsNone ? null : ball.Name,
             encounter.LevelRange.Format,
-            encounter.Location.Name,
+            location,
             encounter.Version.Name);
     }
 

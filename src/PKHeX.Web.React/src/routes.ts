@@ -1,7 +1,9 @@
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
 
 export const routes = {
-  home: '/',
+  home: '/trainer',
+  trainer: '/trainer',
+  dashboard: '/dashboard',
   load: '/load',
   party: '/party',
   items: '/items',

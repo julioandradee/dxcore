@@ -14,7 +14,7 @@ export function createJourney() {
 export const journey = createJourney()
 
 export function routeAfter(event: EngineEvent): string | null {
-  if (event.type === 'gameLoaded') return routes.home
+  if (event.type === 'gameLoaded') return routes.dashboard
   if (event.type === 'gameClosed') return routes.load
   return null
 }

@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using PKHeX.Facade.Abstractions;
 using PKHeX.Facade.Extensions;
 using PKHeX.Facade.Pokemons;
@@ -67,12 +67,38 @@ public class PokemonParty(Game game) : IMutablePokemonCollection
 
     internal void Replace(int slot, PKM pkm) => _partyData[slot] = pkm;
 
+    internal void Reload()
+    {
+        _partyData = game.SaveFile.PartyData;
+        _snapshot = new SlotSnapshot(_partyData);
+    }
+
     internal void Remove(IEnumerable<int> slots)
     {
         foreach (var slot in slots) _partyData[slot] = game.SaveFile.BlankPKM;
         Commit();
-        _partyData = game.SaveFile.PartyData;
-        _snapshot = new SlotSnapshot(_partyData);
+        Reload();
+    }
+
+    internal void Add(IEnumerable<PKM> pkms)
+    {
+        var list = pkms.ToList();
+        var current = _partyData.Where(pkm => !Pokemon.IsBlank(pkm)).ToList();
+        if (current.Count + list.Count > MaxPartySize)
+            throw new InvalidOperationException($"A equipe possui apenas {MaxPartySize - current.Count} vaga(s) disponível(is).");
+
+        foreach (var pkm in list)
+        {
+            pkm.ResetPartyStats();
+            current.Add(pkm);
+        }
+
+        for (var i = 0; i < MaxPartySize; i++)
+            Write(i < current.Count ? current[i] : game.SaveFile.BlankPKM, i);
+
+        Commit();
+        Reload();
+        game.Trainer.PokemonBox.SharePartyMembers();
     }
 
     public void AddOrUpdate(UniqueId id, Pokemon pokemon)

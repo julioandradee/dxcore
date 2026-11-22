@@ -68,6 +68,7 @@ internal static class EngineCalls
     private static object Arg(object arg) => arg switch
     {
         PokemonHandle at => new { source = at.Source.ToString().ToLowerInvariant(), slot = at.Slot, box = at.Box, team = at.Team },
+        IEnumerable<PokemonHandle> handles => handles.Select(Arg).ToArray(),
         TeamSlot at => new { team = at.Team, slot = at.Slot },
         ItemHandle at => new { pouch = at.Pouch, itemId = at.ItemId },
         _ => arg,
