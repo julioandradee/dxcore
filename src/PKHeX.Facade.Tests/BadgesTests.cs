@@ -14,6 +14,11 @@ public class BadgesTests
     })]
     [InlineData(SaveFilePath.Emerald, new[] { "Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain" })]
     [InlineData(SaveFilePath.FireRed, new[] { "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth" })]
+    [InlineData(SaveFilePath.HgSs, new[]
+    {
+        "Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising",
+        "Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth",
+    })]
     public void All_NamesTheBadgesInGameOrder(string saveFile, string[] names) =>
         SaveFilePath.Load(saveFile).Badges!.All.Select(b => b.Name).Should().Equal(names);
 
@@ -58,7 +63,6 @@ public class BadgesTests
     }
 
     [Theory]
-    [InlineData(SaveFilePath.HgSs)]
     [InlineData(SaveFilePath.LetsGoPikachu)]
     [InlineData(SaveFilePath.Unbound)]
     [InlineData(SaveFilePath.RadicalRed)]
@@ -71,6 +75,10 @@ public class BadgesTests
         SAV1 gen1 => gen1.Badges,
         SAV2 gen2 => gen2.Badges,
         SAV3 gen3 => gen3.Badges,
+        SAV4HGSS hgss => hgss.Badges | (hgss.Badges16 << 8),
+        SAV4Sinnoh sinnoh => sinnoh.Badges,
+        SAV5 gen5 => gen5.Misc.Badges,
+        SAV6 gen6 => gen6.Badges,
         _ => throw new InvalidOperationException(),
     };
 

@@ -25,12 +25,14 @@ interface SpeciesImageProps {
   name: string
   src: string | null
   placeholderSize: number
+  style?: React.CSSProperties
+  className?: string
 }
 
-export function SpeciesImage({ name, src, placeholderSize }: SpeciesImageProps) {
+export function SpeciesImage({ name, src, placeholderSize, style, className }: SpeciesImageProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   if (src === null || src === failedSrc) return <PlaceholderSprite name={name} size={placeholderSize} />
-  return <img alt={name} src={src} onError={() => setFailedSrc(src)} />
+  return <img alt={name} src={src} onError={() => setFailedSrc(src)} style={style} className={className} />
 }
 
 interface PokemonSpriteProps {

@@ -165,9 +165,6 @@ function TransferPokemonCard({
           aria-label={pokemon.nickname || pokemon.species}
         />
         <Flex align="center" gap={4}>
-          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
-            {dexNumber}
-          </span>
           {hasInfo && (
             isLoadingPreview ? (
               <span style={{ color: '#8c8c8c', fontSize: 12, display: 'inline-flex' }}>
@@ -209,15 +206,24 @@ function TransferPokemonCard({
             )
           )}
           {pokemon.isShiny && (
-            <Tag color="gold" style={{ margin: 0, padding: '0 4px', fontSize: 11, fontWeight: 600 }}>
-              ✨ Shiny
-            </Tag>
+            <span
+              title={t('editor.fields.shiny', 'Shiny')}
+              style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+            >
+              ✨
+            </span>
           )}
           {pokemon.isEgg && (
-            <Tag color="orange" style={{ margin: 0, padding: '0 4px', fontSize: 11 }}>
-              {t('editor.fields.egg', 'Ovo')}
-            </Tag>
+            <span
+              title={t('editor.fields.egg', 'Ovo')}
+              style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+            >
+              🥚
+            </span>
           )}
+          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
+            {dexNumber}
+          </span>
         </Flex>
       </Flex>
 
@@ -241,7 +247,7 @@ function TransferPokemonCard({
       {/* Nome e Apelido */}
       <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
         <Flex align="center" justify="center" gap={6} wrap="wrap">
-          <Typography.Text strong style={{ fontSize: 14 }}>
+          <Typography.Text strong style={{ fontSize: 12 }}>
             {hasNickname ? pokemon.nickname : pokemon.species}
           </Typography.Text>
           {genderSymbol && (
@@ -435,7 +441,7 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
             }}
-            title={transfer.partner.fileName}
+            title={transfer.partner.fileName ?? undefined}
           >
             {t('transfer.fromPartner', 'Transferir de {0}').replace(
               '{0}',
@@ -498,7 +504,7 @@ export function TransferPicker({ transfer, onClose }: { transfer: TransferSummar
         </Flex>
 
         {/* Grade de Pokémon: 2 colunas em telas menores (xs=12), 3 em médias (sm=8) e 4 em maiores (md=6) */}
-        <div style={{ maxHeight: '55vh', overflowY: 'auto', padding: '4px 2px' }}>
+        <div style={{ maxHeight: '55vh', overflowY: 'auto', overflowX: 'hidden' }}>
           {displayed.length === 0 ? (
             <Empty description={t('box.noPokemon', 'Nenhum Pokémon encontrado')} />
           ) : (

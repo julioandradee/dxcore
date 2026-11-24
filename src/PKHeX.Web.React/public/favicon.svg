@@ -1,10 +1,45 @@
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-    <path stroke-width="5" stroke="#0e0726" fill="#512bd4" d="m4,49a45,45 0 0 1 90,0"/>
-    <path opacity="0.25" fill="white" d="M20,32 C25,22 40,18 50,24 Q35,35 20,32" />
-    <path stroke-width="5" stroke="#0e0726" fill="#fff" d="m94,49a45,45 0 0 1 -90,0"/>
-    <rect fill="#0e0726" height="10" width="90" y="44" x="4" rx="5" />
-    <circle stroke-width="4" stroke="#0e0726" fill="#fff" r="12" cy="49" cx="49"/>
-    <circle fill="#512bd4" r="6" cy="49" cx="49"/>
-    <rect stroke-width="3" stroke="#0e0726" ry="10" rx="5" fill="#fff" height="26.25" width="43.99999" y="71" x="53"/>
-    <text font-weight="bold" dominant-baseline="middle" text-anchor="middle" font-family="Courier, monospace" fill="#512bd4" font-size="20" y="86" x="76">&lt;/&gt;</text>Ï
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="favDiskBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b0b13" />
+      <stop offset="50%" stop-color="#24060b" />
+      <stop offset="100%" stop-color="#120205" />
+    </linearGradient>
+    <linearGradient id="favRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d6d" />
+      <stop offset="50%" stop-color="#DC0A2D" />
+      <stop offset="100%" stop-color="#991b1b" />
+    </linearGradient>
+    <linearGradient id="favShutter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#e2e8f0" />
+      <stop offset="100%" stop-color="#94a3b8" />
+    </linearGradient>
+    <filter id="favGlowLed" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Corpo Principal do Save com chanfro no canto superior direito -->
+  <path d="M 8,6 L 48,6 L 58,16 L 58,56 A 6,6 0 0 1 52,62 L 12,62 A 6,6 0 0 1 6,56 L 6,12 A 6,6 0 0 1 8,6 Z" 
+        fill="url(#favDiskBg)" stroke="url(#favRim)" stroke-width="3" />
+
+  <!-- Shutter Metálico Superior -->
+  <rect x="15" y="6" width="30" height="20" rx="2" fill="url(#favShutter)" stroke="#1a0407" stroke-width="1.2" />
+  <rect x="21" y="10" width="7" height="12" rx="1.5" fill="#180407" />
+
+  <!-- Cartão Central Vermelho Rubro -->
+  <rect x="12" y="30" width="40" height="26" rx="4" fill="#180407" stroke="#DC0A2D" stroke-width="1.5" />
+  <!-- Barra de Acento Vermelha -->
+  <rect x="15" y="34" width="34" height="2.5" rx="1" fill="#ff4d6d" />
+  <!-- Ranhura Interna -->
+  <rect x="18" y="40" width="28" height="11" rx="2" fill="#0d0204" stroke="#4c0d17" stroke-width="0.8" />
+
+  <!-- LED Azul/Ciano Brilhante -->
+  <circle cx="46" cy="51" r="3" fill="#22d3ee" filter="url(#favGlowLed)" />
+  <circle cx="45.3" cy="50.3" r="1" fill="#ffffff" />
 </svg>

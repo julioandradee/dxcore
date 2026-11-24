@@ -8,11 +8,10 @@
     "dev:server": "vite",
     "build:web": "tsc --noEmit && vite build",
     "build:engine": "dotnet build ../PKHeX.Everywhere.Engine.Host",
-    "build": "tsc --noEmit && dotnet publish ../PKHeX.Everywhere.Engine.Host -c Release && npm run build:blog && vite build",
+    "build": "tsc --noEmit && dotnet publish ../PKHeX.Everywhere.Engine.Host -c Release && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "build:blog": "cd blog && npm ci --include=dev && npm run build"
+    "test": "vitest run"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.4",

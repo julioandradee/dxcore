@@ -5,7 +5,7 @@ export function supports(game: SaveSummary | null, capability: SaveCapability): 
 }
 
 export function gameName(game: SaveSummary): string {
-  return game.format?.name ?? game.version
+  return game.format?.name ?? (typeof game.version === 'string' ? game.version : String((game as unknown as { game?: string }).game ?? game.version ?? ''))
 }
 
 export function statsAreApproximate(game: SaveSummary | null): boolean {

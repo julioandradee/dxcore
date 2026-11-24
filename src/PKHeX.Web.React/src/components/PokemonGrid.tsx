@@ -58,15 +58,18 @@ export function PokemonGrid({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <section className="pokemon-grid-container" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Barra de seleção */}
       {selected.length > 0 && (
-        <Flex
-          align="center"
-          justify="space-between"
-          gap={12}
-          wrap="wrap"
+        <aside
+          className="pokemon-grid-selection-bar"
+          aria-label={t('table.selectionBar', 'Barra de seleção de Pokémon')}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
             padding: '10px 16px',
             background: 'rgba(220, 10, 45, 0.08)',
             borderRadius: 8,
@@ -85,15 +88,15 @@ export function PokemonGrid({
               </Button>
             )}
           </Space>
-        </Flex>
+        </aside>
       )}
 
       {/* Grid de Cards de Pokémon */}
-      <Row gutter={[16, 16]}>
+      <Row className="pokemon-grid-row" gutter={[16, 16]}>
         {displayedPokemon.map((p) => {
           const isSelected = selectedKeySet.has(rowKey(p))
           return (
-            <Col xs={12} md={6} xl={4} key={rowKey(p)}>
+            <Col xs={12} sm={8} md={6} xl={4} key={rowKey(p)}>
               <PokemonGridCard
                 pokemon={p}
                 isSelected={isSelected}
@@ -108,7 +111,7 @@ export function PokemonGrid({
 
       {/* Paginação */}
       {pagination !== false && pokemon.length > activePageSize && (
-        <Flex vertical align="center" gap={8} style={{ width: '100%', marginTop: 8 }}>
+        <nav className="pokemon-grid-pagination" aria-label={t('common.pagination', 'Paginação')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width: '100%', marginTop: 8 }}>
           <Pagination
             current={currentPage}
             pageSize={activePageSize}
@@ -123,26 +126,28 @@ export function PokemonGrid({
               }
             }}
           />
-        </Flex>
+        </nav>
       )}
-    </div>
+    </section>
   )
 }
 
-interface PokemonGridCardProps {
+export interface PokemonGridCardProps {
   pokemon: PokemonSummary
-  isSelected: boolean
-  selectable: boolean
-  onToggleSelect: () => void
-  showActions: boolean
+  isSelected?: boolean
+  selectable?: boolean
+  onToggleSelect?: () => void
+  showActions?: boolean
+  onClick?: () => void
 }
 
-function PokemonGridCard({
+export function PokemonGridCard({
   pokemon,
-  isSelected,
-  selectable,
+  isSelected = false,
+  selectable = false,
   onToggleSelect,
-  showActions,
+  showActions = true,
+  onClick,
 }: PokemonGridCardProps) {
   const { t } = useTranslation()
   const [artworkFailed, setArtworkFailed] = useState(false)
@@ -160,16 +165,21 @@ function PokemonGridCard({
 
   return (
     <Card
+      className={`pokemon-card pokemon-grid-card ${isSelected ? 'pokemon-card-selected' : ''}`}
       hoverable
       size="small"
       onClick={() => {
-        if (selectable) onToggleSelect()
+        if (onClick) {
+          onClick()
+        } else if (selectable && onToggleSelect) {
+          onToggleSelect()
+        }
       }}
       style={{
         height: '100%',
         borderRadius: 10,
         position: 'relative',
-        cursor: selectable ? 'pointer' : 'default',
+        cursor: onClick || selectable ? 'pointer' : 'default',
         border: isSelected ? '2px solid #DC0A2D' : undefined,
         background: isSelected ? 'rgba(220, 10, 45, 0.04)' : undefined,
         transition: 'all 0.2s ease-in-out',
@@ -187,39 +197,48 @@ function PokemonGridCard({
       }}
     >
       {/* Topo do Card: Checkbox + Dex # + Shiny/Egg */}
-      <Flex justify="space-between" align="center" style={{ width: '100%' }}>
-        {selectable ? (
-          <Checkbox
-            checked={isSelected}
-            onChange={(e) => {
-              e.stopPropagation()
-              onToggleSelect()
-            }}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={pokemon.nickname || pokemon.species}
-          />
-        ) : (
-          <span />
-        )}
-        <Flex align="center" gap={4}>
-          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
-            {dexNumber}
-          </span>
-          {pokemon.isShiny && (
-            <Tag color="gold" style={{ margin: 0, padding: '0 4px', fontSize: 11, fontWeight: 600 }}>
-              ✨ Shiny
-            </Tag>
+      <header className="pokemon-card-header" style={{ width: '100%' }}>
+        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+          {selectable && onToggleSelect ? (
+            <Checkbox
+              checked={isSelected}
+              onChange={(e) => {
+                e.stopPropagation()
+                onToggleSelect()
+              }}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={pokemon.nickname || pokemon.species}
+            />
+          ) : (
+            <span />
           )}
-          {pokemon.isEgg && (
-            <Tag color="orange" style={{ margin: 0, padding: '0 4px', fontSize: 11 }}>
-              {t('editor.fields.egg', 'Ovo')}
-            </Tag>
-          )}
+          <Flex align="center" gap={6}>
+            {pokemon.isShiny && (
+              <span
+                title={t('editor.fields.shiny', 'Shiny')}
+                style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+              >
+                ✨
+              </span>
+            )}
+            {pokemon.isEgg && (
+              <span
+                title={t('editor.fields.egg', 'Ovo')}
+                style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+              >
+                🥚
+              </span>
+            )}
+            <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
+              {dexNumber}
+            </span>
+          </Flex>
         </Flex>
-      </Flex>
+      </header>
 
       {/* Imagem HD do Pokémon: Reduzida para 80x80px */}
       <div
+        className="pokemon-card-thumb"
         style={{
           width: '100%',
           height: 80,
@@ -242,7 +261,7 @@ function PokemonGridCard({
               maxWidth: 80,
               objectFit: 'contain',
               filter: pokemon.isShiny
-                ? 'drop-shadow(0 0 6px rgba(250, 173, 20, 0.5))'
+                ? 'drop-shadow(0 0 6px rgba(250, 173, 20, 0.6))'
                 : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
               transition: 'transform 0.15s ease',
             }}
@@ -255,51 +274,62 @@ function PokemonGridCard({
       </div>
 
       {/* Identificação: Nome, Apelido, Gênero */}
-      <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
-        <Flex align="center" justify="center" gap={6} wrap="wrap">
-          <Typography.Text strong style={{ fontSize: 14 }}>
-            {hasNickname ? pokemon.nickname : pokemon.species}
-          </Typography.Text>
-          {genderSymbol && (
-            <span style={{ color: genderColor, fontWeight: 700, fontSize: 13 }}>
-              {genderSymbol}
-            </span>
+      <div className="pokemon-card-meta" style={{ width: '100%', textAlign: 'center' }}>
+        <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
+          <Flex align="center" justify="center" gap={6} wrap="wrap">
+            <Typography.Text strong style={{ fontSize: 12 }}>
+              {hasNickname ? pokemon.nickname : pokemon.species}
+            </Typography.Text>
+            {genderSymbol && (
+              <span style={{ color: genderColor, fontWeight: 700, fontSize: 13 }}>
+                {genderSymbol}
+              </span>
+            )}
+          </Flex>
+          {hasNickname && (
+            <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+              ({pokemon.species})
+            </Typography.Text>
           )}
         </Flex>
-        {hasNickname && (
-          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-            ({pokemon.species})
-          </Typography.Text>
-        )}
-      </Flex>
+      </div>
 
       {/* Badges de Tipos */}
       {pokemon.types && pokemon.types.length > 0 && (
-        <Space size={4} wrap style={{ justifyContent: 'center' }}>
-          {pokemon.types.map((typeId) => (
-            <TypeBadge key={typeId} typeId={typeId} size="small" />
-          ))}
-        </Space>
+        <div className="pokemon-card-types">
+          <Space size={4} wrap style={{ justifyContent: 'center' }}>
+            {pokemon.types.map((typeId) => (
+              <TypeBadge key={typeId} typeId={typeId} size="small" />
+            ))}
+          </Space>
+        </div>
       )}
 
       {/* Badges de Nível e Caixa */}
-      <Flex justify="center" gap={6} wrap="wrap">
-        <Tag
-          color={pokemon.level === 100 ? 'purple' : pokemon.level >= 50 ? 'blue' : 'default'}
-          style={{ fontWeight: 600, margin: 0 }}
-        >
-          {t('box.levelPrefix', 'Lvl')} {pokemon.level}
-        </Tag>
-        {isBoxPokemon && (
-          <Tag color="cyan" style={{ margin: 0 }}>
-            {t('box.boxLabel', 'Caixa')} {(pokemon.at.box ?? 0) + 1}
+      <footer className="pokemon-card-footer">
+        <Flex justify="center" gap={6} wrap="wrap">
+          <Tag
+            color={pokemon.level === 100 ? 'purple' : pokemon.level >= 50 ? 'blue' : 'default'}
+            style={{ fontWeight: 600, margin: 0 }}
+          >
+            {t('box.levelPrefix', 'Lvl')} {pokemon.level}
           </Tag>
-        )}
-      </Flex>
+          {isBoxPokemon ? (
+            <Tag color="cyan" style={{ margin: 0 }}>
+              {t('box.boxLabel', 'Caixa')} {(pokemon.at.box ?? 0) + 1}
+            </Tag>
+          ) : (
+            <Tag color="blue" style={{ margin: 0 }}>
+              {t('dashboard.party', 'Equipe')}
+            </Tag>
+          )}
+        </Flex>
+      </footer>
 
       {/* Ações */}
       {showActions && (
         <div
+          className="pokemon-card-actions"
           onClick={(e) => e.stopPropagation()}
           style={{ marginTop: 4, width: '100%', display: 'flex', justifyContent: 'center' }}
         >

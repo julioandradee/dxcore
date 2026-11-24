@@ -14,6 +14,7 @@ public class TrainerBadgesTests
     [InlineData(SaveFilePath.Crystal)]
     [InlineData(SaveFilePath.Emerald)]
     [InlineData(SaveFilePath.FireRed)]
+    [InlineData(SaveFilePath.HgSs)]
     public void BadgesListsTheBadgesOfTheSave(string saveFile)
     {
         var session = Loaded(saveFile);
@@ -23,7 +24,6 @@ public class TrainerBadgesTests
     }
 
     [Theory]
-    [InlineData(SaveFilePath.HgSs)]
     [InlineData(SaveFilePath.RadicalRed)]
     public void BadgesIsNullWhenTheSaveCannotWriteThem(string saveFile) =>
         Value(Dispatch(Loaded(saveFile), "trainer.badges", "[]")).Should().BeNull();
@@ -33,6 +33,7 @@ public class TrainerBadgesTests
     [InlineData(SaveFilePath.Crystal)]
     [InlineData(SaveFilePath.Emerald)]
     [InlineData(SaveFilePath.FireRed)]
+    [InlineData(SaveFilePath.HgSs)]
     public void SetBadgesChangesTheEarnedBadges(string saveFile)
     {
         var session = Loaded(saveFile);
@@ -50,7 +51,6 @@ public class TrainerBadgesTests
         Error(Dispatch(Loaded(SaveFilePath.Crystal), "trainer.setBadges", Args(new bool[8]))).Should().Be("out-of-range");
 
     [Theory]
-    [InlineData(SaveFilePath.HgSs)]
     [InlineData(SaveFilePath.RadicalRed)]
     public void SetBadgesReturnsNotSupportedWhenTheSaveCannotWriteThem(string saveFile) =>
         Error(Dispatch(Loaded(saveFile), "trainer.setBadges", Args(new bool[8]))).Should().Be("not-supported");
@@ -60,6 +60,7 @@ public class TrainerBadgesTests
         SAV1 gen1 => gen1.Badges,
         SAV2 gen2 => gen2.Badges,
         SAV3 gen3 => gen3.Badges,
+        SAV4HGSS hgss => hgss.Badges | (hgss.Badges16 << 8),
         _ => throw new InvalidOperationException(),
     };
 }

@@ -9,6 +9,10 @@ public class Badges
     private static readonly string[] Kanto = ["Boulder", "Cascade", "Thunder", "Rainbow", "Soul", "Marsh", "Volcano", "Earth"];
     private static readonly string[] Johto = ["Zephyr", "Hive", "Plain", "Fog", "Storm", "Mineral", "Glacier", "Rising"];
     private static readonly string[] Hoenn = ["Stone", "Knuckle", "Dynamo", "Heat", "Balance", "Feather", "Mind", "Rain"];
+    private static readonly string[] Sinnoh = ["Coal", "Forest", "Cobble", "Fen", "Relic", "Mine", "Icicle", "Beacon"];
+    private static readonly string[] UnovaBW = ["Trio", "Basic", "Insect", "Bolt", "Quake", "Jet", "Freeze", "Legend"];
+    private static readonly string[] UnovaB2W2 = ["Basic", "Toxic", "Insect", "Bolt", "Quake", "Jet", "Wave", "Legend"];
+    private static readonly string[] Kalos = ["Bug", "Cliff", "Rumble", "Plant", "Voltage", "Fairy", "Psychic", "Iceberg"];
 
     private readonly string[] _names;
     private readonly Func<int> _get;
@@ -44,6 +48,12 @@ public class Badges
         SAV2 gen2 => new Badges([..Johto, ..Kanto], () => gen2.Badges, value => gen2.Badges = value),
         SAV3FRLG frlg => new Badges(Kanto, () => frlg.Badges, value => frlg.Badges = value),
         SAV3 gen3 => new Badges(Hoenn, () => gen3.Badges, value => gen3.Badges = value),
+        SAV4HGSS hgss => new Badges([..Johto, ..Kanto], () => hgss.Badges | (hgss.Badges16 << 8), value => { hgss.Badges = (byte)value; hgss.Badges16 = (byte)(value >> 8); }),
+        SAV4Sinnoh sinnoh => new Badges(Sinnoh, () => sinnoh.Badges, value => sinnoh.Badges = (byte)value),
+        SAV5B2W2 b2w2 => new Badges(UnovaB2W2, () => b2w2.Misc.Badges, value => b2w2.Misc.Badges = value),
+        SAV5 gen5 => new Badges(UnovaBW, () => gen5.Misc.Badges, value => gen5.Misc.Badges = value),
+        SAV6XY xy => new Badges(Kalos, () => xy.Badges, value => xy.Badges = value),
+        SAV6AO ao => new Badges(Hoenn, () => ao.Badges, value => ao.Badges = value),
         _ => null,
     };
 }

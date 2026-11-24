@@ -53,9 +53,9 @@ describe('ImportedPokemonModal', () => {
     )
   })
 
-  it('renders imported count and list with names and levels', () => {
+  it('renders imported count and cards with names, levels and dex IDs', () => {
     const onClose = vi.fn()
-    const { container } = render(
+    render(
       <MemoryRouter>
         <App>
           <ImportedPokemonModal open={true} imported={[pikachu, charmander]} onClose={onClose} />
@@ -68,18 +68,9 @@ describe('ImportedPokemonModal', () => {
     // Verify quantity is displayed
     expect(modalText).toMatch(/2 Pokémon (importados|imported)/i)
 
-    // Verify headers sequence: nome+nickname, ID Pokedex, Nível, Localização, Ação
-    const ths = [...document.querySelectorAll('th')].map((th) => th.textContent?.trim())
-    expect(ths).toHaveLength(5)
-    expect(ths[0]).toMatch(/Nome|Name/)
-    expect(ths[1]).toMatch(/ID Pokédex|Pokédex ID/)
-    expect(ths[2]).toMatch(/Nível|Level/)
-    expect(ths[3]).toMatch(/Localização|Location/)
-    expect(ths[4]).toMatch(/Ação|Action/)
-
-    // Verify no sprite images are present
-    const images = document.querySelectorAll('.ant-table-tbody img')
-    expect(images.length).toBe(0)
+    // Verify cards are rendered in grid
+    const cards = document.querySelectorAll('.ant-card')
+    expect(cards.length).toBe(2)
 
     // Verify Pokédex IDs are displayed formatted
     expect(modalText).toContain('#0025')
@@ -88,7 +79,7 @@ describe('ImportedPokemonModal', () => {
     // Verify names and nicknames are displayed
     expect(modalText).toContain('Pikachu')
     expect(modalText).toContain('Charmander')
-    expect(modalText).toContain('"Sparky"')
+    expect(modalText).toContain('Sparky')
 
     // Verify levels are displayed
     expect(modalText).toContain('50')
@@ -111,6 +102,27 @@ describe('ImportedPokemonModal', () => {
     expect(closeBtn).toBeDefined()
     act(() => {
       closeBtn?.click()
+    })
+
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('calls onClose when Ver is clicked', () => {
+    const onClose = vi.fn()
+    render(
+      <MemoryRouter>
+        <App>
+          <ImportedPokemonModal open={true} imported={[pikachu]} onClose={onClose} />
+        </App>
+      </MemoryRouter>,
+    )
+
+    const viewBtn = [...document.querySelectorAll('button')].find(
+      (b) => b.textContent?.includes('Ver') || b.textContent?.includes('View'),
+    )
+    expect(viewBtn).toBeDefined()
+    act(() => {
+      viewBtn?.click()
     })
 
     expect(onClose).toHaveBeenCalled()

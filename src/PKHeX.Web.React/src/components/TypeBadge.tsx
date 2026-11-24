@@ -45,10 +45,10 @@ export function TypeBadge({ typeId, size = 'small' }: TypeBadgeProps) {
         fontWeight: 600,
         fontSize: size === 'small' ? '0.50rem' : '0.55rem',
         padding: size === 'small' ? '1px 6px' : '2px 8px',
-        lineHeight: 1.5,
-        margin: '2px 4px 2px 0',
+        lineHeight: 1,
+        // margin: '2px 4px 2px 0',
         textTransform: 'uppercase',
-        letterSpacing: '0.03em',
+        letterSpacing: '0.15em',
       }}
     >
       {translatedName}

@@ -57,7 +57,7 @@ export function PokemonTable({
                   position: 'absolute',
                   top: -2,
                   right: -4,
-                  fontSize: 14,
+                  fontSize: 12,
                   filter: 'drop-shadow(0 0 2px rgba(250, 192, 0, 0.8))',
                   userSelect: 'none',
                 }}
@@ -140,12 +140,12 @@ export function PokemonTable({
       ...extraColumns,
       ...(actions
         ? [
-            {
-              title: t('table.action', 'Action'),
-              key: 'action',
-              render: (_: unknown, p: PokemonSummary) => <PokemonActions pokemon={p} />,
-            },
-          ]
+          {
+            title: t('table.action', 'Action'),
+            key: 'action',
+            render: (_: unknown, p: PokemonSummary) => <PokemonActions pokemon={p} />,
+          },
+        ]
         : []),
     ],
     [t, extraColumns, actions],
@@ -225,12 +225,12 @@ export function PokemonTable({
           pagination === false
             ? false
             : {
-                defaultPageSize: pageSize,
-                pageSizeOptions: ['10', '25', '50', '100'],
-                showSizeChanger: true,
-                showTotal: (total) => `${total} Pokémon`,
-                ...pagination,
-              }
+              defaultPageSize: pageSize,
+              pageSizeOptions: ['10', '25', '50', '100'],
+              showSizeChanger: true,
+              showTotal: (total) => `${total} Pokémon`,
+              ...pagination,
+            }
         }
       />
     </div>

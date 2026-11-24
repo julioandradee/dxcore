@@ -35,53 +35,55 @@ export default function LoadPage() {
   }
 
   return (
-    <SaveFileDrop onOpen={openFile}>
-      <Flex vertical align="center" gap={20} style={{ width: '100%', padding: '10px 0' }}>
-        {game ? (
-          <LoadedGame
-            key={`${game.fileName}|${game.version}|${game.format?.id}`}
-            game={game}
-            onOpen={openFilePicker}
-            onDemo={() => setDemoConfirmOpen(true)}
-            onOpenBackups={() => setBackupModalOpen(true)}
-          />
-        ) : (
-          <NoGame
-            onOpen={openFilePicker}
-            onDemo={() => setDemoConfirmOpen(true)}
-            onOpenBackups={() => setBackupModalOpen(true)}
-          />
-        )}
-        <input ref={fileInput} type="file" hidden onChange={loadFile} />
-        {formatChoice && <FormatPickerModal choice={formatChoice} onChoose={chooseFormat} onCancel={cancelFormatChoice} />}
-        <SaveBackupModal open={backupModalOpen} onClose={() => setBackupModalOpen(false)} />
+    <main className="app-page page-load">
+      <SaveFileDrop onOpen={openFile}>
+        <Flex vertical align="center" gap={20} style={{ width: '100%', padding: '10px 0' }}>
+          {game ? (
+            <LoadedGame
+              key={`${game.fileName}|${game.version}|${game.format?.id}`}
+              game={game}
+              onOpen={openFilePicker}
+              onDemo={() => setDemoConfirmOpen(true)}
+              onOpenBackups={() => setBackupModalOpen(true)}
+            />
+          ) : (
+            <NoGame
+              onOpen={openFilePicker}
+              onDemo={() => setDemoConfirmOpen(true)}
+              onOpenBackups={() => setBackupModalOpen(true)}
+            />
+          )}
+          <input ref={fileInput} type="file" hidden onChange={loadFile} />
+          {formatChoice && <FormatPickerModal choice={formatChoice} onChoose={chooseFormat} onCancel={cancelFormatChoice} />}
+          <SaveBackupModal open={backupModalOpen} onClose={() => setBackupModalOpen(false)} />
 
-        <Modal
-          open={demoConfirmOpen}
-          onCancel={() => setDemoConfirmOpen(false)}
-          onOk={async () => {
-            setDemoConfirmOpen(false)
-            await openDemo()
-          }}
-          okText={t('load.confirmLoadDemo', 'Carregar')}
-          cancelText={t('common.cancel', 'Cancelar')}
-          title={t('load.demoConfirmTitle', 'Carregar Save de Demonstração?')}
-          centered
-        >
-          <p style={{ marginTop: 12, lineHeight: 1.6 }}>
-            {game
-              ? t(
-                'load.demoConfirmWithGame',
-                'Você já possui um save carregado. Carregar o save de demonstração do Pokémon Emerald (GBA) substituirá os dados atuais da sessão. Se desejar guardar sua partida, exporte ou crie um backup antes. Deseja continuar?',
-              )
-              : t(
-                'load.demoConfirmNoGame',
-                'Ainda não há nenhum save carregado no sistema. Deseja carregar o save de demonstração do Pokémon Emerald (GBA) para explorar e testar todas as funções do DXCore?',
-              )}
-          </p>
-        </Modal>
-      </Flex>
-    </SaveFileDrop>
+          <Modal
+            open={demoConfirmOpen}
+            onCancel={() => setDemoConfirmOpen(false)}
+            onOk={async () => {
+              setDemoConfirmOpen(false)
+              await openDemo()
+            }}
+            okText={t('load.confirmLoadDemo', 'Carregar')}
+            cancelText={t('common.cancel', 'Cancelar')}
+            title={t('load.demoConfirmTitle', 'Carregar Save de Demonstração?')}
+            centered
+          >
+            <p style={{ marginTop: 12, lineHeight: 1.6 }}>
+              {game
+                ? t(
+                  'load.demoConfirmWithGame',
+                  'Você já possui um save carregado. Carregar o save de demonstração do Pokémon Emerald (GBA) substituirá os dados atuais da sessão. Se desejar guardar sua partida, exporte ou crie um backup antes. Deseja continuar?',
+                )
+                : t(
+                  'load.demoConfirmNoGame',
+                  'Ainda não há nenhum save carregado no sistema. Deseja carregar o save de demonstração do Pokémon Emerald (GBA) para explorar e testar todas as funções do DXCore?',
+                )}
+            </p>
+          </Modal>
+        </Flex>
+      </SaveFileDrop>
+    </main>
   )
 }
 
@@ -108,7 +110,7 @@ function LoadedGame({
   }
 
   return (
-    <>
+    <section className="load-hero-section load-loaded-game" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
       <Descriptions
         title={t('load.loadedGame')}
         bordered
@@ -160,7 +162,7 @@ function LoadedGame({
           {t('load.demo')}
         </Button>
       </Flex>
-    </>
+    </section>
   )
 }
 
@@ -178,7 +180,8 @@ function NoGame({
   const versions = useQuery('game.blankVersions')
 
   return (
-    <div
+    <section
+      className="load-hero-section load-no-game"
       style={{
         width: '100%',
         maxWidth: 300,
@@ -201,8 +204,8 @@ function NoGame({
           }
         }
       `}</style>
-      <CaptureAnimation staticFinal size={96} style={{ padding: '0 0 4px 0' }} />
-      <OpenButton label={t('actions.load')} type="primary" style={{ width: '100%', height: 40 }} onOpen={onOpen} />
+      <CaptureAnimation staticFinal size={150} style={{ padding: '0 0 4px 0' }} />
+      <OpenButton label={t('load.openSaveFile', 'Abrir arquivo de save')} type="primary" style={{ width: '100%', height: 40 }} onOpen={onOpen} />
       <Space.Compact style={{ width: '100%', height: 40 }}>
         <Button style={{ flexGrow: 1, height: 40 }} onClick={() => engine.game.loadBlank(swordVersionId)}>
           {t('load.empty')}
@@ -224,7 +227,7 @@ function NoGame({
       <Button style={{ width: '100%', height: 40 }} onClick={onDemo}>
         {t('load.demo')}
       </Button>
-    </div>
+    </section>
   )
 }
 
@@ -248,8 +251,7 @@ function OpenButton({ label, type, style, onOpen }: OpenButtonProps) {
         trigger={['click']}
         menu={{
           items: [
-            { key: 'open', label: t('load.openSaveFile') },
-            { key: 'romHack', label: t('load.loadRomHack') },
+            { key: 'romHack', label: t('load.loadRomHack', 'Carregar ROM Hack') },
           ],
           onClick: ({ key }) => (key === 'romHack' ? setLoadingRomHack(true) : onOpen()),
         }}

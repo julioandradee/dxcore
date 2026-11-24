@@ -3,8 +3,10 @@
     src: url("/font/pkmgb.ttf");
 }
 
-html, body {
+html,
+body {
     font-family: 'Pokemon GB', "Lucida Console", sans-serif;
+    font-size: 12px;
 }
 
 #root {
@@ -42,18 +44,23 @@ code {
     .desktop-header-actions {
         display: none !important;
     }
+
     .mobile-header-actions {
         display: inline-flex !important;
     }
+
     .project-title {
         display: none !important;
     }
+
     .desktop-sider {
         display: none !important;
     }
+
     .mobile-header-sphere {
         display: inline-block !important;
     }
+
     .main-content-wrapper {
         padding-bottom: 76px !important;
     }
@@ -63,12 +70,15 @@ code {
     .desktop-header-actions {
         display: inline-flex !important;
     }
+
     .mobile-header-actions {
         display: none !important;
     }
+
     .mobile-bottom-nav {
         display: none !important;
     }
+
     .mobile-header-sphere {
         display: none !important;
     }
@@ -101,10 +111,10 @@ code {
 /* Padrão vertical compacto em todas as tabelas e células do sistema */
 .ant-table-cell {
     padding: 8px 10px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
 }
 
-.ant-table-thead > tr > th {
+.ant-table-thead>tr>th {
     padding: 8px 10px !important;
     font-size: 12px !important;
     white-space: normal !important;
@@ -117,11 +127,11 @@ code {
     white-space: normal !important;
     word-break: break-word !important;
     height: auto !important;
-    min-height: 22px !important;
-    line-height: 1.3 !important;
-    padding: 1px 8px !important;
-    font-size: 12px !important;
-    margin: 2px 4px 2px 0 !important;
+    min-height: 24px !important;
+    line-height: 1 !important;
+    padding: 6px !important;
+    font-size: 10px !important;
+    /* margin: 2px 4px 2px 0 !important; */
     display: inline-flex !important;
     align-items: center;
 }
@@ -134,7 +144,7 @@ code {
 
 .ant-descriptions-item-content {
     padding: 8px 10px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
 }
 
 /* Suporte de navegação para a barra de abas do editor de Pokémon */
@@ -142,27 +152,29 @@ code {
     overflow-x: auto !important;
     scrollbar-width: none;
 }
+
 .pokemon-editor-tabs-wrapper .ant-tabs-nav-wrap::-webkit-scrollbar {
     display: none;
 }
 
 @media (max-width: 768px) {
+
     /* Ajustes extras ultra-compactos para mobile */
     .ant-table-cell {
         padding: 6px 6px !important;
         font-size: 12px !important;
     }
 
-    .ant-table-thead > tr > th {
+    .ant-table-thead>tr>th {
         padding: 6px 6px !important;
         font-size: 11px !important;
     }
 
     .ant-tag {
-        min-height: 20px !important;
-        padding: 1px 6px !important;
-        font-size: 11px !important;
-        margin: 2px 3px 2px 0 !important;
+        /* min-height: 24px !important; */
+        padding: 2px 6px !important;
+        font-size: 10px !important;
+        /* margin: 2px 3px 2px 0 !important; */
     }
 
     .ant-descriptions-item-label {
@@ -228,17 +240,19 @@ code {
    Padronização do Tamanho das Imagens de Pokémon (Caixas & Dashboard)
    ========================================================================== */
 .pokemon-card-image,
+.pokemon-card-thumb,
 .dashboard-pokemon-thumb {
     width: 80px !important;
     height: 80px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     margin: 0 auto !important;
 }
 
 .pokemon-card-image img,
+.pokemon-card-thumb img,
 .dashboard-pokemon-thumb img {
     max-width: 80px !important;
     max-height: 80px !important;
@@ -248,6 +262,56 @@ code {
     display: block !important;
 }
 
+/* ==========================================================================
+   Classes Estruturais e Semânticas de Páginas e Componentes
+   ========================================================================== */
+.app-page {
+    width: 100%;
+}
 
+.page-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
+.dashboard-section {
+    width: 100%;
+}
 
+.pokemon-card {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Itens do menu dropdown de ações com fonte 12px */
+.box-actions-menu,
+.box-actions-menu .ant-dropdown-menu,
+.box-actions-menu .ant-dropdown-menu-item,
+.box-actions-menu .ant-dropdown-menu-title-content,
+.box-actions-menu .ant-dropdown-menu-item-group-title {
+    font-size: 12px !important;
+}
+
+/* ==========================================================================
+   Padronização de Modais: 16px 16px de padding na janela modal
+   ========================================================================== */
+:root,
+:host,
+body,
+.ant-modal-root,
+.ant-modal,
+.ant-modal-wrap,
+.ant-modal-content,
+.ant-modal-confirm,
+.ant-modal-confirm .ant-modal-content {
+    --ant-modal-content-padding: 16px 16px !important;
+}
+
+.ant-modal .ant-modal-content,
+.ant-modal-confirm .ant-modal-content {
+    padding: 16px 16px !important;
+}
+
+.ant-modal .ant-modal-close {
+    top: 16px !important;
+    inset-inline-end: 16px !important;
+}

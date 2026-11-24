@@ -1,9 +1,145 @@
 import { CheckCircleFilled } from '@ant-design/icons'
-import { Alert, Button, Flex, Modal, Table, Tag, Typography, type TableColumnsType } from 'antd'
+import { Alert, Button, Card, Col, Flex, Modal, Row, Space, Tag, Typography } from 'antd'
 import type { PokemonSummary } from '@pkhex-everywhere/engine'
+import { PokemonSprite } from '../../components/PokemonSprite'
+import { TypeBadge } from '../../components/TypeBadge'
 import { useNavigate } from '../../host'
 import { useTranslation } from '../../i18n'
 import { routes } from '../../routes'
+
+interface ImportedPokemonCardProps {
+  pokemon: PokemonSummary
+  onView: () => void
+}
+
+function ImportedPokemonCard({ pokemon, onView }: ImportedPokemonCardProps) {
+  const { t } = useTranslation()
+  const hasNickname = Boolean(pokemon.nickname && pokemon.nickname !== pokemon.species)
+  const dexNumber = pokemon.speciesId !== null ? `#${String(pokemon.speciesId).padStart(4, '0')}` : '—'
+  const genderSymbol = pokemon.gender === 'male' ? '♂' : pokemon.gender === 'female' ? '♀' : null
+  const genderColor = pokemon.gender === 'male' ? '#1890ff' : '#eb2f96'
+  const isBoxPokemon = typeof pokemon.at.box === 'number'
+
+  return (
+    <Card
+      hoverable
+      size="small"
+      style={{
+        height: '100%',
+        borderRadius: 10,
+        position: 'relative',
+        transition: 'all 0.2s ease-in-out',
+      }}
+      styles={{
+        body: {
+          padding: '10px 8px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 6,
+          height: '100%',
+          justifyContent: 'space-between',
+        },
+      }}
+    >
+      {/* Topo do Card: Dex # + Tags (Shiny, Egg) */}
+      <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+        <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
+          {dexNumber}
+        </span>
+        <Flex align="center" gap={4}>
+          {pokemon.isShiny && (
+            <span
+              title={t('editor.fields.shiny', 'Shiny')}
+              style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+            >
+              ✨
+            </span>
+          )}
+          {pokemon.isEgg && (
+            <span
+              title={t('editor.fields.egg', 'Ovo')}
+              style={{ fontSize: 13, lineHeight: 1, userSelect: 'none' }}
+            >
+              🥚
+            </span>
+          )}
+        </Flex>
+      </Flex>
+
+      {/* Ilustração compacta por ícone sprite */}
+      <div
+        style={{
+          width: '100%',
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          marginBottom: 12,
+        }}
+      >
+        <div style={{ transform: 'scale(1.2)' }}>
+          <PokemonSprite pokemon={pokemon} />
+        </div>
+      </div>
+
+      {/* Nome e Apelido */}
+      <Flex vertical align="center" gap={2} style={{ width: '100%', textAlign: 'center' }}>
+        <Flex align="center" justify="center" gap={6} wrap="wrap">
+          <Typography.Text strong style={{ fontSize: 12 }}>
+            {hasNickname ? pokemon.nickname : pokemon.species}
+          </Typography.Text>
+          {genderSymbol && (
+            <span style={{ color: genderColor, fontWeight: 700, fontSize: 13 }}>
+              {genderSymbol}
+            </span>
+          )}
+        </Flex>
+        {hasNickname && (
+          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            ({pokemon.species})
+          </Typography.Text>
+        )}
+      </Flex>
+
+      {/* Badges de Tipos */}
+      {pokemon.types && pokemon.types.length > 0 && (
+        <Space size={4} wrap style={{ justifyContent: 'center' }}>
+          {pokemon.types.map((typeId) => (
+            <TypeBadge key={typeId} typeId={typeId} size="small" />
+          ))}
+        </Space>
+      )}
+
+      {/* Badges de Nível e Caixa */}
+      <Flex justify="center" gap={6} wrap="wrap">
+        <Tag
+          color={pokemon.level === 100 ? 'purple' : pokemon.level >= 50 ? 'blue' : 'default'}
+          style={{ fontWeight: 600, margin: 0 }}
+        >
+          {t('box.levelPrefix', 'Lvl')} {pokemon.level}
+        </Tag>
+        {isBoxPokemon && (
+          <Tag color="cyan" style={{ margin: 0 }}>
+            {t('box.boxLabel', 'Caixa')} {(pokemon.at.box ?? 0) + 1}
+            {typeof pokemon.at.slot === 'number' ? ` #${pokemon.at.slot + 1}` : ''}
+          </Tag>
+        )}
+      </Flex>
+
+      {/* Botão de Ação: Ver */}
+      <Button
+        type="link"
+        size="small"
+        style={{ padding: '0 4px', height: 'auto', marginTop: 2, fontSize: 12 }}
+        onClick={onView}
+      >
+        {t('actions.view', 'Ver')}
+      </Button>
+    </Card>
+  )
+}
 
 interface ImportedPokemonModalProps {
   open: boolean
@@ -16,79 +152,6 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const columns: TableColumnsType<PokemonSummary> = [
-    {
-      title: t('table.name', 'Nome'),
-      key: 'name',
-      render: (_: unknown, p: PokemonSummary) => (
-        <Flex vertical gap={2}>
-          <Typography.Text strong style={{ fontSize: 14 }}>{p.species}</Typography.Text>
-          {p.nickname && p.nickname !== p.species && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              "{p.nickname}"
-            </Typography.Text>
-          )}
-        </Flex>
-      ),
-    },
-    {
-      title: t('import.pokedexId', 'ID Pokédex'),
-      key: 'dex',
-      width: 110,
-      render: (_: unknown, p: PokemonSummary) => (
-        <Flex vertical>
-          <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
-            {p.speciesId !== null ? `#${String(p.speciesId).padStart(4, '0')}` : '—'}
-          </span>
-        </Flex>
-      ),
-    },
-    {
-      title: t('table.level', 'Nível'),
-      key: 'level',
-      width: 90,
-      render: (_: unknown, p: PokemonSummary) => (
-        <Flex vertical>
-          <Tag color="blue" style={{ margin: 0, width: 'fit-content' }}>
-            {t('box.levelPrefix', 'Lvl')} {p.level}
-          </Tag>
-        </Flex>
-      ),
-    },
-    {
-      title: t('import.location', 'Localização'),
-      key: 'location',
-      width: 130,
-      render: (_: unknown, p: PokemonSummary) => (
-        <Flex vertical gap={2}>
-          <Tag color="cyan" style={{ margin: 0, width: 'fit-content' }}>
-            {t('box.boxLabel', 'Caixa')} {(p.at.box ?? 0) + 1}
-          </Tag>
-          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-            #{ (p.at.slot ?? 0) + 1 }
-          </Typography.Text>
-        </Flex>
-      ),
-    },
-    {
-      title: t('table.action', 'Ação'),
-      key: 'action',
-      width: 80,
-      render: (_: unknown, p: PokemonSummary) => (
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            onClose()
-            void navigate(routes.pokemon(p))
-          }}
-        >
-          {t('actions.view', 'Ver')}
-        </Button>
-      ),
-    },
-  ]
-
   return (
     <Modal
       open={open}
@@ -98,7 +161,8 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
           {t('common.close', 'Fechar')}
         </Button>,
       ]}
-      width={700}
+      width={720}
+      style={{ maxWidth: '95vw', top: 20 }}
       title={
         <Flex align="center" gap={8}>
           <CheckCircleFilled style={{ color: '#52c41a', fontSize: 20 }} />
@@ -113,9 +177,9 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
             imported.length === 1
               ? t('import.singleSuccess', '1 Pokémon importado com sucesso!')
               : t('import.multipleSuccess', '{0} Pokémon importados com sucesso!').replace(
-                  '{0}',
-                  String(imported.length),
-                )
+                '{0}',
+                String(imported.length),
+              )
           }
           description={t(
             'import.modalDescription',
@@ -142,14 +206,21 @@ export function ImportedPokemonModal({ open, imported, failed = [], onClose }: I
           />
         )}
 
-        <Table<PokemonSummary>
-          rowKey={(p) => JSON.stringify(p.at)}
-          dataSource={imported}
-          columns={columns}
-          size="small"
-          pagination={imported.length > 10 ? { pageSize: 10, showSizeChanger: false } : false}
-          scroll={{ y: 350 }}
-        />
+        <div style={{ maxHeight: '55vh', overflowY: 'auto', overflowX: 'hidden' }}>
+          <Row gutter={[10, 10]}>
+            {imported.map((p, idx) => (
+              <Col xs={12} sm={8} md={6} key={p.id ?? `${p.speciesId}-${idx}`}>
+                <ImportedPokemonCard
+                  pokemon={p}
+                  onView={() => {
+                    onClose()
+                    void navigate(routes.pokemon(p))
+                  }}
+                />
+              </Col>
+            ))}
+          </Row>
+        </div>
       </Flex>
     </Modal>
   )

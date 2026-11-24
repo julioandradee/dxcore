@@ -20,7 +20,7 @@ export function boxActions(
 ): ButtonOrMenuAction[] {
   return [
     ...(supports.encounters ? [{ key: 'add', label: t('actions.add', 'Add'), type: 'primary' as const, onClick: handlers.add }] : []),
-    { key: 'load', label: t('actions.load', 'Load *.pk'), icon: <FolderOpenOutlined />, onClick: handlers.load },
+    { key: 'load', label: t('actions.importPokemon', 'Importar Pokémon (.pk / .zip)'), icon: <FolderOpenOutlined />, onClick: handlers.load },
     ...(supports.showdown
       ? [
           { key: 'calculator', label: t('actions.calculator', 'Calculator'), icon: <CalculatorOutlined />, onClick: handlers.calculator },

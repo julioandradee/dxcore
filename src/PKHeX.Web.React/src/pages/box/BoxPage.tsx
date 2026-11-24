@@ -297,6 +297,7 @@ export default function BoxPage() {
         key: 'selection-group',
         type: 'group',
         label: `${t('box.selectionGroup', 'Ações de Seleção')} (${selected.length})`,
+        style: { fontSize: 12 },
         children: [
           {
             key: 'move',
@@ -305,6 +306,7 @@ export default function BoxPage() {
               selected.length === 1
                 ? t('box.moveSingle', 'Mover para outra Caixa')
                 : t('box.moveMultiple', 'Mover ({0}) para outra Caixa').replace('{0}', String(selected.length)),
+            style: { fontSize: 12 },
             disabled: !hasSelection,
             onClick: () => setMovingBox(true),
           },
@@ -315,6 +317,7 @@ export default function BoxPage() {
               selected.length === 1
                 ? t('box.moveToPartySingle', 'Mover para a Equipe')
                 : t('box.moveToPartyMultiple', 'Mover ({0}) para a Equipe').replace('{0}', String(selected.length)),
+            style: { fontSize: 12 },
             disabled: !hasSelection || batchBusy,
             onClick: () => void handleMoveToParty(),
           },
@@ -325,6 +328,7 @@ export default function BoxPage() {
               selected.length === 1
                 ? t('actions.exportSingle', 'Exportar (.pk)')
                 : t('actions.exportZip', 'Exportar ({0}) como .zip').replace('{0}', String(selected.length || 0)),
+            style: { fontSize: 12 },
             disabled: !hasSelection || exporting,
             onClick: () => void exportMultiple(selected, 'box_pokemon.zip'),
           },
@@ -332,6 +336,7 @@ export default function BoxPage() {
             key: 'clone',
             icon: <CopyOutlined />,
             label: t('batch.cloneSelected', 'Clonar Selecionados na Caixa'),
+            style: { fontSize: 12 },
             disabled: !hasSelection || batchBusy,
             onClick: () => void handleBatchClone(),
           },
@@ -342,6 +347,7 @@ export default function BoxPage() {
         key: 'box-group',
         type: 'group',
         label: t('box.managementGroup', 'Gerenciamento da Box'),
+        style: { fontSize: 12 },
         children: [
           ...(encountersSupported
             ? [
@@ -349,6 +355,7 @@ export default function BoxPage() {
                 key: 'add',
                 icon: <PlusOutlined />,
                 label: t('actions.add', 'Adicionar Pokémon'),
+                style: { fontSize: 12 },
                 onClick: () => navigate(routes.searchEncounter),
               },
             ]
@@ -356,13 +363,15 @@ export default function BoxPage() {
           {
             key: 'load',
             icon: <FolderOpenOutlined />,
-            label: t('actions.load', 'Carregar Arquivo (.pk/.zip)'),
+            label: t('actions.importPokemon', 'Importar Pokémon (.pk / .zip)'),
+            style: { fontSize: 12 },
             onClick: () => fileInput.current?.click(),
           },
           {
             key: 'transfer',
             icon: <SwapOutlined />,
             label: t('actions.transfer', 'Transferir entre Saves'),
+            style: { fontSize: 12 },
             onClick: () => setTransferring(true),
           },
           ...(showdownSupported
@@ -371,12 +380,14 @@ export default function BoxPage() {
                 key: 'calculator',
                 icon: <CalculatorOutlined />,
                 label: t('actions.calculator', 'Calculadora de Dano'),
+                style: { fontSize: 12 },
                 onClick: () => void openSelectedInCalculator(),
               },
               {
                 key: 'showdown',
                 icon: <CopyOutlined />,
                 label: t('actions.showdown', 'Copiar Showdown da Box'),
+                style: { fontSize: 12 },
                 onClick: () => void copyBoxShowdown(),
               },
             ]
@@ -400,7 +411,8 @@ export default function BoxPage() {
   const totalShiniesInBox = filteredBox.filter((p) => p.isShiny).length
 
   return (
-    <Flex vertical gap={20}>
+    <main className="app-page page-box" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <header className="box-page-header">
       <PageHeader
         title={
           <Flex align="center" gap={8} wrap="wrap" style={{ minWidth: 0 }}>
@@ -590,7 +602,7 @@ export default function BoxPage() {
                 { value: 'table', icon: <UnorderedListOutlined />, label: t('view.table', '') },
               ]}
             />
-            <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
+            <Dropdown menu={{ items: menuItems, style: { fontSize: 12 }, className: 'box-actions-menu' }} rootClassName="box-actions-menu" trigger={['click']} placement="bottomRight">
               <Button type="primary">
                 <span>{t('box.actions', 'Ações')}</span>
                 {selected.length > 0 && (
@@ -622,14 +634,17 @@ export default function BoxPage() {
           </Flex>
         }
       />
-      <PokemonTable
-        pokemon={filteredBox}
-        extraColumns={getBoxColumns(t)}
-        selected={selected}
-        onSelectedChange={setSelected}
-        batchExport="box_pokemon.zip"
-        pageSize={50}
-      />
+      </header>
+      <section className="box-page-content">
+        <PokemonTable
+          pokemon={filteredBox}
+          extraColumns={getBoxColumns(t)}
+          selected={selected}
+          onSelectedChange={setSelected}
+          batchExport="box_pokemon.zip"
+          pageSize={50}
+        />
+      </section>
       {transferring && game && <TransferModal game={game} onClose={() => setTransferring(false)} />}
       {movingBox && (
         <MoveToBoxModal
@@ -712,7 +727,7 @@ export default function BoxPage() {
           </Flex>
         </Flex>
       </Modal>
-    </Flex>
+    </main>
   )
 }
 

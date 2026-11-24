@@ -11,7 +11,9 @@ import {
   PartitionOutlined,
   SearchOutlined,
   StarFilled,
+  StarOutlined,
   TeamOutlined,
+  ThunderboltFilled,
   TrophyFilled,
   TrophyOutlined,
   UserOutlined,
@@ -40,6 +42,7 @@ import { useBox, useLoadedGame, useParty, useQuery, useTrainer } from '@pkhex-ev
 import { gameName } from '../../capabilities'
 import { PageHeader } from '../../components/PageHeader'
 import { pokemonOfficialArtworkUrl } from '../../components/PokemonImage'
+import { PokemonGridCard } from '../../components/PokemonGrid'
 import { SpeciesImage } from '../../components/PokemonSprite'
 import { TypeBadge, typeData } from '../../components/TypeBadge'
 import { useNavigate } from '../../host'
@@ -60,12 +63,74 @@ interface StorageItem {
   slot: number
 }
 
-const hoennBadges = new Set(['stone', 'knuckle', 'dynamo', 'heat', 'balance', 'feather', 'mind', 'rain'])
+const badgeRegionMap: Record<string, string> = {
+  // Kanto
+  boulder: 'kanto',
+  cascade: 'kanto',
+  thunder: 'kanto',
+  rainbow: 'kanto',
+  soul: 'kanto',
+  marsh: 'kanto',
+  volcano: 'kanto',
+  earth: 'kanto',
+
+  // Johto
+  zephyr: 'johto',
+  hive: 'johto',
+  plain: 'johto',
+  fog: 'johto',
+  storm: 'johto',
+  mineral: 'johto',
+  glacier: 'johto',
+  rising: 'johto',
+
+  // Hoenn
+  stone: 'hoenn',
+  knuckle: 'hoenn',
+  dynamo: 'hoenn',
+  heat: 'hoenn',
+  balance: 'hoenn',
+  feather: 'hoenn',
+  mind: 'hoenn',
+  rain: 'hoenn',
+
+  // Sinnoh
+  coal: 'sinnoh',
+  forest: 'sinnoh',
+  cobble: 'sinnoh',
+  fen: 'sinnoh',
+  relic: 'sinnoh',
+  mine: 'sinnoh',
+  icicle: 'sinnoh',
+  beacon: 'sinnoh',
+
+  // Unova (BW & B2W2)
+  trio: 'unova',
+  basic: 'unova',
+  toxic: 'unova',
+  insect: 'unova',
+  bolt: 'unova',
+  quake: 'unova',
+  jet: 'unova',
+  freeze: 'unova',
+  legend: 'unova',
+  wave: 'unova',
+
+  // Kalos
+  bug: 'kalos',
+  cliff: 'kalos',
+  rumble: 'kalos',
+  plant: 'kalos',
+  voltage: 'kalos',
+  fairy: 'kalos',
+  psychic: 'kalos',
+  iceberg: 'kalos',
+}
 
 function badgeImageUrl(badgeName: string): string {
   const normalized = badgeName.trim().toLowerCase()
-  const ext = hoennBadges.has(normalized) ? 'svg' : 'png'
-  return `https://cdn.jsdelivr.net/gh/paulthemagno/pokemon-emulator-tracker@main/public/badges/${normalized}.${ext}`
+  const region = badgeRegionMap[normalized] || 'kanto'
+  return `https://cdn.jsdelivr.net/gh/jonbarrow/trainercards.studio@master/public/images/badges/${region}/${normalized}.png`
 }
 
 function GymBadgeImage({ name, earned }: { name: string; earned: boolean }) {
@@ -138,6 +203,28 @@ export default function DashboardPage() {
     types: number[]
     seen: boolean
   } | null>(null)
+
+  const isAlola = useMemo(() => {
+    if (!game) return false
+    const v = String(game.version ?? '').toLowerCase()
+    const g = String(game.generation ?? '')
+    const name = String(gameName(game) ?? '').toLowerCase()
+    return g === '7' || g === 'gen7' || v.includes('sun') || v.includes('moon') || name.includes('sun') || name.includes('moon')
+  }, [game])
+
+  const isHisui = useMemo(() => {
+    if (!game) return false
+    const v = String(game.version ?? '').toLowerCase()
+    const name = String(gameName(game) ?? '').toLowerCase()
+    return v.includes('arceus') || v.includes('pla') || name.includes('arceus')
+  }, [game])
+
+  const isGameCube = useMemo(() => {
+    if (!game) return false
+    const v = String(game.version ?? '').toLowerCase()
+    const name = String(gameName(game) ?? '').toLowerCase()
+    return v.includes('colosseum') || v.includes('xd') || name.includes('colosseum') || name.includes('xd')
+  }, [game])
 
   // Map species to storage locations
   const storageMap = useMemo(() => {
@@ -263,34 +350,49 @@ export default function DashboardPage() {
   const badgesTotalCount = progress?.badges?.total ?? badgesList?.length ?? 8
 
   return (
-    <Flex vertical gap={20} style={{ width: '100%', maxWidth: 1400, margin: '0 auto', paddingBottom: 32 }}>
+    <main
+      className="app-page page-dashboard"
+      style={{
+        width: '100%',
+        maxWidth: 1400,
+        margin: '0 auto',
+        paddingBottom: 32,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+      }}
+    >
       {/* Page Header (No Extra Buttons) */}
-      <PageHeader
-        title={
-          <Flex align="center" gap={10} wrap="wrap">
-            <span style={{ fontWeight: 800, letterSpacing: -0.5 }}>{t('dashboard.title', 'Dashboard do Jogo')}</span>
-            {game && (
-              <Tag color="cyan" style={{ fontSize: '0.85em', fontWeight: 600, padding: '2px 10px', borderRadius: 12 }}>
-                {gameName(game)}
-              </Tag>
-            )}
-          </Flex>
-        }
-      />
+      <header className="dashboard-header">
+        <PageHeader
+          title={
+            <Flex align="center" gap={10} wrap="wrap">
+              <span style={{ fontWeight: 800, letterSpacing: -0.5 }}>{t('dashboard.title', 'Dashboard do Jogo')}</span>
+              {game && (
+                <Tag color="cyan" style={{ fontSize: '0.85em', fontWeight: 600, padding: '2px 10px', borderRadius: 12 }}>
+                  {gameName(game)}
+                </Tag>
+              )}
+            </Flex>
+          }
+        />
+      </header>
 
       {/* Hero KPI Stats Grid */}
-      <Row gutter={[12, 12]}>
-        {/* KPI 1: Pokédex Completion */}
-        <Col xs={12} sm={12} lg={6}>
-          <Card
-            size="small"
-            style={{
-              height: '100%',
-              borderRadius: 12,
-              border: `1px solid ${token.colorBorderSecondary}`,
-              background: token.colorBgContainer,
-            }}
-          >
+      <section className="dashboard-section dashboard-section-kpis" aria-label={t('dashboard.kpisTitle', 'Indicadores Principais')}>
+        <Row className="dashboard-kpis-row" gutter={[12, 12]}>
+          {/* KPI 1: Pokédex Completion */}
+          <Col xs={12} sm={12} lg={6}>
+            <Card
+              className="dashboard-kpi-card"
+              size="small"
+              style={{
+                height: '100%',
+                borderRadius: 12,
+                border: `1px solid ${token.colorBorderSecondary}`,
+                background: token.colorBgContainer,
+              }}
+            >
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
@@ -348,7 +450,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
 
-        {/* KPI 3: Gym Badges */}
+        {/* KPI 3: Gym Badges / Special Progress */}
         <Col xs={12} sm={12} lg={6}>
           <Card
             size="small"
@@ -362,25 +464,52 @@ export default function DashboardPage() {
             <Flex vertical gap={8}>
               <Flex justify="space-between" align="center">
                 <Typography.Text type="secondary" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {t('dashboard.kpiBadges', 'Insígnias')}
+                  {isAlola
+                    ? t('dashboard.kpiIslandChallenge', 'Desafio das Ilhas')
+                    : isHisui
+                      ? t('dashboard.kpiGalaxyRank', 'Esquadrão Galaxy')
+                      : isGameCube
+                        ? t('dashboard.kpiShadows', 'Shadow Pokémon')
+                        : t('dashboard.kpiBadges', 'Insígnias')}
                 </Typography.Text>
-                <TrophyOutlined style={{ fontSize: 18, color: '#f59e0b' }} />
+                {isAlola ? (
+                  <CompassOutlined style={{ fontSize: 18, color: '#06b6d4' }} />
+                ) : isHisui ? (
+                  <StarOutlined style={{ fontSize: 18, color: '#f59e0b' }} />
+                ) : isGameCube ? (
+                  <ThunderboltFilled style={{ fontSize: 18, color: '#8b5cf6' }} />
+                ) : (
+                  <TrophyOutlined style={{ fontSize: 18, color: '#f59e0b' }} />
+                )}
               </Flex>
               <Flex align="baseline" gap={8}>
-                <Typography.Title level={2} style={{ margin: 0, fontWeight: 800, color: '#f59e0b' }}>
-                  {badgesEarnedCount} / {badgesTotalCount}
+                <Typography.Title
+                  level={2}
+                  style={{
+                    margin: 0,
+                    fontWeight: 800,
+                    color: isAlola ? '#06b6d4' : isGameCube ? '#8b5cf6' : '#f59e0b',
+                  }}
+                >
+                  {isAlola ? '4 Ilhas' : isHisui ? '10 ⭐' : isGameCube ? 'Purificação' : `${badgesEarnedCount} / ${badgesTotalCount}`}
                 </Typography.Title>
               </Flex>
               <Progress
-                percent={badgesTotalCount > 0 ? Math.round((badgesEarnedCount / badgesTotalCount) * 100) : 0}
+                percent={isAlola ? 100 : isHisui ? 100 : badgesTotalCount > 0 ? Math.round((badgesEarnedCount / badgesTotalCount) * 100) : 0}
                 showInfo={false}
-                strokeColor="#f59e0b"
+                strokeColor={isAlola ? '#06b6d4' : isGameCube ? '#8b5cf6' : '#f59e0b'}
                 size="small"
               />
               <Typography.Text style={{ fontSize: '0.78rem', color: '#8c8c8c', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {badgesEarnedCount === badgesTotalCount
-                  ? t('dashboard.allBadgesEarned', 'Campeão da Liga Pokémon!')
-                  : `${badgesTotalCount - badgesEarnedCount} insígnias restantes`}
+                {isAlola
+                  ? 'Melemele, Akala, Ula\'ula e Poni'
+                  : isHisui
+                    ? 'Classificação do Corpo de Pesquisa'
+                    : isGameCube
+                      ? 'Câmara de Purificação'
+                      : badgesEarnedCount === badgesTotalCount
+                        ? t('dashboard.allBadgesEarned', 'Campeão da Liga Pokémon!')
+                        : `${badgesTotalCount - badgesEarnedCount} insígnias restantes`}
               </Typography.Text>
             </Flex>
           </Card>
@@ -437,9 +566,10 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
+      </section>
 
       {/* Main Tabs Segmented Navigation */}
-      <Flex justify="center" style={{ width: '100%', marginTop: 8 }}>
+      <nav className="dashboard-tabs-nav" aria-label={t('dashboard.tabsNav', 'Navegação do Dashboard')} style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 8 }}>
         <Radio.Group
           value={activeTab}
           onChange={(e) => setActiveTab(e.target.value as DashboardTab)}
@@ -465,11 +595,12 @@ export default function DashboardPage() {
             {t('dashboard.tabTrainer', 'Ficha & Insígnias')}
           </Radio.Button>
         </Radio.Group>
-      </Flex>
+      </nav>
 
       {/* TAB 1: POKÉDEX TRACKER - ONLY NEEDED POKÉMON */}
       {activeTab === 'pokedex' && (
-        <div
+        <section
+          className="dashboard-tab-content dashboard-tab-pokedex"
           style={{
             width: '100%',
             backgroundColor: token.colorBgContainer,
@@ -481,7 +612,8 @@ export default function DashboardPage() {
         >
           <Flex vertical gap={16} style={{ width: '100%' }}>
             {/* Quick Filter Chips for Needed Pokémon - Centered on mobile */}
-            <Flex wrap="wrap" gap={8} justify="center" align="center" style={{ width: '100%' }}>
+            <div className="dashboard-tracker-filters" style={{ width: '100%' }}>
+              <Flex wrap="wrap" gap={8} justify="center" align="center" style={{ width: '100%' }}>
               <Button
                 type={statusFilter === 'all-needed' ? 'primary' : 'default'}
                 size="middle"
@@ -592,6 +724,7 @@ export default function DashboardPage() {
                 </Col>
               </Row>
             </Card>
+          </div>
 
             {/* Species Results Counter */}
             <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
@@ -652,7 +785,7 @@ export default function DashboardPage() {
                   )
 
                   return (
-                    <Col key={species.id} xs={12} md={6} xl={4}>
+                    <Col key={species.id} xs={12} sm={6} xl={4}>
                       <Card
                         size="small"
                         hoverable
@@ -677,8 +810,8 @@ export default function DashboardPage() {
                         }}
                       >
                         {/* Topo do Card: Ícone de Status + Número da Pokédex (ordem padrão das outras páginas) */}
-                        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
-                          <Flex align="center" gap={6}>
+                        <Flex justify="flex-end" align="center" style={{ width: '100%' }}>
+                          <Flex align="center" gap={6} justify='space-between' style={{ width: '100%' }}>
                             {statusIcon}
                             <span style={{ color: '#8c8c8c', fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>
                               {dexNumber}
@@ -749,12 +882,13 @@ export default function DashboardPage() {
               </Flex>
             )}
           </Flex>
-        </div>
+        </section>
       )}
 
       {/* TAB 2: COLLECTION ANALYTICS */}
       {activeTab === 'collection' && (
-        <div
+        <section
+          className="dashboard-tab-content dashboard-tab-collection"
           style={{
             width: '100%',
             backgroundColor: token.colorBgContainer,
@@ -766,67 +900,72 @@ export default function DashboardPage() {
         >
           <Flex vertical gap={20} style={{ width: '100%' }}>
             {/* Type Distribution Breakdown */}
-            <Card
-              title={
-                <Flex align="center" gap={8}>
-                  <FireOutlined style={{ color: '#f59e0b' }} />
-                  <span>{t('dashboard.typeBreakdown', 'Distribuição por Tipagem na Coleção')}</span>
-                </Flex>
-              }
-              size="small"
-              style={{ borderRadius: 12 }}
-            >
-              <Row gutter={[16, 12]}>
-                {typeDistribution.map(({ typeId, count, percent }) => {
-                  const info = typeData[typeId]
-                  if (!info) return null
-                  return (
-                    <Col key={typeId} xs={24} sm={12} md={8} lg={6}>
-                      <Card
-                        size="small"
-                        style={{
-                          borderRadius: 8,
-                          background: token.colorBgContainer,
-                          border: `1px solid ${token.colorBorderSecondary}`,
-                        }}
-                      >
-                        <Flex vertical gap={6}>
-                          <Flex justify="space-between" align="center">
-                            <TypeBadge typeId={typeId} size="middle" />
-                            <Typography.Text strong style={{ fontSize: '0.65rem' }}>
-                              {count} ({percent}%)
-                            </Typography.Text>
+            <section className="dashboard-section dashboard-section-types">
+              <Card
+                className="dashboard-types-card"
+                title={
+                  <Flex align="center" gap={8}>
+                    <FireOutlined style={{ color: '#f59e0b' }} />
+                    <span>{t('dashboard.typeBreakdown', 'Distribuição por Tipagem na Coleção')}</span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
+                <Row gutter={[16, 12]}>
+                  {typeDistribution.map(({ typeId, count, percent }) => {
+                    const info = typeData[typeId]
+                    if (!info) return null
+                    return (
+                      <Col key={typeId} xs={24} md={8} lg={6}>
+                        <Card
+                          size="small"
+                          style={{
+                            borderRadius: 8,
+                            background: token.colorBgContainer,
+                            border: `1px solid ${token.colorBorderSecondary}`,
+                          }}
+                        >
+                          <Flex vertical gap={6}>
+                            <Flex justify="space-between" align="center">
+                              <TypeBadge typeId={typeId} size="middle" />
+                              <Typography.Text strong style={{ fontSize: '0.75rem' }}>
+                                {count} ({percent}%)
+                              </Typography.Text>
+                            </Flex>
+                            <Progress
+                              percent={percent}
+                              showInfo={false}
+                              strokeColor={info.color}
+                              size="small"
+                            />
                           </Flex>
-                          <Progress
-                            percent={percent}
-                            showInfo={false}
-                            strokeColor={info.color}
-                            size="small"
-                          />
-                        </Flex>
-                      </Card>
-                    </Col>
-                  )
-                })}
-              </Row>
-            </Card>
+                        </Card>
+                      </Col>
+                    )
+                  })}
+                </Row>
+              </Card>
+            </section>
 
             {/* Current Party Showcase */}
-            <Card
-              title={
-                <Flex align="center" gap={8}>
-                  <TeamOutlined style={{ color: '#38bdf8' }} />
-                  <span>
-                    {t('dashboard.partyShowcase', 'Equipe Atual')} ({party.length} / 6)
-                  </span>
-                </Flex>
-              }
-              size="small"
-              style={{ borderRadius: 12 }}
-            >
+            <section className="dashboard-section dashboard-section-party">
+              <Card
+                className="dashboard-party-card"
+                title={
+                  <Flex align="center" gap={8}>
+                    <TeamOutlined style={{ color: '#38bdf8' }} />
+                    <span>
+                      {t('dashboard.partyShowcase', 'Equipe Atual')} ({party.length} / 6)
+                    </span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
               <Row gutter={[12, 12]}>
                 {party.map((p, idx) => (
-                  <Col key={idx} xs={12} md={6} xl={4}>
+                  <Col key={idx} xs={12} sm={6} xl={4}>
                     <Card
                       size="small"
                       hoverable
@@ -839,7 +978,7 @@ export default function DashboardPage() {
                       }}
                     >
                       <Flex vertical align="center" gap={4}>
-                        <Badge count={p.isShiny ? '✨' : 0} color="gold">
+                        <div style={{ position: 'relative' }}>
                           <div
                             className="dashboard-pokemon-thumb"
                             style={{
@@ -848,23 +987,61 @@ export default function DashboardPage() {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              overflow: 'hidden',
                             }}
                           >
                             <SpeciesImage
                               name={p.species}
                               src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
                               placeholderSize={44}
+                              style={{
+                                maxWidth: 64,
+                                maxHeight: 64,
+                                objectFit: 'contain',
+                                filter: p.isShiny
+                                  ? 'drop-shadow(0 0 6px rgba(250, 173, 20, 0.6))'
+                                  : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
+                                transition: 'transform 0.15s ease',
+                              }}
                             />
                           </div>
-                        </Badge>
-                        <Typography.Text strong style={{ fontSize: '0.65rem', marginTop: 4 }}>
+                          {p.isShiny && (
+                            <span
+                              title="Shiny"
+                              style={{
+                                position: 'absolute',
+                                top: -2,
+                                right: -4,
+                                fontSize: 13,
+                                lineHeight: 1,
+                                userSelect: 'none',
+                              }}
+                            >
+                              ✨
+                            </span>
+                          )}
+                          {p.isEgg && (
+                            <span
+                              title="Ovo"
+                              style={{
+                                position: 'absolute',
+                                top: -2,
+                                left: -4,
+                                fontSize: 13,
+                                lineHeight: 1,
+                                userSelect: 'none',
+                              }}
+                            >
+                              🥚
+                            </span>
+                          )}
+                        </div>
+                        <Typography.Text strong style={{ marginTop: 4 }}>
                           {p.nickname || p.species}
                         </Typography.Text>
                         <Tag color="blue" style={{ fontSize: '0.72rem', margin: 0 }}>
                           Nv. {p.level}
                         </Tag>
-                        <Flex wrap="wrap" justify="center" gap={2}>
+                        <Flex wrap="wrap" justify="center" gap={4}>
                           {p.types.map((t) => (
                             <TypeBadge key={t} typeId={t} size="small" />
                           ))}
@@ -875,9 +1052,12 @@ export default function DashboardPage() {
                 ))}
               </Row>
             </Card>
+          </section>
 
-            {/* Shiny Showcase */}
+          {/* Shiny Showcase */}
+          <section className="dashboard-section dashboard-section-shinies">
             <Card
+              className="dashboard-shinies-card"
               title={
                 <Flex align="center" gap={8}>
                   <StarFilled style={{ color: '#faad14' }} />
@@ -894,59 +1074,27 @@ export default function DashboardPage() {
                   {t('dashboard.noShinies', 'Nenhum Pokémon Shiny encontrado nas caixas ou equipe.')}
                 </Typography.Text>
               ) : (
-                <Row gutter={[12, 12]}>
+                <Row gutter={[16, 16]}>
                   {shinies.map((p, idx) => (
-                    <Col key={idx} xs={24} sm={12} md={8} lg={4}>
-                      <Card
-                        size="small"
-                        hoverable
+                    <Col key={idx} xs={12} sm={8} md={6} xl={4}>
+                      <PokemonGridCard
+                        pokemon={p}
+                        selectable={false}
+                        isSelected={false}
+                        showActions={false}
                         onClick={() => navigate(routes.pokemon(p))}
-                        style={{
-                          borderRadius: 10,
-                          textAlign: 'center',
-                          borderColor: '#faad1480',
-                          background: token.colorBgElevated,
-                        }}
-                      >
-                        <Flex vertical align="center" gap={4}>
-                          <div
-                            className="dashboard-pokemon-thumb"
-                            style={{
-                              width: 64,
-                              height: 64,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            <SpeciesImage
-                              name={p.species}
-                              src={pokemonOfficialArtworkUrl(p.speciesId, true)}
-                              placeholderSize={44}
-                            />
-                          </div>
-                          <Typography.Text strong style={{ fontSize: '0.65rem' }}>
-                            ✨ {p.nickname || p.species}
-                          </Typography.Text>
-                          <Tag color="gold" style={{ fontSize: '0.72rem', margin: 0 }}>
-                            Nv. {p.level}
-                          </Tag>
-                          <Flex wrap="wrap" justify="center" gap={2}>
-                            {p.types.map((t) => (
-                              <TypeBadge key={t} typeId={t} size="small" />
-                            ))}
-                          </Flex>
-                        </Flex>
-                      </Card>
+                      />
                     </Col>
                   ))}
                 </Row>
               )}
             </Card>
+          </section>
 
-            {/* Level 100 Max Level Showcase */}
+          {/* Level 100 Max Level Showcase */}
+          <section className="dashboard-section dashboard-section-maxlevel">
             <Card
+              className="dashboard-maxlevel-card"
               title={
                 <Flex align="center" gap={8}>
                   <TrophyFilled style={{ color: '#10b981' }} />
@@ -963,59 +1111,30 @@ export default function DashboardPage() {
                   {t('dashboard.noMaxLevel', 'Nenhum Pokémon no nível 100 encontrado.')}
                 </Typography.Text>
               ) : (
-                <Row gutter={[12, 12]}>
+                <Row gutter={[16, 16]}>
                   {maxLevelList.map((p, idx) => (
-                    <Col key={idx} xs={24} sm={12} md={8} lg={4}>
-                      <Card
-                        size="small"
-                        hoverable
+                    <Col key={idx} xs={12} sm={8} md={6} xl={4}>
+                      <PokemonGridCard
+                        pokemon={p}
+                        selectable={false}
+                        isSelected={false}
+                        showActions={false}
                         onClick={() => navigate(routes.pokemon(p))}
-                        style={{
-                          borderRadius: 10,
-                          textAlign: 'center',
-                          borderColor: '#10b98180',
-                          background: token.colorBgElevated,
-                        }}
-                      >
-                        <Flex vertical align="center" gap={4}>
-                          <div
-                            className="dashboard-pokemon-thumb"
-                            style={{
-                              width: 64,
-                              height: 64,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            <SpeciesImage
-                              name={p.species}
-                              src={pokemonOfficialArtworkUrl(p.speciesId, p.isShiny)}
-                              placeholderSize={44}
-                            />
-                          </div>
-                          <Typography.Text strong style={{ fontSize: '0.85rem' }}>
-                            {p.isShiny ? '✨ ' : ''}
-                            {p.nickname || p.species}
-                          </Typography.Text>
-                          <Tag color="green" style={{ fontSize: '0.72rem', margin: 0 }}>
-                            MAX LVL 100
-                          </Tag>
-                        </Flex>
-                      </Card>
+                      />
                     </Col>
                   ))}
                 </Row>
               )}
             </Card>
-          </Flex>
-        </div>
-      )}
+          </section>
+        </Flex>
+      </section>
+    )}
 
       {/* TAB 3: TRAINER & BADGES */}
       {activeTab === 'trainer' && (
-        <div
+        <section
+          className="dashboard-tab-content dashboard-tab-trainer"
           style={{
             width: '100%',
             backgroundColor: token.colorBgContainer,
@@ -1026,20 +1145,21 @@ export default function DashboardPage() {
           }}
         >
           <Flex vertical gap={20} style={{ width: '100%' }}>
-            {/* Gym Badges Visual Board with Real Illustrated Badges */}
-            <Card
-              title={
-                <Flex align="center" gap={8}>
-                  <TrophyOutlined style={{ color: '#f59e0b' }} />
-                  <span>
-                    {t('dashboard.badges', 'Insígnias de Ginásio')} ({badgesEarnedCount} / {badgesTotalCount})
-                  </span>
-                </Flex>
-              }
-              size="small"
-              style={{ borderRadius: 12 }}
-            >
-              {badgesList && badgesList.length > 0 ? (
+            {/* Gym Badges Visual Board / Special Region Mechanic Visual Board */}
+            <section className="dashboard-section dashboard-section-progression">
+            {badgesList && badgesList.length > 0 ? (
+              <Card
+                title={
+                  <Flex align="center" gap={8}>
+                    <TrophyOutlined style={{ color: '#f59e0b' }} />
+                    <span>
+                      {t('dashboard.badges', 'Insígnias de Ginásio')} ({badgesEarnedCount} / {badgesTotalCount})
+                    </span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
                 <Row gutter={[12, 12]}>
                   {badgesList.map((badge, idx) => (
                     <Col key={idx} xs={12} sm={8} md={6} lg={3}>
@@ -1071,7 +1191,107 @@ export default function DashboardPage() {
                     </Col>
                   ))}
                 </Row>
-              ) : (
+              </Card>
+            ) : isAlola ? (
+              <Card
+                title={
+                  <Flex align="center" gap={8}>
+                    <CompassOutlined style={{ color: '#06b6d4' }} />
+                    <span>{t('dashboard.islandChallenge', 'Desafio das Ilhas (Alola)')}</span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
+                <Row gutter={[12, 12]}>
+                  {[
+                    { island: 'Melemele', kahuna: 'Hala (Luta)', trials: 'Prova: Ilima (Normal)', color: '#eab308' },
+                    { island: 'Akala', kahuna: 'Olívia (Pedra)', trials: 'Provas: Lana, Kiawe e Mallow', color: '#ec4899' },
+                    { island: "Ula'ula", kahuna: 'Nanu (Noturno)', trials: 'Provas: Sophocles e Acerola', color: '#ef4444' },
+                    { island: 'Poni', kahuna: 'Hapu (Terrestre)', trials: 'Prova: Mina (Fada)', color: '#8b5cf6' },
+                  ].map((item, idx) => (
+                    <Col key={idx} xs={12} sm={6}>
+                      <Card
+                        size="small"
+                        style={{
+                          borderRadius: 10,
+                          textAlign: 'center',
+                          border: `1px solid ${token.colorBorderSecondary}`,
+                          background: token.colorBgElevated,
+                        }}
+                      >
+                        <Flex vertical align="center" gap={6}>
+                          <div style={{ fontSize: 28 }}>🏝️</div>
+                          <Typography.Text strong style={{ fontSize: '0.85rem' }}>
+                            Ilha {item.island}
+                          </Typography.Text>
+                          <Tag color={item.color} style={{ margin: 0, fontSize: '0.68rem', fontWeight: 600 }}>
+                            Kahuna: {item.kahuna}
+                          </Tag>
+                          <Typography.Text type="secondary" style={{ fontSize: '0.72rem' }}>
+                            {item.trials}
+                          </Typography.Text>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </Card>
+            ) : isHisui ? (
+              <Card
+                title={
+                  <Flex align="center" gap={8}>
+                    <StarOutlined style={{ color: '#f59e0b' }} />
+                    <span>{t('dashboard.galaxyRank', 'Posto de Estrelas do Esquadrão Galaxy (Hisui)')}</span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
+                <Flex vertical align="center" gap={12} style={{ padding: '16px 0' }}>
+                  <div style={{ fontSize: 28, letterSpacing: 6 }}>⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐ ⭐</div>
+                  <Typography.Title level={4} style={{ margin: 0 }}>
+                    Classificação do Corpo de Pesquisa
+                  </Typography.Title>
+                  <Typography.Paragraph type="secondary" style={{ margin: 0, textAlign: 'center', maxWidth: 450 }}>
+                    O progresso em Hisui é medido pelas 10 estrelas do Esquadrão Galaxy através da conclusão de tarefas na Pokédex de Hisui.
+                  </Typography.Paragraph>
+                </Flex>
+              </Card>
+            ) : isGameCube ? (
+              <Card
+                title={
+                  <Flex align="center" gap={8}>
+                    <ThunderboltFilled style={{ color: '#8b5cf6' }} />
+                    <span>{t('dashboard.shadowPurification', 'Câmara de Purificação (GameCube)')}</span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
+                <Flex vertical align="center" gap={8} style={{ padding: '16px 0' }}>
+                  <ThunderboltFilled style={{ fontSize: '2.5rem', color: '#8b5cf6' }} />
+                  <Typography.Title level={4} style={{ margin: 0 }}>
+                    Purificação de Shadow Pokémon
+                  </Typography.Title>
+                  <Typography.Paragraph type="secondary" style={{ margin: 0, textAlign: 'center', maxWidth: 450 }}>
+                    Abra o coração dos Shadow Pokémon através de batalhas e da Câmara de Purificação de Orre para torná-los puros novamente.
+                  </Typography.Paragraph>
+                </Flex>
+              </Card>
+            ) : (
+              <Card
+                title={
+                  <Flex align="center" gap={8}>
+                    <TrophyOutlined style={{ color: '#f59e0b' }} />
+                    <span>
+                      {t('dashboard.badges', 'Insígnias de Ginásio')} ({badgesEarnedCount} / {badgesTotalCount})
+                    </span>
+                  </Flex>
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
                 <Flex vertical gap={8} align="center" style={{ padding: '20px 0' }}>
                   <TrophyFilled style={{ fontSize: '2.5rem', color: '#f59e0b' }} />
                   <Typography.Title level={4} style={{ margin: 0 }}>
@@ -1083,105 +1303,109 @@ export default function DashboardPage() {
                     style={{ maxWidth: 300 }}
                   />
                 </Flex>
-              )}
-            </Card>
+              </Card>
+            )}
+            </section>
 
             {/* Trainer Identity Card (Modern Card, Zero Tables) */}
-            <Card
-              title={
-                <Flex align="center" gap={8}>
-                  <UserOutlined style={{ color: '#818cf8' }} />
-                  <span>{t('dashboard.tabTrainer', 'Ficha & Insígnias')}</span>
-                </Flex>
-              }
-              size="small"
-              style={{ borderRadius: 12 }}
-            >
-              <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} md={8}>
-                  <Flex vertical gap={4}>
-                    <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      Nome do Treinador (OT)
-                    </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                      {trainer?.name || '—'}
-                    </Typography.Title>
+            <section className="dashboard-section dashboard-section-trainercard">
+              <Card
+                className="dashboard-trainercard-card"
+                title={
+                  <Flex align="center" gap={8}>
+                    <UserOutlined style={{ color: '#818cf8' }} />
+                    <span>{t('dashboard.tabTrainer', 'Ficha & Insígnias')}</span>
                   </Flex>
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                  <Flex vertical gap={4}>
-                    <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                      TID / SID
-                    </Typography.Text>
-                    <Typography.Title level={4} style={{ margin: 0, fontFamily: 'monospace', fontWeight: 700 }}>
-                      {trainer?.id || '—'}
-                    </Typography.Title>
-                  </Flex>
-                </Col>
-                {trainer?.gender !== null && trainer?.gender !== undefined && (
+                }
+                size="small"
+                style={{ borderRadius: 12 }}
+              >
+                <Row gutter={[16, 16]}>
                   <Col xs={24} sm={12} md={8}>
                     <Flex vertical gap={4}>
                       <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                        Gênero
+                        Nome do Treinador (OT)
                       </Typography.Text>
                       <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                        {trainer.gender === 'female' ? '♀ Feminino' : '♂ Masculino'}
+                        {trainer?.name || '—'}
                       </Typography.Title>
                     </Flex>
                   </Col>
-                )}
-                {progress?.playTime && (
                   <Col xs={24} sm={12} md={8}>
                     <Flex vertical gap={4}>
                       <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                        {t('dashboard.playTime', 'Tempo de Jogo')}
+                        TID / SID
                       </Typography.Text>
-                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#38bdf8' }}>
-                        {progress.playTime.hours}h {progress.playTime.minutes}m {progress.playTime.seconds}s
+                      <Typography.Title level={4} style={{ margin: 0, fontFamily: 'monospace', fontWeight: 700 }}>
+                        {trainer?.id || '—'}
                       </Typography.Title>
                     </Flex>
                   </Col>
-                )}
-                {trainer?.money !== null && trainer?.money !== undefined && (
-                  <Col xs={24} sm={12} md={8}>
-                    <Flex vertical gap={4}>
-                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                        {t('dashboard.money', 'Dinheiro')}
-                      </Typography.Text>
-                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#10b981' }}>
-                        $ {trainer.money.toLocaleString()}
-                      </Typography.Title>
-                    </Flex>
-                  </Col>
-                )}
-                {trainer?.battlePoints !== null && trainer?.battlePoints !== undefined && (
-                  <Col xs={24} sm={12} md={8}>
-                    <Flex vertical gap={4}>
-                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                        {t('dashboard.battlePoints', 'Pontos de Batalha (BP)')}
-                      </Typography.Text>
-                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#f59e0b' }}>
-                        {trainer.battlePoints} BP
-                      </Typography.Title>
-                    </Flex>
-                  </Col>
-                )}
-                {trainer?.rival && (
-                  <Col xs={24} sm={12} md={8}>
-                    <Flex vertical gap={4}>
-                      <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
-                        Rival
-                      </Typography.Text>
-                      <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-                        {trainer.rival}
-                      </Typography.Title>
-                    </Flex>
-                  </Col>
-                )}
-              </Row>
-            </Card>
+                  {trainer?.gender !== null && trainer?.gender !== undefined && (
+                    <Col xs={24} sm={12} md={8}>
+                      <Flex vertical gap={4}>
+                        <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                          Gênero
+                        </Typography.Text>
+                        <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
+                          {trainer.gender === 'female' ? '♀ Feminino' : '♂ Masculino'}
+                        </Typography.Title>
+                      </Flex>
+                    </Col>
+                  )}
+                  {progress?.playTime && (
+                    <Col xs={24} sm={12} md={8}>
+                      <Flex vertical gap={4}>
+                        <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                          {t('dashboard.playTime', 'Tempo de Jogo')}
+                        </Typography.Text>
+                        <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#38bdf8' }}>
+                          {progress.playTime.hours}h {progress.playTime.minutes}m {progress.playTime.seconds}s
+                        </Typography.Title>
+                      </Flex>
+                    </Col>
+                  )}
+                  {trainer?.money !== null && trainer?.money !== undefined && (
+                    <Col xs={24} sm={12} md={8}>
+                      <Flex vertical gap={4}>
+                        <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                          {t('dashboard.money', 'Dinheiro')}
+                        </Typography.Text>
+                        <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#10b981' }}>
+                          $ {trainer.money.toLocaleString()}
+                        </Typography.Title>
+                      </Flex>
+                    </Col>
+                  )}
+                  {trainer?.battlePoints !== null && trainer?.battlePoints !== undefined && (
+                    <Col xs={24} sm={12} md={8}>
+                      <Flex vertical gap={4}>
+                        <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                          {t('dashboard.battlePoints', 'Pontos de Batalha (BP)')}
+                        </Typography.Text>
+                        <Typography.Title level={4} style={{ margin: 0, fontWeight: 700, color: '#f59e0b' }}>
+                          {trainer.battlePoints} BP
+                        </Typography.Title>
+                      </Flex>
+                    </Col>
+                  )}
+                  {trainer?.rival && (
+                    <Col xs={24} sm={12} md={8}>
+                      <Flex vertical gap={4}>
+                        <Typography.Text type="secondary" style={{ fontSize: '0.8rem' }}>
+                          Rival
+                        </Typography.Text>
+                        <Typography.Title level={4} style={{ margin: 0, fontWeight: 700 }}>
+                          {trainer.rival}
+                        </Typography.Title>
+                      </Flex>
+                    </Col>
+                  )}
+                </Row>
+              </Card>
+            </section>
           </Flex>
-        </div>
+        </section>
       )}
 
       {/* Modal: Como Capturar / Obter */}
@@ -1196,6 +1420,6 @@ export default function DashboardPage() {
           }
         }}
       />
-    </Flex>
+    </main>
   )
 }

@@ -25,7 +25,18 @@ export function PokemonImage({ pokemon, style = 'showdown', size = 64 }: Pokemon
   const src = style === 'official'
     ? pokemonOfficialArtworkUrl(pokemon.speciesId, pokemon.isShiny)
     : pokemonImageUrl(pokemon.speciesId, pokemon.isShiny)
-  const image = <SpeciesImage name={pokemon.species} src={src} placeholderSize={size} />
+  const image = (
+    <SpeciesImage
+      name={pokemon.species}
+      src={src}
+      placeholderSize={size}
+      style={{
+        filter: pokemon.isShiny
+          ? 'drop-shadow(0 0 6px rgba(250, 173, 20, 0.6))'
+          : 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12))',
+      }}
+    />
+  )
   if (!pokemon.isShiny) return image
   return (
     <Badge.Ribbon text="shiny" color="orange">

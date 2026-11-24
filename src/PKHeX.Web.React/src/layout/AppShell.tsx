@@ -206,7 +206,7 @@ function SplashScreen({ onFinish }: { onFinish: () => void }) {
       onClick={handleComplete}
       title="Toque para pular"
     >
-      <CaptureAnimation textColor="#f8fafc" onComplete={handleComplete} />
+      <CaptureAnimation size={150} textColor="#f8fafc" onComplete={handleComplete} />
       <div
         style={{
           position: 'absolute',
@@ -238,7 +238,10 @@ export function AppShell({ autoLoad }: { autoLoad: boolean }) {
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
           fontFamily,
+          fontSize: 12,
           controlHeight: 38,
+          paddingMD: 16,
+          paddingContentHorizontalLG: 16,
           colorPrimary: '#DC0A2D',
           colorPrimaryHover: '#E8304D',
           colorPrimaryActive: '#B80825',
@@ -257,6 +260,9 @@ export function AppShell({ autoLoad }: { autoLoad: boolean }) {
             : {}),
         },
         components: {
+          Modal: {
+            contentPadding: '16px 16px',
+          } as any,
           Layout: {
             headerBg: '#001529',
             siderBg: '#001529',

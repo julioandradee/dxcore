@@ -78,7 +78,7 @@ describe('PokemonGrid', () => {
     expect(container.textContent).toContain('Sparky')
     expect(container.textContent).toContain('(Pikachu)')
     expect(container.textContent).toContain('#0025')
-    expect(container.textContent).toContain('Shiny')
+    expect(container.textContent).toContain('✨')
     expect(container.textContent).toContain('Lvl 50')
   })
 

@@ -14,11 +14,11 @@ const labels = (supports: { encounters: boolean; showdown: boolean }) =>
 
 describe('boxActions', () => {
   it('ends with Transfer', () => {
-    expect(labels({ encounters: true, showdown: true })).toEqual(['Add', 'Load *.pk', 'Calculator', 'Showdown', 'Transfer'])
+    expect(labels({ encounters: true, showdown: true })).toEqual(['Add', 'Importar Pokémon (.pk / .zip)', 'Calculator', 'Showdown', 'Transfer'])
   })
 
   it('keeps Load *.pk first on a save without encounters or Showdown', () => {
-    expect(labels({ encounters: false, showdown: false })).toEqual(['Load *.pk', 'Transfer'])
+    expect(labels({ encounters: false, showdown: false })).toEqual(['Importar Pokémon (.pk / .zip)', 'Transfer'])
   })
 
   it('opens the transfer from Transfer', () => {
